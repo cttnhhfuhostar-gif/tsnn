@@ -1,5 +1,5 @@
 // modules/personalTracker.js - Quản lý tiến trình và thời gian biểu thực tập cá nhân hóa
-import { loadCurrentProfile, saveCurrentProfile, DEFAULT_GUEST_PROFILE } from './profileManager.js';
+import { loadCurrentProfile, saveCurrentProfile, DEFAULT_GUEST_PROFILE, normalizeProfile } from './profileManager.js';
 
 export const DEFAULT_TRACKER_DATA = DEFAULT_GUEST_PROFILE;
 
@@ -16,41 +16,83 @@ export function resetPersonalTrackerState() {
 }
 
 /**
- * Tính toán phân tích tiến trình cá nhân hóa
+ * Tính tổng giờ từ danh sách weeklyLogs (kết hợp dailyLogs nếu có)
  */
-export function calculatePersonalProgress(trackerData) {
+export function calculateLogsHours(weeklyLogs) {
+  if (!Array.isArray(weeklyLogs)) return 0;
+  return weeklyLogs.reduce((acc, log) => {
+    if (Array.isArray(log.dailyLogs) && log.dailyLogs.length > 0) {
+      const dailySum = log.dailyLogs.reduce((dAcc, day) => dAcc + (Number(day.hours) || 0), 0);
+      return acc + (dailySum > 0 ? dailySum : (Number(log.hours) || 0));
+    }
+    return acc + (Number(log.hours) || 0);
+  }, 0);
+}
+
+/**
+ * Tính toán phân tích tiến trình cá nhân hóa (hỗ trợ Track TSNN & KTCN riêng biệt)
+ */
+export function calculatePersonalProgress(trackerData, selectedTrackKey) {
   const data = trackerData || DEFAULT_TRACKER_DATA;
   const isDual = data.courseType === 'dual';
   const targetHours = isDual ? 240 : 120;
 
-  // 1. Tổng số giờ đã tích lũy từ các tuần
-  const totalLoggedHours = data.weeklyLogs.reduce((acc, log) => acc + (Number(log.hours) || 0), 0);
+  // Xác định track hiện hành
+  const activeTrackKey = selectedTrackKey || data.activeTrack || (data.courseType === 'single_ktcn' ? 'ktcn' : 'tsnn');
+
+  // Tính giờ từng môn nếu có data.tracks
+  let tsnnHours = 0;
+  let ktcnHours = 0;
+  let totalLoggedHours = 0;
+
+  if (data.tracks && (data.tracks.tsnn || data.tracks.ktcn)) {
+    tsnnHours = calculateLogsHours(data.tracks.tsnn?.weeklyLogs || []);
+    ktcnHours = calculateLogsHours(data.tracks.ktcn?.weeklyLogs || []);
+    if (isDual) {
+      totalLoggedHours = tsnnHours + ktcnHours;
+    } else if (data.courseType === 'single_ktcn') {
+      totalLoggedHours = ktcnHours > 0 ? ktcnHours : calculateLogsHours(data.weeklyLogs || []);
+    } else {
+      totalLoggedHours = tsnnHours > 0 ? tsnnHours : calculateLogsHours(data.weeklyLogs || []);
+    }
+  } else {
+    // Dữ liệu cũ hoặc test data đơn giản
+    totalLoggedHours = calculateLogsHours(data.weeklyLogs || []);
+    tsnnHours = totalLoggedHours;
+    ktcnHours = 0;
+  }
+
   const remainingHours = Math.max(0, targetHours - totalLoggedHours);
   const progressPercentage = Math.min(100, Math.round((totalLoggedHours / targetHours) * 100));
   const isCompleted = totalLoggedHours >= targetHours;
 
-  // 2. Phân tích thời gian (Ngày bắt đầu, kết thúc, deadline)
+  // Track cụ thể đang xem
+  const activeTrackData = (data.tracks && data.tracks[activeTrackKey]) ? data.tracks[activeTrackKey] : data;
+  const currentTrackHours = activeTrackKey === 'ktcn' ? ktcnHours : tsnnHours;
+  const currentTrackTarget = 120;
+  const currentTrackRemaining = Math.max(0, currentTrackTarget - currentTrackHours);
+  const currentTrackPct = Math.min(100, Math.round((currentTrackHours / currentTrackTarget) * 100));
+
+  // 2. Phân tích thời gian (Ưu tiên lấy theo track đang xem)
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
-  const start = new Date(data.startDate);
-  const end = new Date(data.endDate);
-  const deadline = new Date(data.deadlineDate);
+  const startDateStr = activeTrackData.startDate || data.startDate || '2026-02-15';
+  const endDateStr = activeTrackData.endDate || data.endDate || '2026-05-15';
+  const deadlineDateStr = activeTrackData.deadlineDate || data.deadlineDate || '2026-05-30';
 
-  // Số ngày còn lại đến hạn nộp bài
+  const deadline = new Date(deadlineDateStr);
   const diffTimeToDeadline = deadline.getTime() - now.getTime();
   const daysUntilDeadline = Math.ceil(diffTimeToDeadline / (1000 * 60 * 60 * 24));
   const isDeadlinePassed = daysUntilDeadline < 0;
-
-  // Số tuần còn lại đến deadline
   const weeksUntilDeadline = Math.max(0, Math.ceil(daysUntilDeadline / 7));
 
   // 3. Tốc độ làm việc & Dự báo
-  // Số giờ cần làm mỗi tuần để kịp deadline
-  const requiredHoursPerWeek = weeksUntilDeadline > 0 ? Math.ceil(remainingHours / weeksUntilDeadline) : remainingHours;
+  const hoursToCalc = isDual ? remainingHours : currentTrackRemaining;
+  const requiredHoursPerWeek = weeksUntilDeadline > 0 ? Math.ceil(hoursToCalc / weeksUntilDeadline) : hoursToCalc;
 
   // Đánh giá tình trạng tiến độ (Velocity Status)
-  let status = 'on_track'; // 'completed' | 'on_track' | 'warning' | 'urgent'
+  let status = 'on_track';
   let statusMessage = '';
 
   if (isCompleted) {
@@ -70,9 +112,10 @@ export function calculatePersonalProgress(trackerData) {
     statusMessage = `Tiến độ ổn định: Còn ${daysUntilDeadline} ngày. Duy trì ~${requiredHoursPerWeek || 15}H/tuần để về đích đúng hạn.`;
   }
 
-  // Thống kê chữ ký mentor
-  const signedLogsCount = data.weeklyLogs.filter(l => l.mentorSigned).length;
-  const unsignedLogsCount = data.weeklyLogs.length - signedLogsCount;
+  // Thống kê chữ ký mentor của track đang xem và toàn bộ
+  const currentWeeklyLogs = activeTrackData.weeklyLogs || data.weeklyLogs || [];
+  const signedLogsCount = currentWeeklyLogs.filter(l => l.mentorSigned).length;
+  const unsignedLogsCount = currentWeeklyLogs.length - signedLogsCount;
 
   return {
     targetHours,
@@ -88,6 +131,20 @@ export function calculatePersonalProgress(trackerData) {
     statusMessage,
     signedLogsCount,
     unsignedLogsCount,
-    totalWeeksRecorded: data.weeklyLogs.length
+    totalWeeksRecorded: currentWeeklyLogs.length,
+    // Thông tin phân tích theo từng môn
+    activeTrackKey,
+    currentTrackHours,
+    currentTrackTarget,
+    currentTrackRemaining,
+    currentTrackPct,
+    tsnnHours,
+    tsnnTarget: 120,
+    tsnnRemaining: Math.max(0, 120 - tsnnHours),
+    tsnnPct: Math.min(100, Math.round((tsnnHours / 120) * 100)),
+    ktcnHours,
+    ktcnTarget: 120,
+    ktcnRemaining: Math.max(0, 120 - ktcnHours),
+    ktcnPct: Math.min(100, Math.round((ktcnHours / 120) * 100))
   };
 }

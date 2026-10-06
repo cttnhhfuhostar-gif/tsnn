@@ -122,20 +122,24 @@ sequenceDiagram
 ---
 
 ### 3.3. Thời Gian Biểu & Theo Dõi Tiến Độ Cá Nhân Hóa (Live Tracker)
-- **Cấu hình học phần linh hoạt:**
-  - *Tập sự nghề nghiệp (TSNN)*: Mục tiêu 120H.
-  - *Kiến tập công nghiệp (KTCN)*: Mục tiêu 120H.
-  - *Song hành cả 2 môn*: Tự động nâng mục tiêu lên **240H**.
+- **Kiến trúc phân tách 2 học phần độc lập (Dual Track Architecture):**
+  - Giải quyết bài toán thực tế khi sinh viên thực tập **Tập sự nghề nghiệp (TSNN)** và **Kiến tập công nghiệp (KTCN)** tại **hai doanh nghiệp/đơn vị khác nhau**.
+  - Tách bạch thông tin nhập liệu thành 2 Track riêng biệt (Tab TSNN vs Tab KTCN): Mỗi môn có tên Công ty, Mã số thuế, Cán bộ hướng dẫn (Mentor), ngày bắt đầu/kết thúc và hạn nộp HSMH độc lập.
+  - Tích hợp nút tiện ích: **"Sao chép thông tin DN từ môn kia"** (1-click sao chép nếu sinh viên thực tập cùng một công ty, không cần gõ lại).
+  - Thanh tổng quan tiến độ kép: Hiển thị đồng thời tỉ lệ hoàn thành của từng môn (120H) và tổng khối lượng song hành (240H).
+- **Nhật ký tuần dạng Accordion sổ xuống chi tiết theo từng ngày (Expandable Daily Logs):**
+  - Mỗi tuần làm việc được thiết kế dạng **Accordion gập/mở (sổ xuống)** mượt mà với icon chevron xoay và huy hiệu số ngày.
+  - Cho phép mở rộng để nhập chi tiết công việc cụ thể cho từng ngày: Thứ (T2 – T6/CN), Ngày tháng, Số giờ làm việc và Nội dung nhiệm vụ kỹ thuật chi tiết.
+  - **Tự động cộng dồn giờ thông minh:** Khi điều chỉnh giờ làm việc của bất kỳ ngày nào, tổng số giờ của tuần và tổng tiến độ môn học sẽ tự động được tính toán lại ngay lập tức.
+  - **Nút tiện ích "Điền nhanh T2-T6 (4H/ngày)":** Tự động điền 5 ngày làm việc chuẩn 20H chỉ với 1 cú click.
+  - Nút thêm ngày linh hoạt (cho phép thêm Thứ 7 hoặc Chủ Nhật) và nút xóa ngày dễ dàng.
+  - Checkbox xác nhận chữ ký của CBHD Doanh nghiệp (đối chiếu BM02).
 - **Đếm ngược thời hạn (Deadline Countdown):** Tính toán số ngày còn lại đến hạn nộp bản cứng HSMH của Khoa, cảnh báo đổi màu đỏ khi quá hạn.
 - **Thanh tiến độ & Vận tốc tích lũy:**
-  - Tính toán phần trăm hoàn thành tổng thời gian.
+  - Tính toán phần trăm hoàn thành tổng thời gian theo môn và tổng thể.
   - Tính toán số giờ cần duy trì mỗi tuần (`requiredHoursPerWeek`) dựa trên ngày kết thúc dự kiến.
   - Cảnh báo tình trạng: Bình thường, Cần tăng tốc (Warning), hoặc Khẩn cấp (Urgent).
-- **Nhật ký tuần chi tiết (Weekly Logs):**
-  - Thêm / Xóa từng tuần làm việc linh hoạt.
-  - Ghi nhận số giờ làm việc thực tế và nội dung công việc kỹ thuật cụ thể.
-  - Checkbox xác nhận chữ ký của CBHD Doanh nghiệp (đối chiếu BM02).
-- **Sao chép báo cáo tiến độ 1-Click:** Xuất bản tóm tắt tiến độ dạng văn bản có định dạng vào Clipboard để báo cáo nhanh cho GVGS hoặc Mentor.
+- **Sao chép báo cáo tiến độ chi tiết 1-Click:** Xuất bản tóm tắt tiến độ dạng văn bản có cấu trúc phân tầng (kèm chi tiết từng ngày của từng môn) vào Clipboard để báo cáo nhanh cho GVGS hoặc Mentor.
 
 ---
 
@@ -253,14 +257,14 @@ http://localhost:3000
 
 ## 7. HỆ THỐNG KIỂM THỬ TỰ ĐỘNG (TEST SUITE)
 
-Dự án tích hợp sẵn bộ kiểm thử 10 Test Cases bao quát toàn bộ logic cốt lõi.
+Dự án tích hợp sẵn bộ kiểm thử 12 Test Cases bao quát toàn bộ logic cốt lõi.
 
 ### Chạy kiểm thử từ Command Line (CLI):
 ```bash
 node -e "import('./modules/testRunner.js').then(m => m.executeAllTests(r => console.log(r.id, r.status, r.outputMessage)))"
 ```
 
-### Danh sách 10 Test Cases:
+### Danh sách 12 Test Cases:
 1. `TC-VAL-01`: Kiểm tra tên file nộp HSMH chuẩn TDTU (`1_52000888_BM01.pdf`).
 2. `TC-VAL-02`: Bắt lỗi tên file chứa khoảng trắng (`1_52000888 BM01.pdf`).
 3. `TC-VAL-03`: Bắt lỗi file biểu mẫu không phải định dạng PDF scan màu (`1_52000888_BM01.docx`).
@@ -269,8 +273,10 @@ node -e "import('./modules/testRunner.js').then(m => m.executeAllTests(r => cons
 6. `TC-HRS-01`: Tính toán giờ học phần đơn lẻ (Mục tiêu ≥ 120H).
 7. `TC-HRS-02`: Tính toán giờ học phần song hành (Mục tiêu ≥ 240H, cảnh báo thiếu giờ).
 8. `TC-TRACK-01`: Tính toán tiến trình cá nhân hóa từ nhật ký tuần thực tế.
-9. `TC-UTIL-01`: Thuật toán chuẩn hóa loại bỏ dấu tiếng Việt cho tên file.
-10. `TC-I18N-01`: Kiểm tra gói từ điển song ngữ Anh - Việt (589+ mục từ).
+9. `TC-TRACK-02`: Tính toán tổng giờ từ chi tiết các ngày trong tuần (Daily Logs).
+10. `TC-TRACK-03`: Quản lý và phân tách 2 học phần độc lập (Dual Tracks: TSNN & KTCN).
+11. `TC-UTIL-01`: Thuật toán chuẩn hóa loại bỏ dấu tiếng Việt cho tên file.
+12. `TC-I18N-01`: Kiểm tra gói từ điển song ngữ Anh - Việt (610+ mục từ).
 
 ---
 

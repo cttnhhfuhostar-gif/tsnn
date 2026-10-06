@@ -1,0 +1,23 @@
+{
+  "mssv": "522h0045",
+  "pin": "1234",
+  "studentName": "Nguyễn Hữu Nhân",
+  "studentClass": "22H50202",
+  "companyName": "AI_LAB-Trường đại học Tôn Đức Thắng",
+  "companyTax": "",
+  "mentorName": "Thầy Dương Hữu Phúc",
+  "courseType": "single_tsnn",
+  "startDate": "2026-10-06",
+  "endDate": "2026-12-20",
+  "deadlineDate": "2026-11-29",
+  "weeklyLogs": [
+    {
+      "id": 1,
+      "week": 1,
+      "hours": 21,
+      "task": "làm quen với môi trường, văn phòng, mô tả công việc",
+      "mentorSigned": false
+    }
+  ],
+  "updatedAt": "2026-10-06T05:54:18.538Z"
+}

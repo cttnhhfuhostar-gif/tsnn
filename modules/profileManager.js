@@ -1,21 +1,190 @@
 // modules/profileManager.js - Quản lý Tài Khoản Sinh Viên & Bảo Mật Cá Nhân Hóa
-export const DEFAULT_GUEST_PROFILE = {
-  mssv: '52000888',
-  studentName: 'Nguyễn Văn An',
-  studentClass: '20050201',
+
+export function generateDefaultDailyLogs(weekNum, totalHours = 20) {
+  const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6'];
+  const dailyHour = Math.floor(totalHours / 5) || 4;
+  const remainder = totalHours - (dailyHour * 5);
+
+  return days.map((dayName, idx) => ({
+    id: Date.now() + idx + Math.floor(Math.random() * 1000),
+    day: dayName,
+    date: '',
+    hours: idx === 4 ? dailyHour + remainder : dailyHour,
+    task: `Nhiệm vụ kỹ thuật ngày ${idx + 1} (Tuần ${weekNum})`
+  }));
+}
+
+export const DEFAULT_TSNN_TRACK = {
   companyName: 'Công ty Cổ phần Công nghệ FPT Software',
   companyTax: '0101248141',
   mentorName: 'Trần Văn Bình (Tech Lead)',
-  courseType: 'single_tsnn',
   startDate: '2026-02-15',
   endDate: '2026-05-15',
   deadlineDate: '2026-05-30',
   weeklyLogs: [
-    { id: 1, week: 1, hours: 20, task: 'Làm quen môi trường công ty, setup IDE và đọc tài liệu dự án', mentorSigned: true },
-    { id: 2, week: 2, hours: 20, task: 'Nghiên cứu cấu trúc cơ sở dữ liệu, viết API authentication', mentorSigned: true },
-    { id: 3, week: 3, hours: 25, task: 'Xây dựng giao diện Dashboard, tích hợp REST API', mentorSigned: false }
+    {
+      id: 1,
+      week: 1,
+      hours: 20,
+      task: 'Làm quen môi trường công ty, setup IDE và đọc tài liệu dự án',
+      mentorSigned: true,
+      isExpanded: false,
+      dailyLogs: [
+        { id: 101, day: 'Thứ 2', date: '2026-02-16', hours: 4, task: 'Làm quen văn hóa công ty, nhận máy trạm và cài VPN nội bộ' },
+        { id: 102, day: 'Thứ 3', date: '2026-02-17', hours: 4, task: 'Cài đặt môi trường Dev (Node.js, Docker, Git)' },
+        { id: 103, day: 'Thứ 4', date: '2026-02-18', hours: 4, task: 'Đọc tài liệu SRS và kiến trúc hệ thống' },
+        { id: 104, day: 'Thứ 5', date: '2026-02-19', hours: 4, task: 'Tìm hiểu quy chuẩn Git flow và coding conventions' },
+        { id: 105, day: 'Thứ 6', date: '2026-02-20', hours: 4, task: 'Họp tuần với Mentor, báo cáo tiến độ tuần 1' }
+      ]
+    },
+    {
+      id: 2,
+      week: 2,
+      hours: 20,
+      task: 'Nghiên cứu cấu trúc cơ sở dữ liệu, viết API authentication',
+      mentorSigned: true,
+      isExpanded: false,
+      dailyLogs: [
+        { id: 201, day: 'Thứ 2', date: '2026-02-23', hours: 4, task: 'Nghiên cứu mô hình Database PostgreSQL' },
+        { id: 202, day: 'Thứ 3', date: '2026-02-24', hours: 4, task: 'Viết migration script và seed dữ liệu thử nghiệm' },
+        { id: 203, day: 'Thứ 4', date: '2026-02-25', hours: 4, task: 'Phát triển API Login và Register xác thực JWT' },
+        { id: 204, day: 'Thứ 5', date: '2026-02-26', hours: 4, task: 'Viết Unit Test cho module Authentication' },
+        { id: 205, day: 'Thứ 6', date: '2026-02-27', hours: 4, task: 'Review code và chỉnh sửa theo góp ý của Tech Lead' }
+      ]
+    },
+    {
+      id: 3,
+      week: 3,
+      hours: 25,
+      task: 'Xây dựng giao diện Dashboard, tích hợp REST API',
+      mentorSigned: false,
+      isExpanded: false,
+      dailyLogs: [
+        { id: 301, day: 'Thứ 2', date: '2026-03-02', hours: 5, task: 'Thiết kế giao diện Dashboard và Chart phân tích' },
+        { id: 302, day: 'Thứ 3', date: '2026-03-03', hours: 5, task: 'Tích hợp API thống kê người dùng và đơn hàng' },
+        { id: 303, day: 'Thứ 4', date: '2026-03-04', hours: 5, task: 'Xử lý responsive và chế độ Dark mode' },
+        { id: 304, day: 'Thứ 5', date: '2026-03-05', hours: 5, task: 'Tối ưu hiệu năng rendering và caching state' },
+        { id: 305, day: 'Thứ 6', date: '2026-03-06', hours: 5, task: 'Kiểm thử E2E và demo tính năng với Mentor' }
+      ]
+    }
   ]
 };
+
+export const DEFAULT_KTCN_TRACK = {
+  companyName: 'Trung tâm Phát triển Phần mềm Viettel Solutions',
+  companyTax: '0100109106',
+  mentorName: 'Lê Hoàng Nam (Senior DevOps)',
+  startDate: '2026-02-20',
+  endDate: '2026-05-20',
+  deadlineDate: '2026-05-30',
+  weeklyLogs: [
+    {
+      id: 11,
+      week: 1,
+      hours: 20,
+      task: 'Tiếp nhận hạ tầng CI/CD, làm quen quy trình triển khai Kubernetes',
+      mentorSigned: true,
+      isExpanded: false,
+      dailyLogs: [
+        { id: 1101, day: 'Thứ 2', date: '2026-02-23', hours: 4, task: 'Học nội quy an toàn bảo mật hạ tầng mạng' },
+        { id: 1102, day: 'Thứ 3', date: '2026-02-24', hours: 4, task: 'Cài đặt và cấu hình kubectl, Lens' },
+        { id: 1103, day: 'Thứ 4', date: '2026-02-25', hours: 4, task: 'Thực hành tạo Pod và Service trên Dev cluster' },
+        { id: 1104, day: 'Thứ 5', date: '2026-02-26', hours: 4, task: 'Cấu hình Ingress và chứng chỉ SSL TLS' },
+        { id: 1105, day: 'Thứ 6', date: '2026-02-27', hours: 4, task: 'Báo cáo tuần với Senior DevOps' }
+      ]
+    },
+    {
+      id: 12,
+      week: 2,
+      hours: 20,
+      task: 'Xây dựng pipeline GitLab CI tự động build và scan lỗ hổng Docker',
+      mentorSigned: true,
+      isExpanded: false,
+      dailyLogs: [
+        { id: 1201, day: 'Thứ 2', date: '2026-03-02', hours: 4, task: 'Viết file .gitlab-ci.yml mẫu' },
+        { id: 1202, day: 'Thứ 3', date: '2026-03-03', hours: 4, task: 'Tích hợp Trivy quét lỗ hổng image' },
+        { id: 1203, day: 'Thứ 4', date: '2026-03-04', hours: 4, task: 'Cấu hình SonarQube phân tích chất lượng mã nguồn' },
+        { id: 1204, day: 'Thứ 5', date: '2026-03-05', hours: 4, task: 'Deploy tự động lên môi trường Staging' },
+        { id: 1205, day: 'Thứ 6', date: '2026-03-06', hours: 4, task: 'Hoàn thiện tài liệu kiến trúc CI/CD' }
+      ]
+    }
+  ]
+};
+
+export const DEFAULT_GUEST_PROFILE = {
+  mssv: '52000888',
+  studentName: 'Nguyễn Văn An',
+  studentClass: '20050201',
+  companyName: DEFAULT_TSNN_TRACK.companyName,
+  companyTax: DEFAULT_TSNN_TRACK.companyTax,
+  mentorName: DEFAULT_TSNN_TRACK.mentorName,
+  courseType: 'dual',
+  activeTrack: 'tsnn',
+  startDate: DEFAULT_TSNN_TRACK.startDate,
+  endDate: DEFAULT_TSNN_TRACK.endDate,
+  deadlineDate: DEFAULT_TSNN_TRACK.deadlineDate,
+  weeklyLogs: DEFAULT_TSNN_TRACK.weeklyLogs,
+  tracks: {
+    tsnn: JSON.parse(JSON.stringify(DEFAULT_TSNN_TRACK)),
+    ktcn: JSON.parse(JSON.stringify(DEFAULT_KTCN_TRACK))
+  }
+};
+
+export function normalizeProfile(rawProfile) {
+  const profile = { ...DEFAULT_GUEST_PROFILE, ...(rawProfile || {}) };
+
+  if (!profile.tracks) {
+    profile.tracks = {};
+  }
+
+  if (!profile.tracks.tsnn) {
+    profile.tracks.tsnn = {
+      companyName: profile.companyName || DEFAULT_TSNN_TRACK.companyName,
+      companyTax: profile.companyTax || DEFAULT_TSNN_TRACK.companyTax,
+      mentorName: profile.mentorName || DEFAULT_TSNN_TRACK.mentorName,
+      startDate: profile.startDate || DEFAULT_TSNN_TRACK.startDate,
+      endDate: profile.endDate || DEFAULT_TSNN_TRACK.endDate,
+      deadlineDate: profile.deadlineDate || DEFAULT_TSNN_TRACK.deadlineDate,
+      weeklyLogs: Array.isArray(profile.weeklyLogs) && profile.weeklyLogs.length > 0
+        ? JSON.parse(JSON.stringify(profile.weeklyLogs))
+        : JSON.parse(JSON.stringify(DEFAULT_TSNN_TRACK.weeklyLogs))
+    };
+  }
+
+  if (!profile.tracks.ktcn) {
+    profile.tracks.ktcn = JSON.parse(JSON.stringify(DEFAULT_KTCN_TRACK));
+  }
+
+  ['tsnn', 'ktcn'].forEach((trackKey) => {
+    const track = profile.tracks[trackKey];
+    if (track && Array.isArray(track.weeklyLogs)) {
+      track.weeklyLogs.forEach((log, wIdx) => {
+        if (!Array.isArray(log.dailyLogs) || log.dailyLogs.length === 0) {
+          log.dailyLogs = generateDefaultDailyLogs(log.week || (wIdx + 1), Number(log.hours) || 20);
+        }
+        if (typeof log.isExpanded !== 'boolean') {
+          log.isExpanded = false;
+        }
+      });
+    }
+  });
+
+  if (!profile.activeTrack) {
+    profile.activeTrack = (profile.courseType === 'single_ktcn') ? 'ktcn' : 'tsnn';
+  }
+
+  // Đồng bộ root từ activeTrack
+  const curTrack = profile.tracks[profile.activeTrack] || profile.tracks.tsnn;
+  profile.companyName = curTrack.companyName;
+  profile.companyTax = curTrack.companyTax;
+  profile.mentorName = curTrack.mentorName;
+  profile.startDate = curTrack.startDate;
+  profile.endDate = curTrack.endDate;
+  profile.deadlineDate = curTrack.deadlineDate;
+  profile.weeklyLogs = curTrack.weeklyLogs;
+
+  return profile;
+}
 
 const TOKEN_KEY = 'tdtu_auth_token';
 const USER_KEY = 'tdtu_auth_user';
@@ -78,14 +247,14 @@ export function logout() {
 export function loadCurrentProfile() {
   const user = getAuthUser();
   if (user && user.mssv) {
-    return { ...DEFAULT_GUEST_PROFILE, ...user };
+    return normalizeProfile(user);
   }
   // Nếu chưa đăng nhập, dùng hồ sơ cục bộ của trình duyệt
   try {
     const local = localStorage.getItem('tdtu_local_profile_guest');
-    return local ? { ...DEFAULT_GUEST_PROFILE, ...JSON.parse(local) } : DEFAULT_GUEST_PROFILE;
+    return normalizeProfile(local ? JSON.parse(local) : DEFAULT_GUEST_PROFILE);
   } catch {
-    return DEFAULT_GUEST_PROFILE;
+    return normalizeProfile(DEFAULT_GUEST_PROFILE);
   }
 }
 
@@ -93,12 +262,13 @@ let syncTimeout = null;
 
 // Tự động lưu hồ sơ (Local cache + Server Sync bảo mật ngầm)
 export function saveCurrentProfile(profileData, onSyncStatus) {
+  const normalized = normalizeProfile(profileData);
   const token = getAuthToken();
 
   if (token) {
     // 1. Cập nhật ngay local cache
     const currentUser = getAuthUser() || {};
-    const merged = { ...currentUser, ...profileData };
+    const merged = { ...currentUser, ...normalized };
     localStorage.setItem(USER_KEY, JSON.stringify(merged));
 
     // 2. Tự động đồng bộ ngầm lên Server sau 600ms (Debounce)
@@ -112,7 +282,7 @@ export function saveCurrentProfile(profileData, onSyncStatus) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(profileData)
+          body: JSON.stringify(normalized)
         });
         const data = await res.json();
         if (data.success && onSyncStatus) {
@@ -126,7 +296,7 @@ export function saveCurrentProfile(profileData, onSyncStatus) {
     }, 600);
   } else {
     // Lưu cục bộ nếu chưa đăng nhập
-    localStorage.setItem('tdtu_local_profile_guest', JSON.stringify(profileData));
+    localStorage.setItem('tdtu_local_profile_guest', JSON.stringify(normalized));
     if (onSyncStatus) onSyncStatus('local');
   }
 }

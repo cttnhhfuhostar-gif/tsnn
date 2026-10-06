@@ -616,7 +616,28 @@
       "Mật khẩu / Mã PIN bảo mật:": "Password / Security PIN:",
       "Tài khoản demo mẫu: MSSV": "Demo account: Student ID",
       "| PIN:": "| PIN:",
-      "Đăng Nhập Ngay": "Sign In Now"
+      "Đăng Nhập Ngay": "Sign In Now",
+      "Chế độ học phần thực tập:": "Internship Course Track:",
+      "Học phần đang nhập:": "Active Entry Track:",
+      "1. Tập Sự Nghề Nghiệp (TSNN)": "1. Apprenticeship (TSNN)",
+      "2. Kiến Tập Công Nghiệp (KTCN)": "2. Industrial Internship (KTCN)",
+      "Sao chép thông tin DN từ KTCN": "Copy company info from KTCN",
+      "Sao chép thông tin DN từ TSNN": "Copy company info from TSNN",
+      "Đơn Vị Thực Tập & Thời Gian: Tập Sự Nghề Nghiệp (TSNN)": "Internship Host & Timeline: Apprenticeship (TSNN)",
+      "Nhập thông tin riêng biệt cho học phần này (kể cả khi 2 môn ở 2 công ty khác nhau)": "Enter independent details for this course (even when at 2 different companies)",
+      "Tên Doanh nghiệp thực tập:": "Host Company Name:",
+      "Mã số thuế DN (nếu có):": "Company Tax Code (if any):",
+      "Cán bộ hướng dẫn (CBHD / Mentor):": "Workplace Mentor (CBHD):",
+      "Giờ tích lũy (Môn này)": "Logged Hours (This Course)",
+      "Cần làm thêm môn này": "Remaining for this course",
+      "Tiến độ môn": "Course Progress",
+      "Tổng quan thực tập Song Hành (TSNN + KTCN)": "Dual Internship Overview (TSNN + KTCN)",
+      "Nhật Ký Từng Tuần & Sổ Xuống Chi Tiết Từng Ngày": "Weekly Logs & Expandable Daily Details",
+      "Mở tất cả tuần": "Expand All Weeks",
+      "Thu gọn tất cả": "Collapse All Weeks",
+      "Điền nhanh T2-T6 (4H/ngày)": "Quick Fill Mon-Fri (4H/day)",
+      "+ Thêm ngày": "+ Add Day",
+      "Nội dung công việc kỹ thuật chi tiết trong ngày": "Detailed technical tasks performed on this day"
     }
   }
 }

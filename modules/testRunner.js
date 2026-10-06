@@ -104,6 +104,60 @@ export const TEST_SUITE = [
     }
   },
   {
+    id: 'TC-TRACK-02',
+    name: 'Tính giờ chi tiết từng ngày trong tuần (Daily Logs)',
+    module: 'PersonalTracker',
+    description: 'Tuần có 5 ngày làm việc (4h/ngày = 20h)',
+    run: () => {
+      const mockData = {
+        courseType: 'single_tsnn',
+        weeklyLogs: [
+          {
+            id: 1,
+            week: 1,
+            hours: 20,
+            task: 'Tuần 1',
+            mentorSigned: true,
+            dailyLogs: [
+              { day: 'Thứ 2', hours: 4, task: 'Task 1' },
+              { day: 'Thứ 3', hours: 4, task: 'Task 2' },
+              { day: 'Thứ 4', hours: 4, task: 'Task 3' },
+              { day: 'Thứ 5', hours: 4, task: 'Task 4' },
+              { day: 'Thứ 6', hours: 4, task: 'Task 5' }
+            ]
+          }
+        ]
+      };
+      const res = calculatePersonalProgress(mockData);
+      const pass = res.totalLoggedHours === 20 && res.remainingHours === 100;
+      return { pass, message: `Tính đúng ${res.totalLoggedHours}/120H từ 5 ngày làm việc chi tiết (4H/ngày).` };
+    }
+  },
+  {
+    id: 'TC-TRACK-03',
+    name: 'Quản lý 2 học phần độc lập (Dual Tracks: TSNN & KTCN)',
+    module: 'PersonalTracker',
+    description: 'TSNN tại FPT 65H + KTCN tại Viettel 40H -> Tổng 105H/240H',
+    run: () => {
+      const mockData = {
+        courseType: 'dual',
+        tracks: {
+          tsnn: {
+            companyName: 'FPT Software',
+            weeklyLogs: [{ week: 1, hours: 25 }, { week: 2, hours: 20 }, { week: 3, hours: 20 }]
+          },
+          ktcn: {
+            companyName: 'Viettel Solutions',
+            weeklyLogs: [{ week: 1, hours: 20 }, { week: 2, hours: 20 }]
+          }
+        }
+      };
+      const res = calculatePersonalProgress(mockData, 'tsnn');
+      const pass = res.tsnnHours === 65 && res.ktcnHours === 40 && res.totalLoggedHours === 105 && res.targetHours === 240;
+      return { pass, message: `TSNN: ${res.tsnnHours}/120H, KTCN: ${res.ktcnHours}/120H. Tổng tích lũy 2 môn: ${res.totalLoggedHours}/240H.` };
+    }
+  },
+  {
     id: 'TC-UTIL-01',
     name: 'Hàm xử lý loại bỏ dấu tiếng Việt',
     module: 'Utilities',

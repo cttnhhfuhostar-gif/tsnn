@@ -16,7 +16,8 @@ import {
   isLoggedIn,
   getAuthUser,
   loadCurrentProfile,
-  saveCurrentProfile
+  saveCurrentProfile,
+  generateDefaultDailyLogs
 } from './modules/profileManager.js';
 import {
   initTextNodes,
@@ -469,7 +470,7 @@ function initStudentTools() {
   }
 }
 
-// 5. PERSONAL INTERNSHIP TRACKER & TIMELINE CONTROLLER (Cá Nhân Hóa Tự Động)
+// 5. PERSONAL INTERNSHIP TRACKER & TIMELINE CONTROLLER (Cá Nhân Hóa Tự Động & Hỗ Trợ 2 Học Phần Riêng Biệt)
 function initPersonalTracker() {
   let trackerData = getPersonalTrackerState();
 
@@ -479,29 +480,77 @@ function initPersonalTracker() {
 
   const profileNameInput = document.getElementById('profile-name');
   const profileClassInput = document.getElementById('profile-class');
-  const profileCompanyInput = document.getElementById('profile-company');
-  const profileMentorInput = document.getElementById('profile-mentor');
-
   const courseTypeSelect = document.getElementById('tracker-course-type');
+
+  // Track switcher
+  const tabTrackTsnn = document.getElementById('tab-track-tsnn');
+  const tabTrackKtcn = document.getElementById('tab-track-ktcn');
+  const badgeTsnnHours = document.getElementById('badge-track-tsnn-hours');
+  const badgeKtcnHours = document.getElementById('badge-track-ktcn-hours');
+  const btnCopyCompanyTrack = document.getElementById('btn-copy-company-track');
+  const btnCopyCompanyText = document.getElementById('btn-copy-company-text');
+  const trackActiveIcon = document.getElementById('track-active-icon');
+  const trackActiveTitle = document.getElementById('track-active-title');
+
+  // Active track inputs
+  const profileCompanyInput = document.getElementById('profile-company');
+  const profileTaxInput = document.getElementById('profile-tax');
+  const profileMentorInput = document.getElementById('profile-mentor');
   const startDateInput = document.getElementById('tracker-start-date');
   const endDateInput = document.getElementById('tracker-end-date');
   const deadlineInput = document.getElementById('tracker-deadline-date');
 
+  // Metrics
   const daysLeftEl = document.getElementById('tracker-days-left');
+  const hoursTitleEl = document.getElementById('tracker-hours-title');
   const hoursDoneEl = document.getElementById('tracker-hours-done');
   const hoursRemainingEl = document.getElementById('tracker-hours-remaining');
-  const velocityStatusEl = document.getElementById('tracker-velocity-status');
   const progressBarEl = document.getElementById('tracker-progress-bar');
   const progressPctEl = document.getElementById('tracker-progress-pct');
+  const velocityStatusEl = document.getElementById('tracker-velocity-status');
 
+  // Dual overview
+  const dualOverviewEl = document.getElementById('tracker-dual-overview');
+  const dualTotalHoursEl = document.getElementById('dual-total-hours');
+  const dualTsnnPctEl = document.getElementById('dual-tsnn-pct');
+  const dualKtcnPctEl = document.getElementById('dual-ktcn-pct');
+
+  // Floating widget
   const widgetHoursEl = document.getElementById('widget-tracker-hours');
   const widgetDaysEl = document.getElementById('widget-tracker-days');
   const widgetBarEl = document.getElementById('widget-tracker-bar');
 
-  const logsContainer = document.getElementById('tracker-logs-tbody');
+  // Accordion Weekly Logs
+  const tableHeaderTitleEl = document.getElementById('tracker-table-header-title');
+  const btnToggleAllWeeks = document.getElementById('btn-toggle-all-weeks');
+  const btnToggleAllText = document.getElementById('btn-toggle-all-text');
   const btnAddLog = document.getElementById('btn-add-week-log');
   const btnResetTracker = document.getElementById('btn-reset-tracker');
   const btnExportTracker = document.getElementById('btn-export-tracker');
+  const logsContainer = document.getElementById('tracker-logs-tbody');
+
+  function getActiveTrackKey() {
+    if (trackerData.courseType === 'single_tsnn') return 'tsnn';
+    if (trackerData.courseType === 'single_ktcn') return 'ktcn';
+    return trackerData.activeTrack || 'tsnn';
+  }
+
+  function getActiveTrack() {
+    const key = getActiveTrackKey();
+    if (!trackerData.tracks) trackerData.tracks = {};
+    if (!trackerData.tracks[key]) {
+      trackerData.tracks[key] = {
+        companyName: trackerData.companyName || '',
+        companyTax: trackerData.companyTax || '',
+        mentorName: trackerData.mentorName || '',
+        startDate: trackerData.startDate || '2026-02-15',
+        endDate: trackerData.endDate || '2026-05-15',
+        deadlineDate: trackerData.deadlineDate || '2026-05-30',
+        weeklyLogs: trackerData.weeklyLogs || []
+      };
+    }
+    return trackerData.tracks[key];
+  }
 
   function updateSyncStatus(status) {
     if (!syncDotEl || !syncTextEl) return;
@@ -521,19 +570,84 @@ function initPersonalTracker() {
   }
 
   function persistData() {
+    const activeKey = getActiveTrackKey();
+    trackerData.activeTrack = activeKey;
+    const curTrack = getActiveTrack();
+
+    // Đồng bộ ngược ra root để tương thích với các module cũ
+    trackerData.companyName = curTrack.companyName;
+    trackerData.companyTax = curTrack.companyTax;
+    trackerData.mentorName = curTrack.mentorName;
+    trackerData.startDate = curTrack.startDate;
+    trackerData.endDate = curTrack.endDate;
+    trackerData.deadlineDate = curTrack.deadlineDate;
+    trackerData.weeklyLogs = curTrack.weeklyLogs;
+
     savePersonalTrackerState(trackerData, updateSyncStatus);
   }
 
   function renderTrackerUI() {
     trackerData = getPersonalTrackerState();
-    const analysis = calculatePersonalProgress(trackerData);
+    const activeKey = getActiveTrackKey();
+    trackerData.activeTrack = activeKey;
+    const curTrack = getActiveTrack();
+    const analysis = calculatePersonalProgress(trackerData, activeKey);
 
+    // 1. Header cơ bản
     if (mssvBadgeEl) mssvBadgeEl.textContent = trackerData.mssv ? `MSSV: ${trackerData.mssv}` : 'Khách';
     if (profileNameInput) profileNameInput.value = trackerData.studentName || '';
     if (profileClassInput) profileClassInput.value = trackerData.studentClass || '';
-    if (profileCompanyInput) profileCompanyInput.value = trackerData.companyName || '';
-    if (profileMentorInput) profileMentorInput.value = trackerData.mentorName || '';
+    if (courseTypeSelect) courseTypeSelect.value = trackerData.courseType || 'dual';
 
+    // 2. Chuyển Tab Học phần (Track Switcher)
+    if (tabTrackTsnn && tabTrackKtcn) {
+      if (activeKey === 'tsnn') {
+        tabTrackTsnn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border-2 border-primary bg-primary/10 text-primary shadow-xs';
+        tabTrackKtcn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border-2 border-transparent bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high';
+        if (trackActiveIcon) {
+          trackActiveIcon.textContent = 'engineering';
+          trackActiveIcon.className = 'material-symbols-outlined text-primary text-[22px]';
+        }
+        if (trackActiveTitle) {
+          trackActiveTitle.innerHTML = 'Đơn Vị Thực Tập & Thời Gian: <span class="text-primary font-bold">Tập Sự Nghề Nghiệp (TSNN)</span>';
+        }
+        if (btnCopyCompanyText) {
+          btnCopyCompanyText.textContent = 'Sao chép thông tin DN từ KTCN';
+        }
+        if (tableHeaderTitleEl) {
+          tableHeaderTitleEl.innerHTML = 'Nhật Ký Từng Tuần & Sổ Xuống Chi Tiết Từng Ngày • <span class="text-primary">TSNN</span>';
+        }
+      } else {
+        tabTrackKtcn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border-2 border-secondary bg-secondary/10 text-secondary shadow-xs';
+        tabTrackTsnn.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border-2 border-transparent bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high';
+        if (trackActiveIcon) {
+          trackActiveIcon.textContent = 'factory';
+          trackActiveIcon.className = 'material-symbols-outlined text-secondary text-[22px]';
+        }
+        if (trackActiveTitle) {
+          trackActiveTitle.innerHTML = 'Đơn Vị Thực Tập & Thời Gian: <span class="text-secondary font-bold">Kiến Tập Công Nghiệp (KTCN)</span>';
+        }
+        if (btnCopyCompanyText) {
+          btnCopyCompanyText.textContent = 'Sao chép thông tin DN từ TSNN';
+        }
+        if (tableHeaderTitleEl) {
+          tableHeaderTitleEl.innerHTML = 'Nhật Ký Từng Tuần & Sổ Xuống Chi Tiết Từng Ngày • <span class="text-secondary">KTCN</span>';
+        }
+      }
+    }
+
+    if (badgeTsnnHours) badgeTsnnHours.textContent = `${analysis.tsnnHours}/120H`;
+    if (badgeKtcnHours) badgeKtcnHours.textContent = `${analysis.ktcnHours}/120H`;
+
+    // 3. Khối thông tin Doanh nghiệp của Track hiện hành
+    if (profileCompanyInput) profileCompanyInput.value = curTrack.companyName || '';
+    if (profileTaxInput) profileTaxInput.value = curTrack.companyTax || '';
+    if (profileMentorInput) profileMentorInput.value = curTrack.mentorName || '';
+    if (startDateInput) startDateInput.value = curTrack.startDate || '';
+    if (endDateInput) endDateInput.value = curTrack.endDate || '';
+    if (deadlineInput) deadlineInput.value = curTrack.deadlineDate || '';
+
+    // Cập nhật các form phụ (Filler & Validator)
     const fId = document.getElementById('filler-student-id');
     const fName = document.getElementById('filler-student-name');
     const fClass = document.getElementById('filler-student-class');
@@ -543,9 +657,9 @@ function initPersonalTracker() {
     if (fId && trackerData.mssv) fId.value = trackerData.mssv;
     if (fName && trackerData.studentName) fName.value = trackerData.studentName;
     if (fClass && trackerData.studentClass) fClass.value = trackerData.studentClass;
-    if (fComp && trackerData.companyName) fComp.value = trackerData.companyName;
-    if (fTax && trackerData.companyTax) fTax.value = trackerData.companyTax;
-    if (fMentor && trackerData.mentorName) fMentor.value = trackerData.mentorName;
+    if (fComp && curTrack.companyName) fComp.value = curTrack.companyName;
+    if (fTax && curTrack.companyTax) fTax.value = curTrack.companyTax;
+    if (fMentor && curTrack.mentorName) fMentor.value = curTrack.mentorName;
 
     const valInput = document.getElementById('validator-input');
     if (valInput && valInput.value.includes('52000888') && trackerData.mssv && trackerData.mssv !== '52000888') {
@@ -554,32 +668,53 @@ function initPersonalTracker() {
       valInput.dispatchEvent(event);
     }
 
-    if (courseTypeSelect) courseTypeSelect.value = trackerData.courseType;
-    if (startDateInput) startDateInput.value = trackerData.startDate;
-    if (endDateInput) endDateInput.value = trackerData.endDate;
-    if (deadlineInput) deadlineInput.value = trackerData.deadlineDate;
-
-    if (daysLeftEl) {
-      if (analysis.isDeadlinePassed) {
-        daysLeftEl.textContent = `Quá hạn ${Math.abs(analysis.daysUntilDeadline)}d`;
-        daysLeftEl.className = 'font-mono text-lg font-bold text-error';
+    // 4. Khối Dual Overview (nếu học Song hành cả 2 môn)
+    if (dualOverviewEl) {
+      if (trackerData.courseType === 'dual') {
+        dualOverviewEl.classList.remove('hidden');
+        dualOverviewEl.classList.add('flex');
+        if (dualTotalHoursEl) dualTotalHoursEl.textContent = `${analysis.totalLoggedHours}H / 240H (${analysis.progressPercentage}%)`;
+        if (dualTsnnPctEl) dualTsnnPctEl.textContent = `${analysis.tsnnHours}/120H (${analysis.tsnnPct}%)`;
+        if (dualKtcnPctEl) dualKtcnPctEl.textContent = `${analysis.ktcnHours}/120H (${analysis.ktcnPct}%)`;
       } else {
-        daysLeftEl.textContent = `${analysis.daysUntilDeadline} ngày`;
-        daysLeftEl.className = 'font-mono text-lg font-bold text-primary';
+        dualOverviewEl.classList.add('hidden');
+        dualOverviewEl.classList.remove('flex');
       }
     }
 
-    if (hoursDoneEl) hoursDoneEl.textContent = `${analysis.totalLoggedHours}H / ${analysis.targetHours}H`;
-    if (hoursRemainingEl) hoursRemainingEl.textContent = `${analysis.remainingHours}H`;
-    if (progressPctEl) progressPctEl.textContent = `${analysis.progressPercentage}%`;
+    // 5. Thẻ đếm ngược Deadline
+    if (daysLeftEl) {
+      if (analysis.isDeadlinePassed) {
+        daysLeftEl.textContent = `Quá hạn ${Math.abs(analysis.daysUntilDeadline)}d`;
+        daysLeftEl.className = 'font-mono text-xl sm:text-2xl font-extrabold text-error my-1';
+      } else {
+        daysLeftEl.textContent = `${analysis.daysUntilDeadline} ngày`;
+        daysLeftEl.className = 'font-mono text-xl sm:text-2xl font-extrabold text-primary my-1';
+      }
+    }
+
+    // 6. Số giờ tích lũy & Tiến độ theo môn hiện hành
+    if (hoursTitleEl) {
+      hoursTitleEl.textContent = `Giờ tích lũy (${activeKey.toUpperCase()})`;
+    }
+    if (hoursDoneEl) {
+      hoursDoneEl.textContent = `${analysis.currentTrackHours}H / 120H`;
+    }
+    if (hoursRemainingEl) {
+      hoursRemainingEl.textContent = `${analysis.currentTrackRemaining}H`;
+    }
+    if (progressPctEl) {
+      progressPctEl.textContent = `${analysis.currentTrackPct}%`;
+    }
 
     if (progressBarEl) {
-      progressBarEl.style.width = `${analysis.progressPercentage}%`;
-      progressBarEl.className = analysis.isCompleted
+      progressBarEl.style.width = `${analysis.currentTrackPct}%`;
+      progressBarEl.className = analysis.currentTrackHours >= 120
         ? 'h-full bg-emerald-500 rounded-full transition-all duration-300'
         : 'h-full bg-secondary rounded-full transition-all duration-300';
     }
 
+    // 7. Velocity / Status Banner
     if (velocityStatusEl) {
       let badgeClass = 'bg-blue-100 text-blue-900 border-blue-200';
       if (analysis.status === 'completed') badgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-300';
@@ -594,107 +729,355 @@ function initPersonalTracker() {
         <div>
           <span class="font-bold">${analysis.statusMessage}</span>
           <div class="text-[11px] opacity-90 mt-0.5">
-            Sinh viên: <strong>${trackerData.studentName || 'Chưa đặt tên'} (${trackerData.mssv || '---'})</strong> • 
+            Môn: <strong>${activeKey.toUpperCase()}</strong> (${curTrack.companyName || 'Chưa điền DN'}) • 
             Đã ký: <strong>${analysis.signedLogsCount}/${analysis.totalWeeksRecorded} tuần</strong> • 
-            Cần duy trì: <strong>${analysis.requiredHoursPerWeek}H/tuần</strong>.
+            Cần làm thêm: <strong>${analysis.currentTrackRemaining}H</strong> (${analysis.requiredHoursPerWeek}H/tuần).
           </div>
         </div>
       `;
     }
 
+    // Floating widget sync
     if (widgetHoursEl) widgetHoursEl.textContent = `${analysis.totalLoggedHours}/${analysis.targetHours}H (${analysis.progressPercentage}%)`;
     if (widgetDaysEl) widgetDaysEl.textContent = `${analysis.daysUntilDeadline} ngày`;
     if (widgetBarEl) widgetBarEl.style.width = `${analysis.progressPercentage}%`;
 
+    // 8. Render Accordion Weekly Logs & Detailed Daily Logs
     if (logsContainer) {
-      if (!trackerData.weeklyLogs || trackerData.weeklyLogs.length === 0) {
+      const weeklyLogs = curTrack.weeklyLogs || [];
+      if (weeklyLogs.length === 0) {
         logsContainer.innerHTML = `
           <tr>
-            <td colspan="5" class="p-4 text-center text-xs text-on-surface-variant italic">
-              Chưa có tuần làm việc nào. Bấm "+ Thêm tuần làm việc" để bắt đầu ghi nhận!
+            <td colspan="5" class="p-6 text-center text-xs text-on-surface-variant italic">
+              Chưa có tuần làm việc nào cho học phần ${activeKey.toUpperCase()}. Bấm "+ Thêm tuần làm việc" để bắt đầu ghi nhận!
             </td>
           </tr>
         `;
       } else {
-        logsContainer.innerHTML = trackerData.weeklyLogs.map((log, index) => `
-          <tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/40 text-xs">
-            <td class="p-2.5 font-mono font-bold text-primary text-center">Tuần ${log.week || (index + 1)}</td>
-            <td class="p-2.5 w-24">
-              <div class="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  max="60"
-                  value="${log.hours}"
-                  data-log-idx="${index}"
-                  data-log-field="hours"
-                  class="w-16 px-2 py-1 rounded border border-outline-variant font-mono font-bold text-center text-xs focus:border-secondary focus:outline-none"
-                />
-                <span class="text-[11px] text-on-surface-variant">H</span>
-              </div>
-            </td>
-            <td class="p-2.5">
-              <input
-                type="text"
-                value="${log.task || ''}"
-                data-log-idx="${index}"
-                data-log-field="task"
-                placeholder="Nhiệm vụ kỹ thuật (vd: thiết kế DB, API...)"
-                class="w-full px-2.5 py-1 rounded border border-outline-variant text-xs focus:border-secondary focus:outline-none"
-              />
-            </td>
-            <td class="p-2.5 text-center">
-              <label class="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="checkbox"
-                  ${log.mentorSigned ? 'checked' : ''}
-                  data-log-idx="${index}"
-                  data-log-field="mentorSigned"
-                  class="w-4 h-4 accent-secondary"
-                />
-                <span class="text-[11px] ${log.mentorSigned ? 'text-emerald-700 font-bold' : 'text-on-surface-variant'}">
-                  ${log.mentorSigned ? 'Đã ký' : 'Chưa'}
-                </span>
-              </label>
-            </td>
-            <td class="p-2.5 text-center">
-              <button
-                type="button"
-                data-remove-log-idx="${index}"
-                class="p-1 rounded text-outline hover:text-error hover:bg-red-50 transition-colors"
-                title="Xóa tuần này"
-              >
-                <span class="material-symbols-outlined text-[16px]">delete</span>
-              </button>
-            </td>
-          </tr>
-        `).join('');
+        const anyExpanded = weeklyLogs.some(l => l.isExpanded);
+        if (btnToggleAllText) {
+          btnToggleAllText.textContent = anyExpanded ? 'Thu gọn tất cả' : 'Mở tất cả tuần';
+        }
 
-        logsContainer.querySelectorAll('input[data-log-idx]').forEach((input) => {
+        logsContainer.innerHTML = weeklyLogs.map((log, wIdx) => {
+          const days = log.dailyLogs || [];
+          const isExp = !!log.isExpanded;
+          const weekNum = log.week || (wIdx + 1);
+
+          return `
+            <!-- Hàng tóm tắt Tuần ${weekNum} -->
+            <tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/40 text-xs transition-colors">
+              <td class="p-2.5 text-center">
+                <button
+                  type="button"
+                  data-toggle-week-idx="${wIdx}"
+                  class="btn-toggle-week inline-flex items-center gap-1 font-mono font-bold ${activeKey === 'ktcn' ? 'text-secondary hover:text-emerald-700' : 'text-primary hover:text-blue-700'} transition-all py-1 px-1.5 rounded-lg hover:bg-surface-container"
+                  title="Bấm để sổ xuống / thu gọn chi tiết từng ngày"
+                >
+                  <span class="material-symbols-outlined text-[18px] transition-transform duration-200 ${isExp ? 'rotate-90 text-secondary' : 'text-outline'}">
+                    chevron_right
+                  </span>
+                  <span>Tuần ${weekNum}</span>
+                  <span class="text-[10px] px-1 py-0.2 rounded bg-surface-container text-on-surface-variant font-sans font-normal ml-0.5">
+                    (${days.length}d)
+                  </span>
+                </button>
+              </td>
+              <td class="p-2.5 w-28">
+                <div class="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="80"
+                    value="${log.hours}"
+                    data-week-idx="${wIdx}"
+                    data-week-field="hours"
+                    class="w-16 px-2 py-1 rounded border border-outline-variant font-mono font-bold text-center text-xs focus:border-secondary focus:outline-none"
+                    title="Tổng số giờ tuần (sẽ tự động cập nhật khi sửa các ngày bên dưới)"
+                  />
+                  <span class="text-[11px] text-on-surface-variant font-mono font-bold">H</span>
+                </div>
+              </td>
+              <td class="p-2.5">
+                <input
+                  type="text"
+                  value="${log.task || ''}"
+                  data-week-idx="${wIdx}"
+                  data-week-field="task"
+                  placeholder="Tóm tắt nhiệm vụ tuần ${weekNum} (vd: Nghiên cứu Docker, viết API...)"
+                  class="w-full px-2.5 py-1 rounded border border-outline-variant text-xs focus:border-secondary focus:outline-none"
+                />
+              </td>
+              <td class="p-2.5 text-center">
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    ${log.mentorSigned ? 'checked' : ''}
+                    data-week-idx="${wIdx}"
+                    data-week-field="mentorSigned"
+                    class="w-4 h-4 accent-secondary rounded"
+                  />
+                  <span class="text-[11px] font-medium ${log.mentorSigned ? 'text-emerald-700 font-bold' : 'text-on-surface-variant'}">
+                    ${log.mentorSigned ? 'Đã ký' : 'Chưa'}
+                  </span>
+                </label>
+              </td>
+              <td class="p-2.5 text-center">
+                <button
+                  type="button"
+                  data-remove-week-idx="${wIdx}"
+                  class="p-1 rounded text-outline hover:text-error hover:bg-red-50 transition-colors"
+                  title="Xóa tuần này"
+                >
+                  <span class="material-symbols-outlined text-[16px]">delete</span>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Hàng Accordion Sổ Xuống: Chi tiết từng ngày của Tuần ${weekNum} -->
+            <tr class="${isExp ? '' : 'hidden'} border-b border-outline-variant/30 bg-surface-container-low/50">
+              <td colspan="5" class="p-3 pl-4 sm:pl-8">
+                <div class="rounded-xl bg-surface-container-lowest p-3.5 border border-outline-variant/30 shadow-xs flex flex-col gap-3">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-secondary">calendar_view_day</span>
+                      <h5 class="text-xs font-bold text-on-surface">
+                        Chi tiết công việc từng ngày trong <strong>Tuần ${weekNum}</strong>:
+                      </h5>
+                      <span class="text-[11px] font-mono text-primary font-bold px-2 py-0.5 rounded bg-primary/10">
+                        Tổng cộng: ${log.hours || 0} Giờ
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        data-fill-weekdays="${wIdx}"
+                        class="px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-secondary transition-colors flex items-center gap-1 shadow-2xs"
+                        title="Tự động điền 5 ngày Thứ 2 đến Thứ 6 với 4 giờ/ngày (Tổng 20H)"
+                      >
+                        <span class="material-symbols-outlined text-[14px]">bolt</span>
+                        <span>Điền nhanh T2-T6 (4H/ngày)</span>
+                      </button>
+                      <button
+                        type="button"
+                        data-add-day-week="${wIdx}"
+                        class="px-2.5 py-1 rounded-lg bg-primary text-on-primary hover:bg-primary-container text-[11px] font-semibold transition-colors flex items-center gap-1 shadow-2xs"
+                        title="Thêm một ngày làm việc mới trong tuần này"
+                      >
+                        <span class="material-symbols-outlined text-[14px]">add</span>
+                        <span>+ Thêm ngày</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Danh sách bảng các ngày -->
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                      <thead>
+                        <tr class="text-on-surface-variant font-mono uppercase text-[10px] border-b border-outline-variant/20">
+                          <th class="pb-1.5 w-24">Thứ</th>
+                          <th class="pb-1.5 w-32">Ngày tháng</th>
+                          <th class="pb-1.5 w-24 text-center">Số giờ (H)</th>
+                          <th class="pb-1.5 min-w-[220px]">Nội dung công việc kỹ thuật chi tiết trong ngày</th>
+                          <th class="pb-1.5 w-12 text-center">Xóa</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-outline-variant/15">
+                        ${days.length === 0 ? `
+                          <tr>
+                            <td colspan="5" class="py-3 text-center text-on-surface-variant italic">
+                              Chưa có ngày nào trong tuần này. Bấm "Điền nhanh T2-T6" hoặc "+ Thêm ngày" để nhập chi tiết!
+                            </td>
+                          </tr>
+                        ` : days.map((day, dIdx) => `
+                          <tr class="hover:bg-surface-container-low/40">
+                            <td class="py-1.5 pr-2">
+                              <input
+                                type="text"
+                                value="${day.day || ''}"
+                                data-week-idx="${wIdx}"
+                                data-day-idx="${dIdx}"
+                                data-day-field="day"
+                                placeholder="Thứ 2"
+                                class="w-full px-2 py-1 rounded border border-outline-variant font-semibold text-xs text-on-surface focus:border-secondary focus:outline-none"
+                              />
+                            </td>
+                            <td class="py-1.5 pr-2">
+                              <input
+                                type="date"
+                                value="${day.date || ''}"
+                                data-week-idx="${wIdx}"
+                                data-day-idx="${dIdx}"
+                                data-day-field="date"
+                                class="w-full px-2 py-1 rounded border border-outline-variant font-mono text-xs text-on-surface focus:border-secondary focus:outline-none"
+                              />
+                            </td>
+                            <td class="py-1.5 pr-2 text-center">
+                              <input
+                                type="number"
+                                min="0"
+                                max="16"
+                                value="${day.hours}"
+                                data-week-idx="${wIdx}"
+                                data-day-idx="${dIdx}"
+                                data-day-field="hours"
+                                class="w-14 px-1.5 py-1 rounded border border-outline-variant font-mono font-bold text-center text-xs focus:border-secondary focus:outline-none"
+                              />
+                            </td>
+                            <td class="py-1.5 pr-2">
+                              <input
+                                type="text"
+                                value="${day.task || ''}"
+                                data-week-idx="${wIdx}"
+                                data-day-idx="${dIdx}"
+                                data-day-field="task"
+                                placeholder="Chi tiết việc thực hiện trong ngày (vd: Thiết kế ERD, viết test...)"
+                                class="w-full px-2.5 py-1 rounded border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none"
+                              />
+                            </td>
+                            <td class="py-1.5 text-center">
+                              <button
+                                type="button"
+                                data-remove-day-week="${wIdx}"
+                                data-remove-day-idx="${dIdx}"
+                                class="p-1 rounded text-outline hover:text-error hover:bg-red-50 transition-colors"
+                                title="Xóa ngày này"
+                              >
+                                <span class="material-symbols-outlined text-[15px]">close</span>
+                              </button>
+                            </td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Bind events cho Accordion Toggle
+        logsContainer.querySelectorAll('button[data-toggle-week-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const wIdx = Number(btn.getAttribute('data-toggle-week-idx'));
+            if (curTrack.weeklyLogs[wIdx]) {
+              curTrack.weeklyLogs[wIdx].isExpanded = !curTrack.weeklyLogs[wIdx].isExpanded;
+              persistData();
+              renderTrackerUI();
+            }
+          });
+        });
+
+        // Bind events cho Input của Tuần
+        logsContainer.querySelectorAll('input[data-week-idx][data-week-field]').forEach(input => {
           input.addEventListener('change', (e) => {
-            const idx = Number(e.target.getAttribute('data-log-idx'));
-            const field = e.target.getAttribute('data-log-field');
+            const wIdx = Number(e.target.getAttribute('data-week-idx'));
+            const field = e.target.getAttribute('data-week-field');
+            if (!curTrack.weeklyLogs[wIdx]) return;
+
             if (field === 'mentorSigned') {
-              trackerData.weeklyLogs[idx].mentorSigned = e.target.checked;
+              curTrack.weeklyLogs[wIdx].mentorSigned = e.target.checked;
             } else if (field === 'hours') {
-              trackerData.weeklyLogs[idx].hours = Number(e.target.value) || 0;
+              curTrack.weeklyLogs[wIdx].hours = Number(e.target.value) || 0;
             } else if (field === 'task') {
-              trackerData.weeklyLogs[idx].task = e.target.value;
+              curTrack.weeklyLogs[wIdx].task = e.target.value;
             }
             persistData();
             renderTrackerUI();
           });
         });
 
-        logsContainer.querySelectorAll('button[data-remove-log-idx]').forEach((btn) => {
+        // Bind events cho Xóa Tuần
+        logsContainer.querySelectorAll('button[data-remove-week-idx]').forEach(btn => {
           btn.addEventListener('click', () => {
-            const idx = Number(btn.getAttribute('data-remove-log-idx'));
-            if (confirm(`Xóa ghi nhận của Tuần ${idx + 1}?`)) {
-              trackerData.weeklyLogs.splice(idx, 1);
-              trackerData.weeklyLogs.forEach((l, i) => { l.week = i + 1; });
+            const wIdx = Number(btn.getAttribute('data-remove-week-idx'));
+            if (confirm(`Xóa ghi nhận của Tuần ${wIdx + 1} (${activeKey.toUpperCase()})?`)) {
+              curTrack.weeklyLogs.splice(wIdx, 1);
+              curTrack.weeklyLogs.forEach((l, i) => { l.week = i + 1; });
               persistData();
               renderTrackerUI();
               showToast('Đã xóa tuần làm việc');
+            }
+          });
+        });
+
+        // Bind events cho Điền nhanh T2-T6
+        logsContainer.querySelectorAll('button[data-fill-weekdays]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const wIdx = Number(btn.getAttribute('data-fill-weekdays'));
+            const log = curTrack.weeklyLogs[wIdx];
+            if (log) {
+              log.dailyLogs = generateDefaultDailyLogs(log.week || (wIdx + 1), 20);
+              log.hours = 20;
+              persistData();
+              renderTrackerUI();
+              showToast(`Đã điền nhanh 5 ngày (20H) cho Tuần ${wIdx + 1}`);
+            }
+          });
+        });
+
+        // Bind events cho Thêm ngày
+        logsContainer.querySelectorAll('button[data-add-day-week]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const wIdx = Number(btn.getAttribute('data-add-day-week'));
+            const log = curTrack.weeklyLogs[wIdx];
+            if (log) {
+              if (!Array.isArray(log.dailyLogs)) log.dailyLogs = [];
+              const dayNames = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+              const nextDayName = dayNames[log.dailyLogs.length % dayNames.length] || 'Ngày mới';
+              log.dailyLogs.push({
+                id: Date.now() + Math.random(),
+                day: nextDayName,
+                date: '',
+                hours: 4,
+                task: `Nhiệm vụ ngày ${log.dailyLogs.length + 1}`
+              });
+              log.hours = log.dailyLogs.reduce((sum, d) => sum + (Number(d.hours) || 0), 0);
+              persistData();
+              renderTrackerUI();
+              showToast('Đã thêm 1 ngày làm việc');
+            }
+          });
+        });
+
+        // Bind events cho Chỉnh sửa các ngày (Daily Log Fields)
+        logsContainer.querySelectorAll('input[data-day-idx][data-day-field]').forEach(input => {
+          input.addEventListener('change', (e) => {
+            const wIdx = Number(e.target.getAttribute('data-week-idx'));
+            const dIdx = Number(e.target.getAttribute('data-day-idx'));
+            const field = e.target.getAttribute('data-day-field');
+            const log = curTrack.weeklyLogs[wIdx];
+            if (log && log.dailyLogs && log.dailyLogs[dIdx]) {
+              if (field === 'hours') {
+                log.dailyLogs[dIdx].hours = Number(e.target.value) || 0;
+                log.hours = log.dailyLogs.reduce((sum, d) => sum + (Number(d.hours) || 0), 0);
+              } else if (field === 'day') {
+                log.dailyLogs[dIdx].day = e.target.value;
+              } else if (field === 'date') {
+                log.dailyLogs[dIdx].date = e.target.value;
+              } else if (field === 'task') {
+                log.dailyLogs[dIdx].task = e.target.value;
+              }
+              persistData();
+              renderTrackerUI();
+            }
+          });
+        });
+
+        // Bind events cho Xóa Ngày
+        logsContainer.querySelectorAll('button[data-remove-day-week]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const wIdx = Number(btn.getAttribute('data-remove-day-week'));
+            const dIdx = Number(btn.getAttribute('data-remove-day-idx'));
+            const log = curTrack.weeklyLogs[wIdx];
+            if (log && log.dailyLogs && log.dailyLogs[dIdx]) {
+              log.dailyLogs.splice(dIdx, 1);
+              log.hours = log.dailyLogs.reduce((sum, d) => sum + (Number(d.hours) || 0), 0);
+              persistData();
+              renderTrackerUI();
+              showToast('Đã xóa ngày làm việc');
             }
           });
         });
@@ -704,7 +1087,7 @@ function initPersonalTracker() {
 
   window.renderPersonalTracker = renderTrackerUI;
 
-  // Real-time debounced auto-save
+  // Real-time events cho Thông tin sinh viên cơ bản
   if (profileNameInput) {
     profileNameInput.addEventListener('input', (e) => {
       trackerData.studentName = e.target.value;
@@ -717,68 +1100,137 @@ function initPersonalTracker() {
       persistData();
     });
   }
+  if (courseTypeSelect) {
+    courseTypeSelect.addEventListener('change', (e) => {
+      trackerData.courseType = e.target.value;
+      if (trackerData.courseType === 'single_tsnn') trackerData.activeTrack = 'tsnn';
+      if (trackerData.courseType === 'single_ktcn') trackerData.activeTrack = 'ktcn';
+      persistData();
+      renderTrackerUI();
+    });
+  }
+
+  // Chuyển Tab Track giữa TSNN và KTCN
+  if (tabTrackTsnn) {
+    tabTrackTsnn.addEventListener('click', () => {
+      trackerData.activeTrack = 'tsnn';
+      persistData();
+      renderTrackerUI();
+    });
+  }
+  if (tabTrackKtcn) {
+    tabTrackKtcn.addEventListener('click', () => {
+      trackerData.activeTrack = 'ktcn';
+      persistData();
+      renderTrackerUI();
+    });
+  }
+
+  // Sao chép thông tin Doanh nghiệp giữa 2 học phần
+  if (btnCopyCompanyTrack) {
+    btnCopyCompanyTrack.addEventListener('click', () => {
+      const activeKey = getActiveTrackKey();
+      const otherKey = activeKey === 'tsnn' ? 'ktcn' : 'tsnn';
+      if (!trackerData.tracks) trackerData.tracks = {};
+      const source = trackerData.tracks[otherKey];
+      const target = getActiveTrack();
+
+      if (source && (source.companyName || source.mentorName)) {
+        target.companyName = source.companyName || target.companyName;
+        target.companyTax = source.companyTax || target.companyTax;
+        target.mentorName = source.mentorName || target.mentorName;
+        target.startDate = source.startDate || target.startDate;
+        target.endDate = source.endDate || target.endDate;
+        target.deadlineDate = source.deadlineDate || target.deadlineDate;
+        persistData();
+        renderTrackerUI();
+        showToast(`Đã sao chép thông tin Doanh nghiệp từ ${otherKey.toUpperCase()} sang ${activeKey.toUpperCase()}!`);
+      } else {
+        showToast(`Chưa có thông tin Doanh nghiệp ở học phần ${otherKey.toUpperCase()} để sao chép.`);
+      }
+    });
+  }
+
+  // Real-time events cho Thông tin Doanh nghiệp & Timeline của Track hiện hành
   if (profileCompanyInput) {
     profileCompanyInput.addEventListener('input', (e) => {
-      trackerData.companyName = e.target.value;
+      getActiveTrack().companyName = e.target.value;
+      persistData();
+    });
+  }
+  if (profileTaxInput) {
+    profileTaxInput.addEventListener('input', (e) => {
+      getActiveTrack().companyTax = e.target.value;
       persistData();
     });
   }
   if (profileMentorInput) {
     profileMentorInput.addEventListener('input', (e) => {
-      trackerData.mentorName = e.target.value;
+      getActiveTrack().mentorName = e.target.value;
       persistData();
-    });
-  }
-
-  if (courseTypeSelect) {
-    courseTypeSelect.addEventListener('change', (e) => {
-      trackerData.courseType = e.target.value;
-      persistData();
-      renderTrackerUI();
     });
   }
   if (startDateInput) {
     startDateInput.addEventListener('change', (e) => {
-      trackerData.startDate = e.target.value;
+      getActiveTrack().startDate = e.target.value;
       persistData();
       renderTrackerUI();
     });
   }
   if (endDateInput) {
     endDateInput.addEventListener('change', (e) => {
-      trackerData.endDate = e.target.value;
+      getActiveTrack().endDate = e.target.value;
       persistData();
       renderTrackerUI();
     });
   }
   if (deadlineInput) {
     deadlineInput.addEventListener('change', (e) => {
-      trackerData.deadlineDate = e.target.value;
+      getActiveTrack().deadlineDate = e.target.value;
       persistData();
       renderTrackerUI();
     });
   }
 
+  // Nút Mở / Thu gọn tất cả các tuần
+  if (btnToggleAllWeeks) {
+    btnToggleAllWeeks.addEventListener('click', () => {
+      const curTrack = getActiveTrack();
+      const weeklyLogs = curTrack.weeklyLogs || [];
+      const anyExpanded = weeklyLogs.some(l => l.isExpanded);
+      weeklyLogs.forEach(l => { l.isExpanded = !anyExpanded; });
+      persistData();
+      renderTrackerUI();
+    });
+  }
+
+  // Nút Thêm tuần làm việc mới
   if (btnAddLog) {
     btnAddLog.addEventListener('click', () => {
-      const nextWeekNum = (trackerData.weeklyLogs ? trackerData.weeklyLogs.length : 0) + 1;
-      if (!trackerData.weeklyLogs) trackerData.weeklyLogs = [];
-      trackerData.weeklyLogs.push({
+      const curTrack = getActiveTrack();
+      if (!Array.isArray(curTrack.weeklyLogs)) curTrack.weeklyLogs = [];
+      const nextWeekNum = curTrack.weeklyLogs.length + 1;
+      const newDailyLogs = generateDefaultDailyLogs(nextWeekNum, 20);
+
+      curTrack.weeklyLogs.push({
         id: Date.now(),
         week: nextWeekNum,
         hours: 20,
         task: `Nhiệm vụ tuần ${nextWeekNum}`,
-        mentorSigned: false
+        mentorSigned: false,
+        isExpanded: true,
+        dailyLogs: newDailyLogs
       });
       persistData();
       renderTrackerUI();
-      showToast(`Đã thêm Tuần ${nextWeekNum}`);
+      showToast(`Đã thêm Tuần ${nextWeekNum} cho ${getActiveTrackKey().toUpperCase()}`);
     });
   }
 
+  // Nút Đặt lại (Reset)
   if (btnResetTracker) {
     btnResetTracker.addEventListener('click', () => {
-      if (confirm('Đặt lại thời gian biểu và nhật ký tuần về mặc định?')) {
+      if (confirm('Đặt lại toàn bộ thời gian biểu và nhật ký 2 học phần về mặc định?')) {
         resetPersonalTrackerState();
         renderTrackerUI();
         showToast('Đã đặt lại thời gian biểu');
@@ -786,23 +1238,47 @@ function initPersonalTracker() {
     });
   }
 
+  // Nút Xuất Báo Cáo Tiến Độ (Export Report)
   if (btnExportTracker) {
     btnExportTracker.addEventListener('click', () => {
-      const analysis = calculatePersonalProgress(trackerData);
-      const text = `=== BẢNG THEO DÕI TIẾN TRÌNH THỰC TẬP TDTU ===
-Sinh viên: ${trackerData.studentName || 'Chưa đặt tên'} (MSSV: ${trackerData.mssv || '---'}) | Lớp: ${trackerData.studentClass || '---'}
-Doanh nghiệp: ${trackerData.companyName || '---'} | CBHD: ${trackerData.mentorName || '---'}
-Học phần: ${trackerData.courseType === 'dual' ? 'Song hành TSNN + KTCN (240H)' : 'Học phần đơn (120H)'}
-Ngày bắt đầu: ${trackerData.startDate}
-Hạn nộp HSMH (Deadline): ${trackerData.deadlineDate} (${analysis.daysUntilDeadline} ngày còn lại)
-Tổng số giờ tích lũy: ${analysis.totalLoggedHours} / ${analysis.targetHours} giờ (${analysis.progressPercentage}%)
-Tình trạng: ${analysis.statusMessage}
+      const activeKey = getActiveTrackKey();
+      const analysis = calculatePersonalProgress(trackerData, activeKey);
 
---- CHI TIẾT CÁC TUẦN ---
-${(trackerData.weeklyLogs || []).map((l) => `Tuần ${l.week}: ${l.hours}H | ${l.task} | Ký xác nhận: ${l.mentorSigned ? 'Đã ký' : 'Chưa ký'}`).join('\n')}
-`;
-      navigator.clipboard.writeText(text);
-      showToast('Đã sao chép báo cáo tiến độ vào Clipboard!');
+      let report = `=== BẢNG THEO DÕI TIẾN TRÌNH THỰC TẬP TDTU ===\n`;
+      report += `Sinh viên: ${trackerData.studentName || 'Chưa đặt tên'} (MSSV: ${trackerData.mssv || '---'}) | Lớp: ${trackerData.studentClass || '---'}\n`;
+      report += `Chế độ: ${trackerData.courseType === 'dual' ? 'Song hành TSNN + KTCN (240H)' : 'Học phần đơn (120H)'}\n\n`;
+
+      if (trackerData.courseType === 'dual') {
+        report += `TỔNG TIẾN ĐỘ SONG HÀNH: ${analysis.totalLoggedHours} / 240 Giờ (${analysis.progressPercentage}%)\n`;
+        report += `TSNN: ${analysis.tsnnHours}/120H | KTCN: ${analysis.ktcnHours}/120H\n\n`;
+      }
+
+      ['tsnn', 'ktcn'].forEach(trackKey => {
+        if (trackerData.courseType !== 'dual' && trackKey !== activeKey) return;
+        const trk = trackerData.tracks?.[trackKey];
+        if (!trk) return;
+
+        const trkName = trackKey === 'tsnn' ? 'TẬP SỰ NGHỀ NGHIỆP (TSNN)' : 'KIẾN TẬP CÔNG NGHIỆP (KTCN)';
+        const trkHours = trackKey === 'tsnn' ? analysis.tsnnHours : analysis.ktcnHours;
+
+        report += `--- ${trkName} ---\n`;
+        report += `Doanh nghiệp: ${trk.companyName || '---'} | MST: ${trk.companyTax || '---'}\n`;
+        report += `CBHD / Mentor: ${trk.mentorName || '---'}\n`;
+        report += `Thời gian: ${trk.startDate} -> ${trk.endDate} | Hạn HSMH: ${trk.deadlineDate}\n`;
+        report += `Tích lũy: ${trkHours} / 120 Giờ\n`;
+        report += `Chi tiết các tuần:\n`;
+
+        (trk.weeklyLogs || []).forEach(w => {
+          report += `  + Tuần ${w.week}: ${w.hours}H | ${w.task} | Ký: ${w.mentorSigned ? 'Đã ký' : 'Chưa'}\n`;
+          (w.dailyLogs || []).forEach(d => {
+            report += `      - ${d.day} (${d.date || '---'}): ${d.hours}H - ${d.task}\n`;
+          });
+        });
+        report += `\n`;
+      });
+
+      navigator.clipboard.writeText(report);
+      showToast('Đã sao chép báo cáo chi tiết vào Clipboard!');
     });
   }
 
