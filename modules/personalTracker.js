@@ -1,44 +1,19 @@
 // modules/personalTracker.js - Quản lý tiến trình và thời gian biểu thực tập cá nhân hóa
+import { loadCurrentProfile, saveCurrentProfile, DEFAULT_PROFILE, getActiveMSSV } from './profileManager.js';
 
-const STORAGE_KEY = 'tdtu_intern_personal_tracker_v1';
-
-export const DEFAULT_TRACKER_DATA = {
-  courseType: 'single_tsnn', // 'single_tsnn' (120H) | 'single_ktcn' (120H) | 'dual' (240H)
-  startDate: new Date().toISOString().split('T')[0], // Mặc định hôm nay
-  endDate: new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +75 ngày
-  deadlineDate: '2026-05-30', // Hạn nộp HSMH kỳ 2
-  weeklyLogs: [
-    { id: 1, week: 1, hours: 20, task: 'Làm quen môi trường công ty, setup IDE và đọc tài liệu dự án', mentorSigned: true },
-    { id: 2, week: 2, hours: 20, task: 'Nghiên cứu cấu trúc cơ sở dữ liệu, viết API authentication', mentorSigned: true },
-    { id: 3, week: 3, hours: 25, task: 'Xây dựng giao diện Dashboard, tích hợp REST API', mentorSigned: false }
-  ]
-};
+export const DEFAULT_TRACKER_DATA = DEFAULT_PROFILE;
 
 export function getPersonalTrackerState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_TRACKER_DATA;
-    const parsed = JSON.parse(raw);
-    return {
-      ...DEFAULT_TRACKER_DATA,
-      ...parsed,
-      weeklyLogs: Array.isArray(parsed.weeklyLogs) ? parsed.weeklyLogs : DEFAULT_TRACKER_DATA.weeklyLogs
-    };
-  } catch {
-    return DEFAULT_TRACKER_DATA;
-  }
+  return loadCurrentProfile();
 }
 
 export function savePersonalTrackerState(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error('Lỗi lưu personal tracker:', e);
-  }
+  saveCurrentProfile(data);
 }
 
 export function resetPersonalTrackerState() {
-  localStorage.removeItem(STORAGE_KEY);
+  const mssv = getActiveMSSV();
+  localStorage.removeItem('tdtu_profile_' + mssv);
 }
 
 /**

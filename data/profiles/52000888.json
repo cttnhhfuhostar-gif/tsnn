@@ -1,0 +1,36 @@
+{
+  "mssv": "52000888",
+  "studentName": "Nguyễn Văn An",
+  "studentClass": "20050201",
+  "companyName": "Công ty Cổ phần Công nghệ FPT Software",
+  "companyTax": "0101248141",
+  "mentorName": "Trần Văn Bình (Tech Lead)",
+  "courseType": "single_tsnn",
+  "startDate": "2026-02-15",
+  "endDate": "2026-05-15",
+  "deadlineDate": "2026-05-30",
+  "weeklyLogs": [
+    {
+      "id": 1,
+      "week": 1,
+      "hours": 20,
+      "task": "Làm quen môi trường công ty, setup IDE và đọc tài liệu dự án",
+      "mentorSigned": true
+    },
+    {
+      "id": 2,
+      "week": 2,
+      "hours": 20,
+      "task": "Nghiên cứu cấu trúc cơ sở dữ liệu, viết API authentication",
+      "mentorSigned": true
+    },
+    {
+      "id": 3,
+      "week": 3,
+      "hours": 25,
+      "task": "Xây dựng giao diện Dashboard, tích hợp REST API",
+      "mentorSigned": false
+    }
+  ],
+  "updatedAt": "2026-10-06T04:09:52.917Z"
+}

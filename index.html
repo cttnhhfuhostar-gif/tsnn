@@ -87,10 +87,10 @@
             <span>Bộ Công Cụ Hỗ Trợ</span>
           </button>
 
-          <!-- Run Tests Button -->
-          <button id="btn-open-tests" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all font-semibold text-xs border border-emerald-200" title="Chạy kiểm thử tự động 8 Test Cases">
-            <span class="material-symbols-outlined text-[16px] text-emerald-600">play_circle</span>
-            <span class="hidden sm:inline">Kiểm Thử (8 Tests)</span>
+          <!-- Student Profile Quick Badge -->
+          <button id="btn-header-profile" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface-container border border-outline-variant/40 hover:bg-surface-container-high transition-all font-semibold text-xs" title="Hồ sơ sinh viên cá nhân">
+            <span class="material-symbols-outlined text-[16px] text-primary">account_circle</span>
+            <span id="header-mssv-display" class="font-mono font-bold text-primary">52000888</span>
           </button>
 
           <!-- Admin Settings Button -->
@@ -1149,6 +1149,83 @@
 
           <!-- Tool 2: Personal Timeline & Hours Tracker -->
           <div id="tool-hours" class="tool-tab-content hidden flex flex-col gap-5">
+            <!-- 0. Student Profile & Multi-User Server Database Sync -->
+            <div class="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col gap-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[22px]">manage_accounts</span>
+                  <div>
+                    <h4 class="text-xs sm:text-sm font-bold text-on-surface">Hồ Sơ Cá Nhân & Quản Lý Đa Sinh Viên (Database Sync)</h4>
+                    <p class="text-[11px] text-on-surface-variant">Lưu độc lập theo từng MSSV, đồng bộ Máy chủ NoSQL và sao lưu file JSON</p>
+                  </div>
+                </div>
+
+                <!-- Profile Switcher & Actions -->
+                <div class="flex flex-wrap items-center gap-2">
+                  <div class="flex items-center gap-1">
+                    <label class="text-[11px] font-bold text-on-surface-variant">Chọn hồ sơ:</label>
+                    <select id="profile-switcher-select" class="px-2.5 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant text-xs font-mono font-bold text-primary focus:border-secondary focus:outline-none">
+                      <option value="52000888">52000888 (Hiện tại)</option>
+                    </select>
+                  </div>
+                  <button id="btn-create-profile" class="px-2.5 py-1.5 rounded-lg bg-surface-container text-xs font-semibold text-primary hover:bg-surface-container-high transition-colors flex items-center gap-1" title="Tạo hồ sơ sinh viên mới">
+                    <span class="material-symbols-outlined text-[16px]">person_add</span>
+                    <span>Tạo mới</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Student Profile Fields -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+                <div class="flex flex-col gap-1">
+                  <label class="font-bold text-primary uppercase tracking-wider font-mono text-[11px]">Mã số sinh viên (MSSV):</label>
+                  <input id="profile-mssv" type="text" value="52000888" placeholder="52000888" class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-primary/40 font-mono font-bold text-primary text-xs focus:border-primary focus:outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Họ và tên sinh viên:</label>
+                  <input id="profile-name" type="text" value="Nguyễn Văn An" placeholder="Họ và tên..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs font-semibold text-on-surface focus:border-secondary focus:outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Lớp sinh hoạt:</label>
+                  <input id="profile-class" type="text" value="20050201" placeholder="Vd: 20050201" class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs font-semibold text-on-surface focus:border-secondary focus:outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Tên Công ty / Doanh nghiệp:</label>
+                  <input id="profile-company" type="text" value="Công ty Cổ phần Công nghệ FPT Software" placeholder="Tên DN thực tập..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none" />
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Cán bộ hướng dẫn (CBHD):</label>
+                  <input id="profile-mentor" type="text" value="Trần Văn Bình (Tech Lead)" placeholder="Họ tên CBHD..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none" />
+                </div>
+              </div>
+
+              <!-- Database Sync & Storage Action Buttons -->
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-outline-variant/20 text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                  <button id="btn-sync-server" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all flex items-center gap-1.5 shadow-xs" title="Lưu dữ liệu vào Server Flat-File Database">
+                    <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                    <span>Lưu Lên Server</span>
+                  </button>
+                  <button id="btn-load-server" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-1.5 border border-outline-variant/30" title="Tải dữ liệu của MSSV này từ Server">
+                    <span class="material-symbols-outlined text-[16px]">cloud_download</span>
+                    <span>Tải Từ Server</span>
+                  </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <button id="btn-export-profile-json" class="px-2.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1" title="Tải file TDTU_HoSo_MSSV.json về máy tính">
+                    <span class="material-symbols-outlined text-[16px]">file_download</span>
+                    <span>Xuất File .JSON</span>
+                  </button>
+                  <label class="px-2.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1 cursor-pointer" title="Nhập file JSON đã sao lưu để khôi phục">
+                    <span class="material-symbols-outlined text-[16px]">file_upload</span>
+                    <span>Nhập File .JSON</span>
+                    <input id="input-import-profile-json" type="file" accept=".json" class="hidden" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- 1. Header & Timeline Configuration -->
             <div class="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col gap-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
@@ -1398,12 +1475,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-          <button id="btn-open-tests-footer" class="text-emerald-700 hover:underline flex items-center gap-1 font-semibold">
-            <span class="material-symbols-outlined text-[16px]">play_circle</span>
-            <span>Kiểm Thử Tự Động (8 Tests)</span>
-          </button>
-          <span>•</span>
-          <button id="btn-open-admin-footer" class="hover:text-primary transition-colors">Cấu hình Học vụ</button>
+          <button id="btn-open-admin-footer" class="hover:text-primary transition-colors font-medium">Cấu hình Học vụ</button>
         </div>
       </div>
     </footer>

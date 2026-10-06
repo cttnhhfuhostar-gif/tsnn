@@ -9,6 +9,18 @@ import {
   calculatePersonalProgress,
   resetPersonalTrackerState
 } from './modules/personalTracker.js';
+import {
+  loadCurrentProfile,
+  saveCurrentProfile,
+  syncProfileToServer,
+  fetchProfileFromServer,
+  listProfilesFromServer,
+  exportProfileToFile,
+  importProfileFromFile,
+  getActiveMSSV,
+  setActiveMSSV,
+  DEFAULT_PROFILE
+} from './modules/profileManager.js';
 
 let currentLang = localStorage.getItem('tdtu_lang') || 'vi';
 
@@ -64,10 +76,9 @@ function initModals() {
     { openBtn: 'btn-open-tools', modal: 'modal-tools', closeBtn: 'btn-close-tools' },
     { openBtn: 'btn-open-tools-hero', modal: 'modal-tools', closeBtn: 'btn-close-tools-footer' },
     { openBtn: 'btn-open-tools-tracker-widget', modal: 'modal-tools', closeBtn: null },
+    { openBtn: 'btn-header-profile', modal: 'modal-tools', closeBtn: null },
     { openBtn: 'btn-open-admin', modal: 'modal-admin', closeBtn: 'btn-close-admin' },
-    { openBtn: 'btn-open-admin-footer', modal: 'modal-admin', closeBtn: null },
-    { openBtn: 'btn-open-tests', modal: 'modal-tests', closeBtn: 'btn-close-tests' },
-    { openBtn: 'btn-open-tests-footer', modal: 'modal-tests', closeBtn: 'btn-close-tests-footer' }
+    { openBtn: 'btn-open-admin-footer', modal: 'modal-admin', closeBtn: null }
   ];
 
   modalConfigs.forEach(({ openBtn, modal, closeBtn }) => {
@@ -312,11 +323,25 @@ function initStudentTools() {
   }
 }
 
-// 4. PERSONAL INTERNSHIP TRACKER & TIMELINE CONTROLLER (Cá Nhân Hóa Toàn Diện)
+// 4. PERSONAL INTERNSHIP TRACKER & TIMELINE CONTROLLER (Cá Nhân Hóa Toàn Diện & Database Sync)
 function initPersonalTracker() {
   let trackerData = getPersonalTrackerState();
 
-  // Elements
+  // Profile Elements
+  const profileMssvInput = document.getElementById('profile-mssv');
+  const profileNameInput = document.getElementById('profile-name');
+  const profileClassInput = document.getElementById('profile-class');
+  const profileCompanyInput = document.getElementById('profile-company');
+  const profileMentorInput = document.getElementById('profile-mentor');
+  const profileSwitcherSelect = document.getElementById('profile-switcher-select');
+  const btnCreateProfile = document.getElementById('btn-create-profile');
+  const btnSyncServer = document.getElementById('btn-sync-server');
+  const btnLoadServer = document.getElementById('btn-load-server');
+  const btnExportProfileJson = document.getElementById('btn-export-profile-json');
+  const inputImportProfileJson = document.getElementById('input-import-profile-json');
+  const headerMssvDisplay = document.getElementById('header-mssv-display');
+
+  // Timeline & Course Elements
   const courseTypeSelect = document.getElementById('tracker-course-type');
   const startDateInput = document.getElementById('tracker-start-date');
   const endDateInput = document.getElementById('tracker-end-date');
@@ -330,7 +355,7 @@ function initPersonalTracker() {
   const progressBarEl = document.getElementById('tracker-progress-bar');
   const progressPctEl = document.getElementById('tracker-progress-pct');
 
-  // Home widget elements (nếu có trên trang chính)
+  // Home widget elements
   const widgetHoursEl = document.getElementById('widget-tracker-hours');
   const widgetDaysEl = document.getElementById('widget-tracker-days');
   const widgetBarEl = document.getElementById('widget-tracker-bar');
@@ -341,10 +366,55 @@ function initPersonalTracker() {
   const btnResetTracker = document.getElementById('btn-reset-tracker');
   const btnExportTracker = document.getElementById('btn-export-tracker');
 
+  async function refreshProfileSwitcher() {
+    if (!profileSwitcherSelect) return;
+    const serverProfiles = await listProfilesFromServer();
+    const mssvSet = new Set();
+    mssvSet.add(trackerData.mssv || '52000888');
+    serverProfiles.forEach((p) => mssvSet.add(p.mssv));
+
+    profileSwitcherSelect.innerHTML = Array.from(mssvSet).map((m) => {
+      const isCurr = m === trackerData.mssv;
+      const sItem = serverProfiles.find((p) => p.mssv === m);
+      const name = sItem ? sItem.studentName : (m === trackerData.mssv ? trackerData.studentName : 'Cục bộ');
+      return `<option value="${m}" ${isCurr ? 'selected' : ''}>${m} - ${name || 'Chưa đặt tên'}</option>`;
+    }).join('');
+  }
+
   function renderTrackerUI() {
     const analysis = calculatePersonalProgress(trackerData);
 
-    // Sync input values
+    // Sync Profile inputs
+    if (profileMssvInput) profileMssvInput.value = trackerData.mssv || '52000888';
+    if (profileNameInput) profileNameInput.value = trackerData.studentName || '';
+    if (profileClassInput) profileClassInput.value = trackerData.studentClass || '';
+    if (profileCompanyInput) profileCompanyInput.value = trackerData.companyName || '';
+    if (profileMentorInput) profileMentorInput.value = trackerData.mentorName || '';
+    if (headerMssvDisplay) headerMssvDisplay.textContent = trackerData.mssv || '52000888';
+
+    // Sync Quick Filler in Tab 4
+    const fId = document.getElementById('filler-student-id');
+    const fName = document.getElementById('filler-student-name');
+    const fClass = document.getElementById('filler-student-class');
+    const fComp = document.getElementById('filler-company-name');
+    const fTax = document.getElementById('filler-company-tax');
+    const fMentor = document.getElementById('filler-mentor-name');
+    if (fId && trackerData.mssv) fId.value = trackerData.mssv;
+    if (fName && trackerData.studentName) fName.value = trackerData.studentName;
+    if (fClass && trackerData.studentClass) fClass.value = trackerData.studentClass;
+    if (fComp && trackerData.companyName) fComp.value = trackerData.companyName;
+    if (fTax && trackerData.companyTax) fTax.value = trackerData.companyTax;
+    if (fMentor && trackerData.mentorName) fMentor.value = trackerData.mentorName;
+
+    // Sync Validator input hint with current MSSV
+    const valInput = document.getElementById('validator-input');
+    if (valInput && valInput.value.includes('52000888') && trackerData.mssv !== '52000888') {
+      valInput.value = `1_${trackerData.mssv}_BM01.pdf`;
+      const event = new Event('input', { bubbles: true });
+      valInput.dispatchEvent(event);
+    }
+
+    // Sync Timeline input values
     if (courseTypeSelect) courseTypeSelect.value = trackerData.courseType;
     if (startDateInput) startDateInput.value = trackerData.startDate;
     if (endDateInput) endDateInput.value = trackerData.endDate;
@@ -386,7 +456,7 @@ function initPersonalTracker() {
       if (analysis.status === 'warning') badgeClass = 'bg-amber-100 text-amber-900 border-amber-300';
       if (analysis.status === 'urgent') badgeClass = 'bg-red-100 text-red-900 border-red-300';
 
-      velocityStatusEl.className = `p-3 rounded-xl border text-xs leading-relaxed flex items-start gap-2 ${badgeClass}`;
+      velocityStatusEl.className = `p-3.5 rounded-xl border text-xs leading-relaxed flex items-start gap-2 ${badgeClass}`;
       velocityStatusEl.innerHTML = `
         <span class="material-symbols-outlined text-[18px] shrink-0 mt-0.5">
           ${analysis.status === 'completed' ? 'check_circle' : analysis.status === 'urgent' ? 'emergency' : 'info'}
@@ -394,21 +464,22 @@ function initPersonalTracker() {
         <div>
           <span class="font-bold">${analysis.statusMessage}</span>
           <div class="text-[11px] opacity-90 mt-0.5">
-            Đã ký xác nhận: <strong>${analysis.signedLogsCount}/${analysis.totalWeeksRecorded} tuần</strong>. 
-            Cần duy trì tối thiểu: <strong>${analysis.requiredHoursPerWeek}H/tuần</strong>.
+            Sinh viên: <strong>${trackerData.studentName || 'Chưa đặt tên'} (MSSV: ${trackerData.mssv})</strong> • 
+            Đã ký: <strong>${analysis.signedLogsCount}/${analysis.totalWeeksRecorded} tuần</strong> • 
+            Chỉ tiêu: <strong>${analysis.requiredHoursPerWeek}H/tuần</strong>.
           </div>
         </div>
       `;
     }
 
-    // Update Home Widget nếu tồn tại
+    // Update Home Widget
     if (widgetHoursEl) widgetHoursEl.textContent = `${analysis.totalLoggedHours}/${analysis.targetHours}H (${analysis.progressPercentage}%)`;
     if (widgetDaysEl) widgetDaysEl.textContent = `${analysis.daysUntilDeadline} ngày`;
     if (widgetBarEl) widgetBarEl.style.width = `${analysis.progressPercentage}%`;
 
     // Render Weekly Logs Rows
     if (logsContainer) {
-      if (trackerData.weeklyLogs.length === 0) {
+      if (!trackerData.weeklyLogs || trackerData.weeklyLogs.length === 0) {
         logsContainer.innerHTML = `
           <tr>
             <td colspan="5" class="p-4 text-center text-xs text-on-surface-variant italic">
@@ -492,11 +563,10 @@ function initPersonalTracker() {
 
         // Attach remove buttons
         logsContainer.querySelectorAll('button[data-remove-log-idx]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
+          btn.addEventListener('click', () => {
             const idx = Number(btn.getAttribute('data-remove-log-idx'));
             if (confirm(`Xóa ghi nhận của Tuần ${idx + 1}?`)) {
               trackerData.weeklyLogs.splice(idx, 1);
-              // Cập nhật lại số tuần
               trackerData.weeklyLogs.forEach((l, i) => { l.week = i + 1; });
               savePersonalTrackerState(trackerData);
               renderTrackerUI();
@@ -508,7 +578,168 @@ function initPersonalTracker() {
     }
   }
 
-  // Header Select & Dates Events
+  // Profile Field Event Listeners
+  if (profileMssvInput) {
+    profileMssvInput.addEventListener('change', (e) => {
+      const clean = String(e.target.value || '').trim();
+      if (clean) {
+        trackerData.mssv = clean;
+        setActiveMSSV(clean);
+        savePersonalTrackerState(trackerData);
+        renderTrackerUI();
+        refreshProfileSwitcher();
+        showToast(`Đã cập nhật MSSV: ${clean}`);
+      }
+    });
+  }
+
+  if (profileNameInput) {
+    profileNameInput.addEventListener('change', (e) => {
+      trackerData.studentName = e.target.value;
+      savePersonalTrackerState(trackerData);
+      renderTrackerUI();
+      refreshProfileSwitcher();
+    });
+  }
+
+  if (profileClassInput) {
+    profileClassInput.addEventListener('change', (e) => {
+      trackerData.studentClass = e.target.value;
+      savePersonalTrackerState(trackerData);
+    });
+  }
+
+  if (profileCompanyInput) {
+    profileCompanyInput.addEventListener('change', (e) => {
+      trackerData.companyName = e.target.value;
+      savePersonalTrackerState(trackerData);
+    });
+  }
+
+  if (profileMentorInput) {
+    profileMentorInput.addEventListener('change', (e) => {
+      trackerData.mentorName = e.target.value;
+      savePersonalTrackerState(trackerData);
+    });
+  }
+
+  // Profile Switcher Event
+  if (profileSwitcherSelect) {
+    profileSwitcherSelect.addEventListener('change', async (e) => {
+      const selectedMssv = e.target.value;
+      if (!selectedMssv) return;
+      setActiveMSSV(selectedMssv);
+      trackerData = getPersonalTrackerState();
+      if (!trackerData.studentName) {
+        try {
+          const remote = await fetchProfileFromServer(selectedMssv);
+          if (remote) {
+            trackerData = { ...remote };
+            savePersonalTrackerState(trackerData);
+          }
+        } catch {}
+      }
+      renderTrackerUI();
+      refreshProfileSwitcher();
+      showToast(`Đã chuyển sang hồ sơ sinh viên MSSV: ${selectedMssv}`);
+    });
+  }
+
+  // Create New Profile
+  if (btnCreateProfile) {
+    btnCreateProfile.addEventListener('click', () => {
+      const newMssv = prompt('Nhập Mã số sinh viên (MSSV) mới:');
+      if (newMssv && newMssv.trim()) {
+        const clean = newMssv.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+        setActiveMSSV(clean);
+        trackerData = {
+          ...DEFAULT_PROFILE,
+          mssv: clean,
+          studentName: '',
+          weeklyLogs: []
+        };
+        savePersonalTrackerState(trackerData);
+        renderTrackerUI();
+        refreshProfileSwitcher();
+        showToast(`Đã tạo hồ sơ mới cho MSSV: ${clean}`);
+      }
+    });
+  }
+
+  // Sync To Server Button
+  if (btnSyncServer) {
+    btnSyncServer.addEventListener('click', async () => {
+      try {
+        btnSyncServer.disabled = true;
+        btnSyncServer.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Đang lưu...';
+        await syncProfileToServer(trackerData);
+        showToast(`✓ Đã lưu hồ sơ MSSV ${trackerData.mssv} vào CSDL Server!`);
+        refreshProfileSwitcher();
+      } catch (err) {
+        alert('Lỗi lưu lên Server: ' + err.message);
+      } finally {
+        btnSyncServer.disabled = false;
+        btnSyncServer.innerHTML = '<span class="material-symbols-outlined text-[16px]">cloud_upload</span> Lưu Lên Server';
+      }
+    });
+  }
+
+  // Load From Server Button
+  if (btnLoadServer) {
+    btnLoadServer.addEventListener('click', async () => {
+      const mssvToLoad = prompt('Nhập MSSV cần tải từ hệ thống:', trackerData.mssv || '');
+      if (!mssvToLoad || !mssvToLoad.trim()) return;
+      try {
+        btnLoadServer.disabled = true;
+        btnLoadServer.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Đang tải...';
+        const remoteProfile = await fetchProfileFromServer(mssvToLoad.trim());
+        if (remoteProfile) {
+          trackerData = { ...remoteProfile };
+          setActiveMSSV(remoteProfile.mssv);
+          savePersonalTrackerState(trackerData);
+          renderTrackerUI();
+          refreshProfileSwitcher();
+          showToast(`✓ Đã tải hồ sơ MSSV ${remoteProfile.mssv} từ Server!`);
+        }
+      } catch (err) {
+        alert('Không tải được hồ sơ: ' + err.message);
+      } finally {
+        btnLoadServer.disabled = false;
+        btnLoadServer.innerHTML = '<span class="material-symbols-outlined text-[16px]">cloud_download</span> Tải Từ Server';
+      }
+    });
+  }
+
+  // Export JSON File
+  if (btnExportProfileJson) {
+    btnExportProfileJson.addEventListener('click', () => {
+      exportProfileToFile(trackerData);
+      showToast(`Đã tải về file TDTU_HoSo_${trackerData.mssv}.json!`);
+    });
+  }
+
+  // Import JSON File
+  if (inputImportProfileJson) {
+    inputImportProfileJson.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        const imported = await importProfileFromFile(file);
+        trackerData = { ...DEFAULT_PROFILE, ...imported };
+        setActiveMSSV(trackerData.mssv);
+        savePersonalTrackerState(trackerData);
+        renderTrackerUI();
+        refreshProfileSwitcher();
+        showToast(`✓ Đã nhập thành công hồ sơ MSSV ${trackerData.mssv} từ file!`);
+      } catch (err) {
+        alert('Lỗi nhập file JSON: ' + err.message);
+      } finally {
+        e.target.value = '';
+      }
+    });
+  }
+
+  // Timeline events
   if (courseTypeSelect) {
     courseTypeSelect.addEventListener('change', (e) => {
       trackerData.courseType = e.target.value;
@@ -544,7 +775,8 @@ function initPersonalTracker() {
   // Add Week Button
   if (btnAddLog) {
     btnAddLog.addEventListener('click', () => {
-      const nextWeekNum = trackerData.weeklyLogs.length + 1;
+      const nextWeekNum = (trackerData.weeklyLogs ? trackerData.weeklyLogs.length : 0) + 1;
+      if (!trackerData.weeklyLogs) trackerData.weeklyLogs = [];
       trackerData.weeklyLogs.push({
         id: Date.now(),
         week: nextWeekNum,
@@ -575,6 +807,8 @@ function initPersonalTracker() {
     btnExportTracker.addEventListener('click', () => {
       const analysis = calculatePersonalProgress(trackerData);
       const text = `=== BẢNG THEO DÕI TIẾN TRÌNH THỰC TẬP TDTU ===
+Sinh viên: ${trackerData.studentName || 'Chưa đặt tên'} (MSSV: ${trackerData.mssv || '---'}) | Lớp: ${trackerData.studentClass || '---'}
+Doanh nghiệp: ${trackerData.companyName || '---'} | CBHD: ${trackerData.mentorName || '---'}
 Học phần: ${trackerData.courseType === 'dual' ? 'Song hành TSNN + KTCN (240H)' : 'Học phần đơn (120H)'}
 Ngày bắt đầu: ${trackerData.startDate}
 Hạn nộp HSMH (Deadline): ${trackerData.deadlineDate} (${analysis.daysUntilDeadline} ngày còn lại)
@@ -582,15 +816,16 @@ Tổng số giờ tích lũy: ${analysis.totalLoggedHours} / ${analysis.targetHo
 Tình trạng: ${analysis.statusMessage}
 
 --- CHI TIẾT CÁC TUẦN ---
-${trackerData.weeklyLogs.map(l => `Tuần ${l.week}: ${l.hours}H | ${l.task} | Ký xác nhận: ${l.mentorSigned ? 'Đã ký' : 'Chưa ký'}`).join('\n')}
+${(trackerData.weeklyLogs || []).map((l) => `Tuần ${l.week}: ${l.hours}H | ${l.task} | Ký xác nhận: ${l.mentorSigned ? 'Đã ký' : 'Chưa ký'}`).join('\n')}
 `;
       navigator.clipboard.writeText(text);
       showToast('Đã sao chép báo cáo tiến độ vào Clipboard!');
     });
   }
 
-  // Initial render
+  // Initial render & list load
   renderTrackerUI();
+  refreshProfileSwitcher();
 }
 
 // 5. Admin Settings
