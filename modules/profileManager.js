@@ -1,5 +1,5 @@
-// modules/profileManager.js - Quản lý Hồ Sơ Sinh Viên Cá Nhân & Đồng Bộ CSDL Server
-export const DEFAULT_PROFILE = {
+// modules/profileManager.js - Quản lý Tài Khoản Sinh Viên & Bảo Mật Cá Nhân Hóa
+export const DEFAULT_GUEST_PROFILE = {
   mssv: '52000888',
   studentName: 'Nguyễn Văn An',
   studentClass: '20050201',
@@ -7,8 +7,8 @@ export const DEFAULT_PROFILE = {
   companyTax: '0101248141',
   mentorName: 'Trần Văn Bình (Tech Lead)',
   courseType: 'single_tsnn',
-  startDate: new Date().toISOString().split('T')[0],
-  endDate: new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  startDate: '2026-02-15',
+  endDate: '2026-05-15',
   deadlineDate: '2026-05-30',
   weeklyLogs: [
     { id: 1, week: 1, hours: 20, task: 'Làm quen môi trường công ty, setup IDE và đọc tài liệu dự án', mentorSigned: true },
@@ -17,105 +17,116 @@ export const DEFAULT_PROFILE = {
   ]
 };
 
-const ACTIVE_MSSV_KEY = 'tdtu_active_mssv';
-const PROFILE_KEY_PREFIX = 'tdtu_profile_';
+const TOKEN_KEY = 'tdtu_auth_token';
+const USER_KEY = 'tdtu_auth_user';
 
-export function getActiveMSSV() {
-  return localStorage.getItem(ACTIVE_MSSV_KEY) || '52000888';
+export function getAuthToken() {
+  return localStorage.getItem(TOKEN_KEY) || null;
 }
 
-export function setActiveMSSV(mssv) {
-  const clean = String(mssv || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
-  if (clean) {
-    localStorage.setItem(ACTIVE_MSSV_KEY, clean);
-  }
-  return clean;
-}
-
-export function loadCurrentProfile() {
-  const mssv = getActiveMSSV();
+export function getAuthUser() {
   try {
-    const raw = localStorage.getItem(PROFILE_KEY_PREFIX + mssv);
-    if (!raw) {
-      return { ...DEFAULT_PROFILE, mssv };
-    }
-    const parsed = JSON.parse(raw);
-    return { ...DEFAULT_PROFILE, ...parsed, mssv };
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
   } catch {
-    return { ...DEFAULT_PROFILE, mssv };
+    return null;
   }
 }
 
-export function saveCurrentProfile(profile) {
-  if (!profile || !profile.mssv) return;
-  const mssv = String(profile.mssv).trim();
-  localStorage.setItem(PROFILE_KEY_PREFIX + mssv, JSON.stringify(profile));
-  localStorage.setItem(ACTIVE_MSSV_KEY, mssv);
+export function isLoggedIn() {
+  return !!getAuthToken();
 }
 
-// Server API Sync
-export async function syncProfileToServer(profile) {
-  const res = await fetch('/api/profile/save', {
+export async function login(mssv, pin) {
+  const res = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(profile)
+    body: JSON.stringify({ mssv, pin })
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || `Lỗi máy chủ (${res.status})`);
-  }
-  return await res.json();
-}
-
-export async function fetchProfileFromServer(mssv) {
-  const clean = String(mssv || '').trim();
-  const res = await fetch(`/api/profile?mssv=${encodeURIComponent(clean)}`);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || `Không tìm thấy hồ sơ MSSV ${clean}`);
-  }
   const data = await res.json();
-  return data.profile;
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Đăng nhập không thành công');
+  }
+
+  localStorage.setItem(TOKEN_KEY, data.token);
+  localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+  return data.user;
 }
 
-export async function listProfilesFromServer() {
+export async function register(mssv, pin, studentName, studentClass) {
+  const res = await fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mssv, pin, studentName, studentClass })
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Đăng ký không thành công');
+  }
+
+  localStorage.setItem(TOKEN_KEY, data.token);
+  localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+  return data.user;
+}
+
+export function logout() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+}
+
+// Lấy thông tin hồ sơ của sinh viên đang đăng nhập
+export function loadCurrentProfile() {
+  const user = getAuthUser();
+  if (user && user.mssv) {
+    return { ...DEFAULT_GUEST_PROFILE, ...user };
+  }
+  // Nếu chưa đăng nhập, dùng hồ sơ cục bộ của trình duyệt
   try {
-    const res = await fetch('/api/profiles/list');
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.profiles || [];
+    const local = localStorage.getItem('tdtu_local_profile_guest');
+    return local ? { ...DEFAULT_GUEST_PROFILE, ...JSON.parse(local) } : DEFAULT_GUEST_PROFILE;
   } catch {
-    return [];
+    return DEFAULT_GUEST_PROFILE;
   }
 }
 
-// Export JSON file download
-export function exportProfileToFile(profile) {
-  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(profile, null, 2));
-  const downloadAnchor = document.createElement('a');
-  downloadAnchor.setAttribute('href', dataStr);
-  downloadAnchor.setAttribute('download', `TDTU_HoSo_${profile.mssv || 'sinhvien'}.json`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
-}
+let syncTimeout = null;
 
-// Import JSON file reader
-export function importProfileFromFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
+// Tự động lưu hồ sơ (Local cache + Server Sync bảo mật ngầm)
+export function saveCurrentProfile(profileData, onSyncStatus) {
+  const token = getAuthToken();
+
+  if (token) {
+    // 1. Cập nhật ngay local cache
+    const currentUser = getAuthUser() || {};
+    const merged = { ...currentUser, ...profileData };
+    localStorage.setItem(USER_KEY, JSON.stringify(merged));
+
+    // 2. Tự động đồng bộ ngầm lên Server sau 600ms (Debounce)
+    if (onSyncStatus) onSyncStatus('saving');
+    clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(async () => {
       try {
-        const parsed = JSON.parse(e.target.result);
-        if (!parsed.mssv) {
-          throw new Error('File JSON không chứa thông tin MSSV');
+        const res = await fetch('/api/profile/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(profileData)
+        });
+        const data = await res.json();
+        if (data.success && onSyncStatus) {
+          onSyncStatus('saved', data.updatedAt);
+        } else if (!data.success && onSyncStatus) {
+          onSyncStatus('error', data.error);
         }
-        resolve(parsed);
       } catch (err) {
-        reject(err);
+        if (onSyncStatus) onSyncStatus('error', err.message);
       }
-    };
-    reader.onerror = () => reject(new Error('Lỗi đọc file JSON'));
-    reader.readAsText(file);
-  });
+    }, 600);
+  } else {
+    // Lưu cục bộ nếu chưa đăng nhập
+    localStorage.setItem('tdtu_local_profile_guest', JSON.stringify(profileData));
+    if (onSyncStatus) onSyncStatus('local');
+  }
 }

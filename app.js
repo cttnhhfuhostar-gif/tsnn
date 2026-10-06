@@ -10,16 +10,13 @@ import {
   resetPersonalTrackerState
 } from './modules/personalTracker.js';
 import {
+  login,
+  register,
+  logout,
+  isLoggedIn,
+  getAuthUser,
   loadCurrentProfile,
-  saveCurrentProfile,
-  syncProfileToServer,
-  fetchProfileFromServer,
-  listProfilesFromServer,
-  exportProfileToFile,
-  importProfileFromFile,
-  getActiveMSSV,
-  setActiveMSSV,
-  DEFAULT_PROFILE
+  saveCurrentProfile
 } from './modules/profileManager.js';
 
 let currentLang = localStorage.getItem('tdtu_lang') || 'vi';
@@ -27,6 +24,7 @@ let currentLang = localStorage.getItem('tdtu_lang') || 'vi';
 document.addEventListener('DOMContentLoaded', () => {
   initCopyButtons();
   initModals();
+  initAuth();
   initStudentTools();
   initPersonalTracker();
   initAdmin();
@@ -76,7 +74,6 @@ function initModals() {
     { openBtn: 'btn-open-tools', modal: 'modal-tools', closeBtn: 'btn-close-tools' },
     { openBtn: 'btn-open-tools-hero', modal: 'modal-tools', closeBtn: 'btn-close-tools-footer' },
     { openBtn: 'btn-open-tools-tracker-widget', modal: 'modal-tools', closeBtn: null },
-    { openBtn: 'btn-header-profile', modal: 'modal-tools', closeBtn: null },
     { openBtn: 'btn-open-admin', modal: 'modal-admin', closeBtn: 'btn-close-admin' },
     { openBtn: 'btn-open-admin-footer', modal: 'modal-admin', closeBtn: null }
   ];
@@ -90,7 +87,6 @@ function initModals() {
       o.addEventListener('click', () => {
         m.classList.remove('hidden');
         m.classList.add('flex');
-        // Nếu mở từ tracker widget thì tự động active tab tracker
         if (openBtn === 'btn-open-tools-tracker-widget') {
           switchToolTab('tool-hours');
         }
@@ -132,7 +128,154 @@ function switchToolTab(targetTabId) {
   });
 }
 
-// 3. Student Tools Controller
+// 3. AUTHENTICATION & PERSONAL ACCOUNT CONTROLLER (Bảo Mật Cá Nhân Hóa)
+function initAuth() {
+  const authContainer = document.getElementById('header-auth-container');
+  const modalAuth = document.getElementById('modal-auth');
+  const btnCloseAuth = document.getElementById('btn-close-auth');
+  const tabLogin = document.getElementById('tab-auth-login');
+  const tabRegister = document.getElementById('tab-auth-register');
+  const authForm = document.getElementById('auth-form');
+  const authErrorMsg = document.getElementById('auth-error-msg');
+  const authInputMssv = document.getElementById('auth-input-mssv');
+  const authInputPin = document.getElementById('auth-input-pin');
+  const authInputName = document.getElementById('auth-input-name');
+  const authInputClass = document.getElementById('auth-input-class');
+  const registerFields = document.getElementById('auth-register-extra-fields');
+  const btnAuthSubmitText = document.getElementById('btn-auth-submit-text');
+  const authModalTitle = document.getElementById('auth-modal-title');
+  const pinHint = document.getElementById('auth-pin-hint');
+
+  let currentAuthTab = 'login';
+
+  function openAuthModal(mode = 'login') {
+    currentAuthTab = mode;
+    if (authErrorMsg) authErrorMsg.classList.add('hidden');
+    if (authForm) authForm.reset();
+
+    if (mode === 'login') {
+      tabLogin?.classList.add('border-primary', 'text-primary');
+      tabLogin?.classList.remove('border-transparent', 'text-on-surface-variant');
+      tabRegister?.classList.remove('border-primary', 'text-primary');
+      tabRegister?.classList.add('border-transparent', 'text-on-surface-variant');
+      registerFields?.classList.add('hidden');
+      if (btnAuthSubmitText) btnAuthSubmitText.textContent = 'Đăng Nhập Ngay';
+      if (authModalTitle) authModalTitle.textContent = 'Đăng Nhập Tài Khoản Sinh Viên';
+      if (pinHint) pinHint.classList.remove('hidden');
+    } else {
+      tabRegister?.classList.add('border-primary', 'text-primary');
+      tabRegister?.classList.remove('border-transparent', 'text-on-surface-variant');
+      tabLogin?.classList.remove('border-primary', 'text-primary');
+      tabLogin?.classList.add('border-transparent', 'text-on-surface-variant');
+      registerFields?.classList.remove('hidden');
+      if (btnAuthSubmitText) btnAuthSubmitText.textContent = 'Tạo Tài Khoản & Bắt Đầu';
+      if (authModalTitle) authModalTitle.textContent = 'Đăng Ký Hồ Sơ Sinh Viên Mới';
+      if (pinHint) pinHint.classList.add('hidden');
+    }
+
+    if (modalAuth) {
+      modalAuth.classList.remove('hidden');
+      modalAuth.classList.add('flex');
+    }
+  }
+
+  function closeAuthModal() {
+    if (modalAuth) {
+      modalAuth.classList.add('hidden');
+      modalAuth.classList.remove('flex');
+    }
+  }
+
+  function renderHeaderAuth() {
+    if (!authContainer) return;
+    const user = getAuthUser();
+
+    if (user && user.mssv) {
+      authContainer.innerHTML = `
+        <div class="flex items-center gap-1.5 pl-1">
+          <button id="btn-open-user-profile" class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-surface-container border border-outline-variant/40 hover:bg-surface-container-high transition-all text-xs" title="Xem hồ sơ cá nhân của bạn">
+            <span class="material-symbols-outlined text-[18px] text-primary">account_circle</span>
+            <div class="flex flex-col text-left leading-tight">
+              <span class="font-bold text-on-surface text-[11px] truncate max-w-[110px]">${user.studentName || 'Sinh viên'}</span>
+              <span class="font-mono text-[10px] text-primary font-bold">MSSV: ${user.mssv}</span>
+            </div>
+          </button>
+          <button id="btn-logout-header" class="p-1.5 rounded-xl text-on-surface-variant hover:text-error hover:bg-red-50 transition-colors" title="Đăng xuất khỏi tài khoản này">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+          </button>
+        </div>
+      `;
+
+      document.getElementById('btn-open-user-profile')?.addEventListener('click', () => {
+        const m = document.getElementById('modal-tools');
+        if (m) {
+          m.classList.remove('hidden');
+          m.classList.add('flex');
+          switchToolTab('tool-hours');
+        }
+      });
+
+      document.getElementById('btn-logout-header')?.addEventListener('click', () => {
+        if (confirm('Đăng xuất khỏi tài khoản sinh viên?')) {
+          logout();
+          renderHeaderAuth();
+          if (window.renderPersonalTracker) window.renderPersonalTracker();
+          showToast('Đã đăng xuất an toàn');
+        }
+      });
+    } else {
+      authContainer.innerHTML = `
+        <button id="btn-open-login-header" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all font-semibold text-xs shadow-xs">
+          <span class="material-symbols-outlined text-[16px]">lock</span>
+          <span>Đăng Nhập</span>
+        </button>
+      `;
+
+      document.getElementById('btn-open-login-header')?.addEventListener('click', () => {
+        openAuthModal('login');
+      });
+    }
+  }
+
+  if (tabLogin) tabLogin.addEventListener('click', () => openAuthModal('login'));
+  if (tabRegister) tabRegister.addEventListener('click', () => openAuthModal('register'));
+  if (btnCloseAuth) btnCloseAuth.addEventListener('click', closeAuthModal);
+
+  if (authForm) {
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mssv = authInputMssv?.value.trim();
+      const pin = authInputPin?.value.trim();
+      const name = authInputName?.value.trim();
+      const sClass = authInputClass?.value.trim();
+
+      if (!mssv || !pin) return;
+      if (authErrorMsg) authErrorMsg.classList.add('hidden');
+
+      try {
+        if (currentAuthTab === 'login') {
+          await login(mssv, pin);
+          showToast(`Đăng nhập thành công: ${mssv}!`);
+        } else {
+          await register(mssv, pin, name, sClass);
+          showToast(`Đăng ký thành công tài khoản: ${mssv}!`);
+        }
+        closeAuthModal();
+        renderHeaderAuth();
+        if (window.renderPersonalTracker) window.renderPersonalTracker();
+      } catch (err) {
+        if (authErrorMsg) {
+          authErrorMsg.textContent = err.message;
+          authErrorMsg.classList.remove('hidden');
+        }
+      }
+    });
+  }
+
+  renderHeaderAuth();
+}
+
+// 4. Student Tools Controller (Validator, Checklist, Filler)
 function initStudentTools() {
   const toolTabs = document.querySelectorAll('.tool-tab-btn');
   toolTabs.forEach((tab) => {
@@ -323,31 +466,24 @@ function initStudentTools() {
   }
 }
 
-// 4. PERSONAL INTERNSHIP TRACKER & TIMELINE CONTROLLER (Cá Nhân Hóa Toàn Diện & Database Sync)
+// 5. PERSONAL INTERNSHIP TRACKER & TIMELINE CONTROLLER (Cá Nhân Hóa Tự Động)
 function initPersonalTracker() {
   let trackerData = getPersonalTrackerState();
 
-  // Profile Elements
-  const profileMssvInput = document.getElementById('profile-mssv');
+  const mssvBadgeEl = document.getElementById('tracker-mssv-badge');
+  const syncDotEl = document.getElementById('tracker-sync-dot');
+  const syncTextEl = document.getElementById('tracker-sync-text');
+
   const profileNameInput = document.getElementById('profile-name');
   const profileClassInput = document.getElementById('profile-class');
   const profileCompanyInput = document.getElementById('profile-company');
   const profileMentorInput = document.getElementById('profile-mentor');
-  const profileSwitcherSelect = document.getElementById('profile-switcher-select');
-  const btnCreateProfile = document.getElementById('btn-create-profile');
-  const btnSyncServer = document.getElementById('btn-sync-server');
-  const btnLoadServer = document.getElementById('btn-load-server');
-  const btnExportProfileJson = document.getElementById('btn-export-profile-json');
-  const inputImportProfileJson = document.getElementById('input-import-profile-json');
-  const headerMssvDisplay = document.getElementById('header-mssv-display');
 
-  // Timeline & Course Elements
   const courseTypeSelect = document.getElementById('tracker-course-type');
   const startDateInput = document.getElementById('tracker-start-date');
   const endDateInput = document.getElementById('tracker-end-date');
   const deadlineInput = document.getElementById('tracker-deadline-date');
 
-  // Stats Displays
   const daysLeftEl = document.getElementById('tracker-days-left');
   const hoursDoneEl = document.getElementById('tracker-hours-done');
   const hoursRemainingEl = document.getElementById('tracker-hours-remaining');
@@ -355,44 +491,46 @@ function initPersonalTracker() {
   const progressBarEl = document.getElementById('tracker-progress-bar');
   const progressPctEl = document.getElementById('tracker-progress-pct');
 
-  // Home widget elements
   const widgetHoursEl = document.getElementById('widget-tracker-hours');
   const widgetDaysEl = document.getElementById('widget-tracker-days');
   const widgetBarEl = document.getElementById('widget-tracker-bar');
 
-  // Logs Table Container
   const logsContainer = document.getElementById('tracker-logs-tbody');
   const btnAddLog = document.getElementById('btn-add-week-log');
   const btnResetTracker = document.getElementById('btn-reset-tracker');
   const btnExportTracker = document.getElementById('btn-export-tracker');
 
-  async function refreshProfileSwitcher() {
-    if (!profileSwitcherSelect) return;
-    const serverProfiles = await listProfilesFromServer();
-    const mssvSet = new Set();
-    mssvSet.add(trackerData.mssv || '52000888');
-    serverProfiles.forEach((p) => mssvSet.add(p.mssv));
+  function updateSyncStatus(status) {
+    if (!syncDotEl || !syncTextEl) return;
+    if (status === 'saving') {
+      syncDotEl.className = 'w-2 h-2 rounded-full bg-amber-500 animate-ping';
+      syncTextEl.textContent = 'Đang lưu...';
+    } else if (status === 'saved') {
+      syncDotEl.className = 'w-2 h-2 rounded-full bg-emerald-500';
+      syncTextEl.textContent = 'Đã lưu tự động';
+    } else if (status === 'local') {
+      syncDotEl.className = 'w-2 h-2 rounded-full bg-blue-500';
+      syncTextEl.textContent = 'Lưu trên máy này';
+    } else if (status === 'error') {
+      syncDotEl.className = 'w-2 h-2 rounded-full bg-red-500';
+      syncTextEl.textContent = 'Lỗi lưu';
+    }
+  }
 
-    profileSwitcherSelect.innerHTML = Array.from(mssvSet).map((m) => {
-      const isCurr = m === trackerData.mssv;
-      const sItem = serverProfiles.find((p) => p.mssv === m);
-      const name = sItem ? sItem.studentName : (m === trackerData.mssv ? trackerData.studentName : 'Cục bộ');
-      return `<option value="${m}" ${isCurr ? 'selected' : ''}>${m} - ${name || 'Chưa đặt tên'}</option>`;
-    }).join('');
+  function persistData() {
+    savePersonalTrackerState(trackerData, updateSyncStatus);
   }
 
   function renderTrackerUI() {
+    trackerData = getPersonalTrackerState();
     const analysis = calculatePersonalProgress(trackerData);
 
-    // Sync Profile inputs
-    if (profileMssvInput) profileMssvInput.value = trackerData.mssv || '52000888';
+    if (mssvBadgeEl) mssvBadgeEl.textContent = trackerData.mssv ? `MSSV: ${trackerData.mssv}` : 'Khách';
     if (profileNameInput) profileNameInput.value = trackerData.studentName || '';
     if (profileClassInput) profileClassInput.value = trackerData.studentClass || '';
     if (profileCompanyInput) profileCompanyInput.value = trackerData.companyName || '';
     if (profileMentorInput) profileMentorInput.value = trackerData.mentorName || '';
-    if (headerMssvDisplay) headerMssvDisplay.textContent = trackerData.mssv || '52000888';
 
-    // Sync Quick Filler in Tab 4
     const fId = document.getElementById('filler-student-id');
     const fName = document.getElementById('filler-student-name');
     const fClass = document.getElementById('filler-student-class');
@@ -406,21 +544,18 @@ function initPersonalTracker() {
     if (fTax && trackerData.companyTax) fTax.value = trackerData.companyTax;
     if (fMentor && trackerData.mentorName) fMentor.value = trackerData.mentorName;
 
-    // Sync Validator input hint with current MSSV
     const valInput = document.getElementById('validator-input');
-    if (valInput && valInput.value.includes('52000888') && trackerData.mssv !== '52000888') {
+    if (valInput && valInput.value.includes('52000888') && trackerData.mssv && trackerData.mssv !== '52000888') {
       valInput.value = `1_${trackerData.mssv}_BM01.pdf`;
       const event = new Event('input', { bubbles: true });
       valInput.dispatchEvent(event);
     }
 
-    // Sync Timeline input values
     if (courseTypeSelect) courseTypeSelect.value = trackerData.courseType;
     if (startDateInput) startDateInput.value = trackerData.startDate;
     if (endDateInput) endDateInput.value = trackerData.endDate;
     if (deadlineInput) deadlineInput.value = trackerData.deadlineDate;
 
-    // Display Stats
     if (daysLeftEl) {
       if (analysis.isDeadlinePassed) {
         daysLeftEl.textContent = `Quá hạn ${Math.abs(analysis.daysUntilDeadline)}d`;
@@ -431,17 +566,9 @@ function initPersonalTracker() {
       }
     }
 
-    if (hoursDoneEl) {
-      hoursDoneEl.textContent = `${analysis.totalLoggedHours}H / ${analysis.targetHours}H`;
-    }
-
-    if (hoursRemainingEl) {
-      hoursRemainingEl.textContent = `${analysis.remainingHours}H`;
-    }
-
-    if (progressPctEl) {
-      progressPctEl.textContent = `${analysis.progressPercentage}%`;
-    }
+    if (hoursDoneEl) hoursDoneEl.textContent = `${analysis.totalLoggedHours}H / ${analysis.targetHours}H`;
+    if (hoursRemainingEl) hoursRemainingEl.textContent = `${analysis.remainingHours}H`;
+    if (progressPctEl) progressPctEl.textContent = `${analysis.progressPercentage}%`;
 
     if (progressBarEl) {
       progressBarEl.style.width = `${analysis.progressPercentage}%`;
@@ -464,20 +591,18 @@ function initPersonalTracker() {
         <div>
           <span class="font-bold">${analysis.statusMessage}</span>
           <div class="text-[11px] opacity-90 mt-0.5">
-            Sinh viên: <strong>${trackerData.studentName || 'Chưa đặt tên'} (MSSV: ${trackerData.mssv})</strong> • 
+            Sinh viên: <strong>${trackerData.studentName || 'Chưa đặt tên'} (${trackerData.mssv || '---'})</strong> • 
             Đã ký: <strong>${analysis.signedLogsCount}/${analysis.totalWeeksRecorded} tuần</strong> • 
-            Chỉ tiêu: <strong>${analysis.requiredHoursPerWeek}H/tuần</strong>.
+            Cần duy trì: <strong>${analysis.requiredHoursPerWeek}H/tuần</strong>.
           </div>
         </div>
       `;
     }
 
-    // Update Home Widget
     if (widgetHoursEl) widgetHoursEl.textContent = `${analysis.totalLoggedHours}/${analysis.targetHours}H (${analysis.progressPercentage}%)`;
     if (widgetDaysEl) widgetDaysEl.textContent = `${analysis.daysUntilDeadline} ngày`;
     if (widgetBarEl) widgetBarEl.style.width = `${analysis.progressPercentage}%`;
 
-    // Render Weekly Logs Rows
     if (logsContainer) {
       if (!trackerData.weeklyLogs || trackerData.weeklyLogs.length === 0) {
         logsContainer.innerHTML = `
@@ -490,9 +615,7 @@ function initPersonalTracker() {
       } else {
         logsContainer.innerHTML = trackerData.weeklyLogs.map((log, index) => `
           <tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/40 text-xs">
-            <td class="p-2.5 font-mono font-bold text-primary text-center">
-              Tuần ${log.week || (index + 1)}
-            </td>
+            <td class="p-2.5 font-mono font-bold text-primary text-center">Tuần ${log.week || (index + 1)}</td>
             <td class="p-2.5 w-24">
               <div class="flex items-center gap-1">
                 <input
@@ -544,7 +667,6 @@ function initPersonalTracker() {
           </tr>
         `).join('');
 
-        // Attach inputs events
         logsContainer.querySelectorAll('input[data-log-idx]').forEach((input) => {
           input.addEventListener('change', (e) => {
             const idx = Number(e.target.getAttribute('data-log-idx'));
@@ -556,19 +678,18 @@ function initPersonalTracker() {
             } else if (field === 'task') {
               trackerData.weeklyLogs[idx].task = e.target.value;
             }
-            savePersonalTrackerState(trackerData);
+            persistData();
             renderTrackerUI();
           });
         });
 
-        // Attach remove buttons
         logsContainer.querySelectorAll('button[data-remove-log-idx]').forEach((btn) => {
           btn.addEventListener('click', () => {
             const idx = Number(btn.getAttribute('data-remove-log-idx'));
             if (confirm(`Xóa ghi nhận của Tuần ${idx + 1}?`)) {
               trackerData.weeklyLogs.splice(idx, 1);
               trackerData.weeklyLogs.forEach((l, i) => { l.week = i + 1; });
-              savePersonalTrackerState(trackerData);
+              persistData();
               renderTrackerUI();
               showToast('Đã xóa tuần làm việc');
             }
@@ -578,201 +699,63 @@ function initPersonalTracker() {
     }
   }
 
-  // Profile Field Event Listeners
-  if (profileMssvInput) {
-    profileMssvInput.addEventListener('change', (e) => {
-      const clean = String(e.target.value || '').trim();
-      if (clean) {
-        trackerData.mssv = clean;
-        setActiveMSSV(clean);
-        savePersonalTrackerState(trackerData);
-        renderTrackerUI();
-        refreshProfileSwitcher();
-        showToast(`Đã cập nhật MSSV: ${clean}`);
-      }
-    });
-  }
+  window.renderPersonalTracker = renderTrackerUI;
 
+  // Real-time debounced auto-save
   if (profileNameInput) {
-    profileNameInput.addEventListener('change', (e) => {
+    profileNameInput.addEventListener('input', (e) => {
       trackerData.studentName = e.target.value;
-      savePersonalTrackerState(trackerData);
-      renderTrackerUI();
-      refreshProfileSwitcher();
+      persistData();
     });
   }
-
   if (profileClassInput) {
-    profileClassInput.addEventListener('change', (e) => {
+    profileClassInput.addEventListener('input', (e) => {
       trackerData.studentClass = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
     });
   }
-
   if (profileCompanyInput) {
-    profileCompanyInput.addEventListener('change', (e) => {
+    profileCompanyInput.addEventListener('input', (e) => {
       trackerData.companyName = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
     });
   }
-
   if (profileMentorInput) {
-    profileMentorInput.addEventListener('change', (e) => {
+    profileMentorInput.addEventListener('input', (e) => {
       trackerData.mentorName = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
     });
   }
 
-  // Profile Switcher Event
-  if (profileSwitcherSelect) {
-    profileSwitcherSelect.addEventListener('change', async (e) => {
-      const selectedMssv = e.target.value;
-      if (!selectedMssv) return;
-      setActiveMSSV(selectedMssv);
-      trackerData = getPersonalTrackerState();
-      if (!trackerData.studentName) {
-        try {
-          const remote = await fetchProfileFromServer(selectedMssv);
-          if (remote) {
-            trackerData = { ...remote };
-            savePersonalTrackerState(trackerData);
-          }
-        } catch {}
-      }
-      renderTrackerUI();
-      refreshProfileSwitcher();
-      showToast(`Đã chuyển sang hồ sơ sinh viên MSSV: ${selectedMssv}`);
-    });
-  }
-
-  // Create New Profile
-  if (btnCreateProfile) {
-    btnCreateProfile.addEventListener('click', () => {
-      const newMssv = prompt('Nhập Mã số sinh viên (MSSV) mới:');
-      if (newMssv && newMssv.trim()) {
-        const clean = newMssv.trim().replace(/[^a-zA-Z0-9_-]/g, '');
-        setActiveMSSV(clean);
-        trackerData = {
-          ...DEFAULT_PROFILE,
-          mssv: clean,
-          studentName: '',
-          weeklyLogs: []
-        };
-        savePersonalTrackerState(trackerData);
-        renderTrackerUI();
-        refreshProfileSwitcher();
-        showToast(`Đã tạo hồ sơ mới cho MSSV: ${clean}`);
-      }
-    });
-  }
-
-  // Sync To Server Button
-  if (btnSyncServer) {
-    btnSyncServer.addEventListener('click', async () => {
-      try {
-        btnSyncServer.disabled = true;
-        btnSyncServer.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Đang lưu...';
-        await syncProfileToServer(trackerData);
-        showToast(`✓ Đã lưu hồ sơ MSSV ${trackerData.mssv} vào CSDL Server!`);
-        refreshProfileSwitcher();
-      } catch (err) {
-        alert('Lỗi lưu lên Server: ' + err.message);
-      } finally {
-        btnSyncServer.disabled = false;
-        btnSyncServer.innerHTML = '<span class="material-symbols-outlined text-[16px]">cloud_upload</span> Lưu Lên Server';
-      }
-    });
-  }
-
-  // Load From Server Button
-  if (btnLoadServer) {
-    btnLoadServer.addEventListener('click', async () => {
-      const mssvToLoad = prompt('Nhập MSSV cần tải từ hệ thống:', trackerData.mssv || '');
-      if (!mssvToLoad || !mssvToLoad.trim()) return;
-      try {
-        btnLoadServer.disabled = true;
-        btnLoadServer.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Đang tải...';
-        const remoteProfile = await fetchProfileFromServer(mssvToLoad.trim());
-        if (remoteProfile) {
-          trackerData = { ...remoteProfile };
-          setActiveMSSV(remoteProfile.mssv);
-          savePersonalTrackerState(trackerData);
-          renderTrackerUI();
-          refreshProfileSwitcher();
-          showToast(`✓ Đã tải hồ sơ MSSV ${remoteProfile.mssv} từ Server!`);
-        }
-      } catch (err) {
-        alert('Không tải được hồ sơ: ' + err.message);
-      } finally {
-        btnLoadServer.disabled = false;
-        btnLoadServer.innerHTML = '<span class="material-symbols-outlined text-[16px]">cloud_download</span> Tải Từ Server';
-      }
-    });
-  }
-
-  // Export JSON File
-  if (btnExportProfileJson) {
-    btnExportProfileJson.addEventListener('click', () => {
-      exportProfileToFile(trackerData);
-      showToast(`Đã tải về file TDTU_HoSo_${trackerData.mssv}.json!`);
-    });
-  }
-
-  // Import JSON File
-  if (inputImportProfileJson) {
-    inputImportProfileJson.addEventListener('change', async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try {
-        const imported = await importProfileFromFile(file);
-        trackerData = { ...DEFAULT_PROFILE, ...imported };
-        setActiveMSSV(trackerData.mssv);
-        savePersonalTrackerState(trackerData);
-        renderTrackerUI();
-        refreshProfileSwitcher();
-        showToast(`✓ Đã nhập thành công hồ sơ MSSV ${trackerData.mssv} từ file!`);
-      } catch (err) {
-        alert('Lỗi nhập file JSON: ' + err.message);
-      } finally {
-        e.target.value = '';
-      }
-    });
-  }
-
-  // Timeline events
   if (courseTypeSelect) {
     courseTypeSelect.addEventListener('change', (e) => {
       trackerData.courseType = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
       renderTrackerUI();
     });
   }
-
   if (startDateInput) {
     startDateInput.addEventListener('change', (e) => {
       trackerData.startDate = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
       renderTrackerUI();
     });
   }
-
   if (endDateInput) {
     endDateInput.addEventListener('change', (e) => {
       trackerData.endDate = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
       renderTrackerUI();
     });
   }
-
   if (deadlineInput) {
     deadlineInput.addEventListener('change', (e) => {
       trackerData.deadlineDate = e.target.value;
-      savePersonalTrackerState(trackerData);
+      persistData();
       renderTrackerUI();
     });
   }
 
-  // Add Week Button
   if (btnAddLog) {
     btnAddLog.addEventListener('click', () => {
       const nextWeekNum = (trackerData.weeklyLogs ? trackerData.weeklyLogs.length : 0) + 1;
@@ -784,25 +767,22 @@ function initPersonalTracker() {
         task: `Nhiệm vụ tuần ${nextWeekNum}`,
         mentorSigned: false
       });
-      savePersonalTrackerState(trackerData);
+      persistData();
       renderTrackerUI();
       showToast(`Đã thêm Tuần ${nextWeekNum}`);
     });
   }
 
-  // Reset Tracker
   if (btnResetTracker) {
     btnResetTracker.addEventListener('click', () => {
       if (confirm('Đặt lại thời gian biểu và nhật ký tuần về mặc định?')) {
         resetPersonalTrackerState();
-        trackerData = getPersonalTrackerState();
         renderTrackerUI();
         showToast('Đã đặt lại thời gian biểu');
       }
     });
   }
 
-  // Export Tracker Summary
   if (btnExportTracker) {
     btnExportTracker.addEventListener('click', () => {
       const analysis = calculatePersonalProgress(trackerData);
@@ -823,12 +803,10 @@ ${(trackerData.weeklyLogs || []).map((l) => `Tuần ${l.week}: ${l.hours}H | ${l
     });
   }
 
-  // Initial render & list load
   renderTrackerUI();
-  refreshProfileSwitcher();
 }
 
-// 5. Admin Settings
+// 6. Admin Settings
 function initAdmin() {
   const cfg = getAdminConfig();
   const termNameInput = document.getElementById('admin-term-name');
@@ -870,7 +848,7 @@ function initAdmin() {
   }
 }
 
-// 6. Test Runner
+// 7. Test Runner
 function initTestRunner() {
   const testListContainer = document.getElementById('test-suite-list');
   const btnRunAll = document.getElementById('btn-run-all-tests');
@@ -905,7 +883,7 @@ function initTestRunner() {
       btnRunAll.textContent = 'Đang chạy test...';
 
       let passCount = 0;
-      await executeAllTests((res, idx, total) => {
+      await executeAllTests((res) => {
         const card = document.getElementById(`test-card-${res.id}`);
         const icon = document.getElementById(`test-icon-${res.id}`);
         const msg = document.getElementById(`test-msg-${res.id}`);
@@ -946,7 +924,7 @@ function initTestRunner() {
   }
 }
 
-// 7. Scroll-spy
+// 8. Scroll-spy
 function initScrollSpy() {
   const navLinks = document.querySelectorAll('[data-quick-nav] a[href^="#"]');
   if (navLinks.length === 0) return;
@@ -963,7 +941,7 @@ function initScrollSpy() {
   }, { passive: true });
 }
 
-// 8. Instant Search Filter
+// 9. Instant Search Filter
 function initSearch() {
   const searchInput = document.getElementById('global-search-input');
   if (!searchInput) return;
@@ -981,7 +959,7 @@ function initSearch() {
   });
 }
 
-// 9. Language Switcher
+// 10. Language Switcher
 function initLanguageSwitcher() {
   const btnVi = document.getElementById('lang-vi-btn');
   const btnEn = document.getElementById('lang-en-btn');

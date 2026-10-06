@@ -1,19 +1,18 @@
 // modules/personalTracker.js - Quản lý tiến trình và thời gian biểu thực tập cá nhân hóa
-import { loadCurrentProfile, saveCurrentProfile, DEFAULT_PROFILE, getActiveMSSV } from './profileManager.js';
+import { loadCurrentProfile, saveCurrentProfile, DEFAULT_GUEST_PROFILE } from './profileManager.js';
 
-export const DEFAULT_TRACKER_DATA = DEFAULT_PROFILE;
+export const DEFAULT_TRACKER_DATA = DEFAULT_GUEST_PROFILE;
 
 export function getPersonalTrackerState() {
   return loadCurrentProfile();
 }
 
-export function savePersonalTrackerState(data) {
-  saveCurrentProfile(data);
+export function savePersonalTrackerState(data, onSyncStatus) {
+  saveCurrentProfile(data, onSyncStatus);
 }
 
 export function resetPersonalTrackerState() {
-  const mssv = getActiveMSSV();
-  localStorage.removeItem('tdtu_profile_' + mssv);
+  localStorage.removeItem('tdtu_local_profile_guest');
 }
 
 /**

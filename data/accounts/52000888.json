@@ -1,6 +1,7 @@
 {
   "mssv": "52000888",
-  "studentName": "Nguyễn Văn An",
+  "pin": "123456",
+  "studentName": "Nguyen Van An Cap Nhat",
   "studentClass": "20050201",
   "companyName": "Công ty Cổ phần Công nghệ FPT Software",
   "companyTax": "0101248141",
@@ -32,5 +33,5 @@
       "mentorSigned": false
     }
   ],
-  "updatedAt": "2026-10-06T04:09:52.917Z"
+  "updatedAt": "2026-10-06T04:22:01.117Z"
 }

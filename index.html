@@ -87,11 +87,8 @@
             <span>Bộ Công Cụ Hỗ Trợ</span>
           </button>
 
-          <!-- Student Profile Quick Badge -->
-          <button id="btn-header-profile" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface-container border border-outline-variant/40 hover:bg-surface-container-high transition-all font-semibold text-xs" title="Hồ sơ sinh viên cá nhân">
-            <span class="material-symbols-outlined text-[16px] text-primary">account_circle</span>
-            <span id="header-mssv-display" class="font-mono font-bold text-primary">52000888</span>
-          </button>
+          <!-- Authentication & Personal Profile Container -->
+          <div id="header-auth-container" class="flex items-center"></div>
 
           <!-- Admin Settings Button -->
           <button id="btn-open-admin" class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container transition-colors" title="Cấu hình học kỳ">
@@ -1149,79 +1146,46 @@
 
           <!-- Tool 2: Personal Timeline & Hours Tracker -->
           <div id="tool-hours" class="tool-tab-content hidden flex flex-col gap-5">
-            <!-- 0. Student Profile & Multi-User Server Database Sync -->
+            <!-- 0. Personal Student Profile Card -->
             <div class="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col gap-3">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary text-[22px]">manage_accounts</span>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">person</span>
+                  </div>
                   <div>
-                    <h4 class="text-xs sm:text-sm font-bold text-on-surface">Hồ Sơ Cá Nhân & Quản Lý Đa Sinh Viên (Database Sync)</h4>
-                    <p class="text-[11px] text-on-surface-variant">Lưu độc lập theo từng MSSV, đồng bộ Máy chủ NoSQL và sao lưu file JSON</p>
+                    <h4 class="text-xs sm:text-sm font-bold text-on-surface flex items-center gap-2">
+                      <span>Hồ Sơ Cá Nhân Sinh Viên</span>
+                      <span id="tracker-mssv-badge" class="font-mono text-xs font-bold text-primary px-2 py-0.5 rounded bg-primary/10">52000888</span>
+                    </h4>
+                    <p class="text-[11px] text-on-surface-variant">Tài khoản bảo mật riêng biệt • Chỉ bạn mới có quyền xem và chỉnh sửa</p>
                   </div>
                 </div>
 
-                <!-- Profile Switcher & Actions -->
-                <div class="flex flex-wrap items-center gap-2">
-                  <div class="flex items-center gap-1">
-                    <label class="text-[11px] font-bold text-on-surface-variant">Chọn hồ sơ:</label>
-                    <select id="profile-switcher-select" class="px-2.5 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant text-xs font-mono font-bold text-primary focus:border-secondary focus:outline-none">
-                      <option value="52000888">52000888 (Hiện tại)</option>
-                    </select>
-                  </div>
-                  <button id="btn-create-profile" class="px-2.5 py-1.5 rounded-lg bg-surface-container text-xs font-semibold text-primary hover:bg-surface-container-high transition-colors flex items-center gap-1" title="Tạo hồ sơ sinh viên mới">
-                    <span class="material-symbols-outlined text-[16px]">person_add</span>
-                    <span>Tạo mới</span>
-                  </button>
+                <!-- Sync Status Badge (Tự động lưu ngầm an toàn) -->
+                <div id="tracker-sync-badge" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-surface-container text-on-surface-variant shrink-0">
+                  <span id="tracker-sync-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span id="tracker-sync-text">Đã đồng bộ an toàn</span>
                 </div>
               </div>
 
               <!-- Student Profile Fields -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
-                <div class="flex flex-col gap-1">
-                  <label class="font-bold text-primary uppercase tracking-wider font-mono text-[11px]">Mã số sinh viên (MSSV):</label>
-                  <input id="profile-mssv" type="text" value="52000888" placeholder="52000888" class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-primary/40 font-mono font-bold text-primary text-xs focus:border-primary focus:outline-none" />
-                </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                 <div class="flex flex-col gap-1">
                   <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Họ và tên sinh viên:</label>
-                  <input id="profile-name" type="text" value="Nguyễn Văn An" placeholder="Họ và tên..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs font-semibold text-on-surface focus:border-secondary focus:outline-none" />
+                  <input id="profile-name" type="text" placeholder="Họ và tên..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs font-semibold text-on-surface focus:border-secondary focus:outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Lớp sinh hoạt:</label>
-                  <input id="profile-class" type="text" value="20050201" placeholder="Vd: 20050201" class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs font-semibold text-on-surface focus:border-secondary focus:outline-none" />
+                  <input id="profile-class" type="text" placeholder="Vd: 20050201" class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs font-semibold text-on-surface focus:border-secondary focus:outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
-                  <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Tên Công ty / Doanh nghiệp:</label>
-                  <input id="profile-company" type="text" value="Công ty Cổ phần Công nghệ FPT Software" placeholder="Tên DN thực tập..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none" />
+                  <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Tên Doanh nghiệp thực tập:</label>
+                  <input id="profile-company" type="text" placeholder="Tên DN thực tập..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none" />
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="font-bold text-on-surface-variant uppercase tracking-wider font-mono text-[11px]">Cán bộ hướng dẫn (CBHD):</label>
-                  <input id="profile-mentor" type="text" value="Trần Văn Bình (Tech Lead)" placeholder="Họ tên CBHD..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none" />
-                </div>
-              </div>
-
-              <!-- Database Sync & Storage Action Buttons -->
-              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-outline-variant/20 text-xs">
-                <div class="flex flex-wrap items-center gap-2">
-                  <button id="btn-sync-server" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all flex items-center gap-1.5 shadow-xs" title="Lưu dữ liệu vào Server Flat-File Database">
-                    <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
-                    <span>Lưu Lên Server</span>
-                  </button>
-                  <button id="btn-load-server" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-1.5 border border-outline-variant/30" title="Tải dữ liệu của MSSV này từ Server">
-                    <span class="material-symbols-outlined text-[16px]">cloud_download</span>
-                    <span>Tải Từ Server</span>
-                  </button>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                  <button id="btn-export-profile-json" class="px-2.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1" title="Tải file TDTU_HoSo_MSSV.json về máy tính">
-                    <span class="material-symbols-outlined text-[16px]">file_download</span>
-                    <span>Xuất File .JSON</span>
-                  </button>
-                  <label class="px-2.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1 cursor-pointer" title="Nhập file JSON đã sao lưu để khôi phục">
-                    <span class="material-symbols-outlined text-[16px]">file_upload</span>
-                    <span>Nhập File .JSON</span>
-                    <input id="input-import-profile-json" type="file" accept=".json" class="hidden" />
-                  </label>
+                  <input id="profile-mentor" type="text" placeholder="Họ tên CBHD..." class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-outline-variant text-xs text-on-surface focus:border-secondary focus:outline-none" />
                 </div>
               </div>
             </div>
@@ -1479,6 +1443,95 @@
         </div>
       </div>
     </footer>
+
+    <!-- Modal: Đăng Nhập / Đăng Ký Tài Khoản Sinh Viên Cá Nhân -->
+    <div id="modal-auth" class="modal-backdrop fixed inset-0 z-50 bg-black/50 backdrop-blur-xs hidden items-center justify-center p-4">
+      <div class="w-full max-w-md rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        <!-- Auth Header -->
+        <div class="p-5 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+              <span class="material-symbols-outlined text-[20px]">lock</span>
+            </div>
+            <div>
+              <h3 id="auth-modal-title" class="text-base font-bold text-primary font-display">Tài Khoản Sinh Viên Cá Nhân</h3>
+              <p class="text-xs text-on-surface-variant">Bảo mật thông tin & quản lý tiến trình của chính bạn</p>
+            </div>
+          </div>
+          <button id="btn-close-auth" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <!-- Auth Tabs: Đăng nhập vs Đăng ký -->
+        <div class="flex border-b border-outline-variant/30 px-5 bg-surface-container-low/50 gap-2 text-xs font-semibold">
+          <button id="tab-auth-login" type="button" class="py-2.5 px-3 border-b-2 border-primary text-primary">Đăng Nhập</button>
+          <button id="tab-auth-register" type="button" class="py-2.5 px-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface">Đăng Ký Mới</button>
+        </div>
+
+        <!-- Auth Form Body -->
+        <form id="auth-form" class="p-5 flex flex-col gap-4 text-xs">
+          <div id="auth-error-msg" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-900 text-xs"></div>
+
+          <!-- Field MSSV -->
+          <div class="flex flex-col gap-1">
+            <label class="font-bold text-on-surface font-mono text-[11px] uppercase">Mã số sinh viên (MSSV):</label>
+            <input
+              id="auth-input-mssv"
+              type="text"
+              required
+              placeholder="Vd: 52000888"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant font-mono font-bold text-primary text-xs focus:border-secondary focus:outline-none"
+            />
+          </div>
+
+          <!-- Field PIN -->
+          <div class="flex flex-col gap-1">
+            <label class="font-bold text-on-surface font-mono text-[11px] uppercase">Mật khẩu / Mã PIN bảo mật:</label>
+            <input
+              id="auth-input-pin"
+              type="password"
+              required
+              placeholder="Tối thiểu 4 ký tự..."
+              class="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant font-mono text-xs focus:border-secondary focus:outline-none"
+            />
+            <span id="auth-pin-hint" class="text-[10px] text-on-surface-variant">Tài khoản demo mẫu: MSSV <code class="font-bold">52000888</code> | PIN: <code class="font-bold">123456</code></span>
+          </div>
+
+          <!-- Extra Fields when Registering -->
+          <div id="auth-register-extra-fields" class="hidden flex flex-col gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="font-bold text-on-surface font-mono text-[11px] uppercase">Họ và tên sinh viên:</label>
+              <input
+                id="auth-input-name"
+                type="text"
+                placeholder="Nguyễn Văn A..."
+                class="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant text-xs focus:border-secondary focus:outline-none"
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-bold text-on-surface font-mono text-[11px] uppercase">Lớp sinh hoạt:</label>
+              <input
+                id="auth-input-class"
+                type="text"
+                placeholder="Vd: 20050201..."
+                class="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant text-xs focus:border-secondary focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            id="btn-auth-submit"
+            type="submit"
+            class="w-full py-2.5 px-4 rounded-xl bg-primary text-on-primary font-bold hover:bg-primary/90 transition-all shadow-sm flex items-center justify-center gap-1.5 mt-1"
+          >
+            <span class="material-symbols-outlined text-[18px]">login</span>
+            <span id="btn-auth-submit-text">Đăng Nhập Ngay</span>
+          </button>
+        </form>
+      </div>
+    </div>
 
     <!-- App Module Controller -->
     <script type="module" src="./app.js"></script>
