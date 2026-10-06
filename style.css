@@ -1,0 +1,75 @@
+/* ==========================================================
+   style.css - Custom CSS (ngoài Tailwind utility classes)
+   ========================================================== */
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    overscroll-behavior: none;
+  }
+  main > :first-child {
+    margin-top: 0 !important;
+  }
+  main > :last-child {
+    margin-bottom: 0 !important;
+  }
+  main > div {
+    min-width: 0;
+  }
+  main > div > div {
+    width: 100%;
+    min-width: 0;
+  }
+  main section {
+    min-width: 0;
+  }
+}
+::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+#giai-doan-3 button[aria-label^="Sao chép"] {
+  min-width: 0;
+}
+#giai-doan-3 button[aria-label^="Sao chép"] code {
+  min-width: 0;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  font-size: 0.625rem;
+}
+@media (min-width: 640px) {
+  #giai-doan-3 button[aria-label^="Sao chép"] code {
+    font-size: inherit;
+  }
+}
+#giai-doan-3 button[aria-label^="Sao chép"] .material-symbols-outlined {
+  flex-shrink: 0;
+}
+.copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 60;
+  transform: translate(-50%, 1rem);
+  max-width: calc(100vw - 2rem);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: #00236f;
+  color: #fff;
+  font: 500 0.875rem "Be Vietnam Pro", sans-serif;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.copy-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
