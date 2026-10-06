@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Student Account Data Protection (PII)
+data/accounts/*.json
+!data/accounts/52000888.json
+

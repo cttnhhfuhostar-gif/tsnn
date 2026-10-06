@@ -170,11 +170,55 @@ export const TEST_SUITE = [
   },
   {
     id: 'TC-I18N-01',
-    name: 'Kiểm tra gói chuyển ngữ đa ngôn ngữ (VI ↔ EN)',
+    name: 'Kiểm tra gói từ điển đa ngôn ngữ (language.json)',
     module: 'I18n',
-    description: 'Xác thực gói từ điển có sẵn 580+ mục từ và hỗ trợ chuyển ngữ hai chiều',
-    run: () => {
-      return { pass: true, message: 'Đã sẵn sàng 580+ mục từ điển song ngữ VI/EN cho toàn bộ giao diện Cẩm nang.' };
+    description: 'Xác thực cấu trúc gói ngôn ngữ: >600 mục từ tiếng Anh (en.text), đầy đủ thuộc tính, không rỗng',
+    run: async () => {
+      let pack = null;
+      if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+        const res = await fetch('./language.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status} khi tải language.json`);
+        pack = await res.json();
+      } else {
+        const fs = await import('fs');
+        const { fileURLToPath } = await import('url');
+        const path = await import('path');
+        const __dirname = path.dirname(fileURLToPath(import.meta.url));
+        const filePath = path.resolve(__dirname, '..', 'language.json');
+        const raw = fs.readFileSync(filePath, 'utf8');
+        pack = JSON.parse(raw);
+      }
+
+      if (!pack || typeof pack !== 'object') {
+        return { pass: false, message: 'Gói ngôn ngữ language.json không hợp lệ hoặc rỗng.' };
+      }
+      if (!pack.en || typeof pack.en.text !== 'object') {
+        return { pass: false, message: 'Thiếu nhánh từ điển en.text trong language.json.' };
+      }
+
+      const entries = Object.entries(pack.en.text);
+      if (entries.length < 500) {
+        return { pass: false, message: `Số lượng mục từ quá ít: ${entries.length} (yêu cầu tối thiểu 500).` };
+      }
+
+      // Kiểm tra không có mục từ rỗng
+      const emptyEntry = entries.find(([k, v]) => !k.trim() || typeof v !== 'string' || !v.trim());
+      if (emptyEntry) {
+        return { pass: false, message: `Phát hiện mục từ rỗng: "${emptyEntry[0]}".` };
+      }
+
+      // Kiểm tra các thuật ngữ cốt lõi
+      const coreKeys = ['TDTU • KHOA CNTT', 'Biểu mẫu', '1. Tổng Quan', '5. Xử Lý Sự Cố'];
+      const missingKeys = coreKeys.filter(k => !(k in pack.en.text));
+      if (missingKeys.length > 0) {
+        return { pass: false, message: `Thiếu các mục từ cốt lõi: ${missingKeys.join(', ')}` };
+      }
+
+      const attrCount = Array.isArray(pack.en.attributes) ? pack.en.attributes.length : 0;
+      return {
+        pass: true,
+        message: `Đã xác thực thành công ${entries.length} mục từ song ngữ (en.text), ${attrCount} thuộc tính giao diện. Đầy đủ cặp VI/EN không rỗng.`
+      };
     }
   }
 ];
@@ -185,7 +229,13 @@ export async function executeAllTests(onProgress) {
     const tc = TEST_SUITE[i];
     const startTime = performance.now();
     await new Promise(r => setTimeout(r, 40));
-    const { pass, message } = tc.run();
+    let runResult;
+    try {
+      runResult = await tc.run();
+    } catch (err) {
+      runResult = { pass: false, message: 'Lỗi thực thi kiểm thử: ' + err.message };
+    }
+    const { pass, message } = runResult;
     const duration = Math.round(performance.now() - startTime);
 
     const testResult = {

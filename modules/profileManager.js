@@ -14,13 +14,43 @@ export function generateDefaultDailyLogs(weekNum, totalHours = 20) {
   }));
 }
 
+export function getDefaultSemesterDates() {
+  const now = new Date();
+  const fmt = (d) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+  // Bắt đầu 3 tuần trước (đã hoàn thành 3 tuần mẫu), kết thúc sau 9 tuần, deadline sau 11 tuần (~77 ngày)
+  const start = new Date(now.getTime() - 21 * 24 * 3600 * 1000);
+  const end = new Date(now.getTime() + 63 * 24 * 3600 * 1000);
+  const deadline = new Date(now.getTime() + 77 * 24 * 3600 * 1000);
+  return {
+    startDate: fmt(start),
+    endDate: fmt(end),
+    deadlineDate: fmt(deadline)
+  };
+}
+
+export function getRelativeDayDate(baseDateStr, dayOffset) {
+  const base = new Date(baseDateStr);
+  base.setDate(base.getDate() + dayOffset);
+  const y = base.getFullYear();
+  const m = String(base.getMonth() + 1).padStart(2, '0');
+  const d = String(base.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const defaultDates = getDefaultSemesterDates();
+
 export const DEFAULT_TSNN_TRACK = {
   companyName: 'Công ty Cổ phần Công nghệ FPT Software',
   companyTax: '0101248141',
   mentorName: 'Trần Văn Bình (Tech Lead)',
-  startDate: '2026-02-15',
-  endDate: '2026-05-15',
-  deadlineDate: '2026-05-30',
+  startDate: defaultDates.startDate,
+  endDate: defaultDates.endDate,
+  deadlineDate: defaultDates.deadlineDate,
   weeklyLogs: [
     {
       id: 1,
@@ -30,11 +60,11 @@ export const DEFAULT_TSNN_TRACK = {
       mentorSigned: true,
       isExpanded: false,
       dailyLogs: [
-        { id: 101, day: 'Thứ 2', date: '2026-02-16', hours: 4, task: 'Làm quen văn hóa công ty, nhận máy trạm và cài VPN nội bộ' },
-        { id: 102, day: 'Thứ 3', date: '2026-02-17', hours: 4, task: 'Cài đặt môi trường Dev (Node.js, Docker, Git)' },
-        { id: 103, day: 'Thứ 4', date: '2026-02-18', hours: 4, task: 'Đọc tài liệu SRS và kiến trúc hệ thống' },
-        { id: 104, day: 'Thứ 5', date: '2026-02-19', hours: 4, task: 'Tìm hiểu quy chuẩn Git flow và coding conventions' },
-        { id: 105, day: 'Thứ 6', date: '2026-02-20', hours: 4, task: 'Họp tuần với Mentor, báo cáo tiến độ tuần 1' }
+        { id: 101, day: 'Thứ 2', date: getRelativeDayDate(defaultDates.startDate, 0), hours: 4, task: 'Làm quen văn hóa công ty, nhận máy trạm và cài VPN nội bộ' },
+        { id: 102, day: 'Thứ 3', date: getRelativeDayDate(defaultDates.startDate, 1), hours: 4, task: 'Cài đặt môi trường Dev (Node.js, Docker, Git)' },
+        { id: 103, day: 'Thứ 4', date: getRelativeDayDate(defaultDates.startDate, 2), hours: 4, task: 'Đọc tài liệu SRS và kiến trúc hệ thống' },
+        { id: 104, day: 'Thứ 5', date: getRelativeDayDate(defaultDates.startDate, 3), hours: 4, task: 'Tìm hiểu quy chuẩn Git flow và coding conventions' },
+        { id: 105, day: 'Thứ 6', date: getRelativeDayDate(defaultDates.startDate, 4), hours: 4, task: 'Họp tuần với Mentor, báo cáo tiến độ tuần 1' }
       ]
     },
     {
@@ -45,11 +75,11 @@ export const DEFAULT_TSNN_TRACK = {
       mentorSigned: true,
       isExpanded: false,
       dailyLogs: [
-        { id: 201, day: 'Thứ 2', date: '2026-02-23', hours: 4, task: 'Nghiên cứu mô hình Database PostgreSQL' },
-        { id: 202, day: 'Thứ 3', date: '2026-02-24', hours: 4, task: 'Viết migration script và seed dữ liệu thử nghiệm' },
-        { id: 203, day: 'Thứ 4', date: '2026-02-25', hours: 4, task: 'Phát triển API Login và Register xác thực JWT' },
-        { id: 204, day: 'Thứ 5', date: '2026-02-26', hours: 4, task: 'Viết Unit Test cho module Authentication' },
-        { id: 205, day: 'Thứ 6', date: '2026-02-27', hours: 4, task: 'Review code và chỉnh sửa theo góp ý của Tech Lead' }
+        { id: 201, day: 'Thứ 2', date: getRelativeDayDate(defaultDates.startDate, 7), hours: 4, task: 'Nghiên cứu mô hình Database PostgreSQL' },
+        { id: 202, day: 'Thứ 3', date: getRelativeDayDate(defaultDates.startDate, 8), hours: 4, task: 'Viết migration script và seed dữ liệu thử nghiệm' },
+        { id: 203, day: 'Thứ 4', date: getRelativeDayDate(defaultDates.startDate, 9), hours: 4, task: 'Phát triển API Login và Register xác thực JWT' },
+        { id: 204, day: 'Thứ 5', date: getRelativeDayDate(defaultDates.startDate, 10), hours: 4, task: 'Viết Unit Test cho module Authentication' },
+        { id: 205, day: 'Thứ 6', date: getRelativeDayDate(defaultDates.startDate, 11), hours: 4, task: 'Review code và chỉnh sửa theo góp ý của Tech Lead' }
       ]
     },
     {
@@ -60,11 +90,11 @@ export const DEFAULT_TSNN_TRACK = {
       mentorSigned: false,
       isExpanded: false,
       dailyLogs: [
-        { id: 301, day: 'Thứ 2', date: '2026-03-02', hours: 5, task: 'Thiết kế giao diện Dashboard và Chart phân tích' },
-        { id: 302, day: 'Thứ 3', date: '2026-03-03', hours: 5, task: 'Tích hợp API thống kê người dùng và đơn hàng' },
-        { id: 303, day: 'Thứ 4', date: '2026-03-04', hours: 5, task: 'Xử lý responsive và chế độ Dark mode' },
-        { id: 304, day: 'Thứ 5', date: '2026-03-05', hours: 5, task: 'Tối ưu hiệu năng rendering và caching state' },
-        { id: 305, day: 'Thứ 6', date: '2026-03-06', hours: 5, task: 'Kiểm thử E2E và demo tính năng với Mentor' }
+        { id: 301, day: 'Thứ 2', date: getRelativeDayDate(defaultDates.startDate, 14), hours: 5, task: 'Thiết kế giao diện Dashboard và Chart phân tích' },
+        { id: 302, day: 'Thứ 3', date: getRelativeDayDate(defaultDates.startDate, 15), hours: 5, task: 'Tích hợp API thống kê người dùng và đơn hàng' },
+        { id: 303, day: 'Thứ 4', date: getRelativeDayDate(defaultDates.startDate, 16), hours: 5, task: 'Xử lý responsive và chế độ Dark mode' },
+        { id: 304, day: 'Thứ 5', date: getRelativeDayDate(defaultDates.startDate, 17), hours: 5, task: 'Tối ưu hiệu năng rendering và caching state' },
+        { id: 305, day: 'Thứ 6', date: getRelativeDayDate(defaultDates.startDate, 18), hours: 5, task: 'Kiểm thử E2E và demo tính năng với Mentor' }
       ]
     }
   ]
@@ -74,9 +104,9 @@ export const DEFAULT_KTCN_TRACK = {
   companyName: 'Trung tâm Phát triển Phần mềm Viettel Solutions',
   companyTax: '0100109106',
   mentorName: 'Lê Hoàng Nam (Senior DevOps)',
-  startDate: '2026-02-20',
-  endDate: '2026-05-20',
-  deadlineDate: '2026-05-30',
+  startDate: defaultDates.startDate,
+  endDate: defaultDates.endDate,
+  deadlineDate: defaultDates.deadlineDate,
   weeklyLogs: [
     {
       id: 11,
@@ -86,11 +116,11 @@ export const DEFAULT_KTCN_TRACK = {
       mentorSigned: true,
       isExpanded: false,
       dailyLogs: [
-        { id: 1101, day: 'Thứ 2', date: '2026-02-23', hours: 4, task: 'Học nội quy an toàn bảo mật hạ tầng mạng' },
-        { id: 1102, day: 'Thứ 3', date: '2026-02-24', hours: 4, task: 'Cài đặt và cấu hình kubectl, Lens' },
-        { id: 1103, day: 'Thứ 4', date: '2026-02-25', hours: 4, task: 'Thực hành tạo Pod và Service trên Dev cluster' },
-        { id: 1104, day: 'Thứ 5', date: '2026-02-26', hours: 4, task: 'Cấu hình Ingress và chứng chỉ SSL TLS' },
-        { id: 1105, day: 'Thứ 6', date: '2026-02-27', hours: 4, task: 'Báo cáo tuần với Senior DevOps' }
+        { id: 1101, day: 'Thứ 2', date: getRelativeDayDate(defaultDates.startDate, 0), hours: 4, task: 'Học nội quy an toàn bảo mật hạ tầng mạng' },
+        { id: 1102, day: 'Thứ 3', date: getRelativeDayDate(defaultDates.startDate, 1), hours: 4, task: 'Cài đặt và cấu hình kubectl, Lens' },
+        { id: 1103, day: 'Thứ 4', date: getRelativeDayDate(defaultDates.startDate, 2), hours: 4, task: 'Thực hành tạo Pod và Service trên Dev cluster' },
+        { id: 1104, day: 'Thứ 5', date: getRelativeDayDate(defaultDates.startDate, 3), hours: 4, task: 'Cấu hình Ingress và chứng chỉ SSL TLS' },
+        { id: 1105, day: 'Thứ 6', date: getRelativeDayDate(defaultDates.startDate, 4), hours: 4, task: 'Báo cáo tuần với Senior DevOps' }
       ]
     },
     {
@@ -101,11 +131,11 @@ export const DEFAULT_KTCN_TRACK = {
       mentorSigned: true,
       isExpanded: false,
       dailyLogs: [
-        { id: 1201, day: 'Thứ 2', date: '2026-03-02', hours: 4, task: 'Viết file .gitlab-ci.yml mẫu' },
-        { id: 1202, day: 'Thứ 3', date: '2026-03-03', hours: 4, task: 'Tích hợp Trivy quét lỗ hổng image' },
-        { id: 1203, day: 'Thứ 4', date: '2026-03-04', hours: 4, task: 'Cấu hình SonarQube phân tích chất lượng mã nguồn' },
-        { id: 1204, day: 'Thứ 5', date: '2026-03-05', hours: 4, task: 'Deploy tự động lên môi trường Staging' },
-        { id: 1205, day: 'Thứ 6', date: '2026-03-06', hours: 4, task: 'Hoàn thiện tài liệu kiến trúc CI/CD' }
+        { id: 1201, day: 'Thứ 2', date: getRelativeDayDate(defaultDates.startDate, 7), hours: 4, task: 'Viết file .gitlab-ci.yml mẫu' },
+        { id: 1202, day: 'Thứ 3', date: getRelativeDayDate(defaultDates.startDate, 8), hours: 4, task: 'Tích hợp Trivy quét lỗ hổng image' },
+        { id: 1203, day: 'Thứ 4', date: getRelativeDayDate(defaultDates.startDate, 9), hours: 4, task: 'Cấu hình SonarQube phân tích chất lượng mã nguồn' },
+        { id: 1204, day: 'Thứ 5', date: getRelativeDayDate(defaultDates.startDate, 10), hours: 4, task: 'Deploy tự động lên môi trường Staging' },
+        { id: 1205, day: 'Thứ 6', date: getRelativeDayDate(defaultDates.startDate, 11), hours: 4, task: 'Hoàn thiện tài liệu kiến trúc CI/CD' }
       ]
     }
   ]
@@ -113,7 +143,7 @@ export const DEFAULT_KTCN_TRACK = {
 
 export const DEFAULT_GUEST_PROFILE = {
   mssv: '52000888',
-  studentName: 'Nguyễn Văn An',
+  studentName: 'Nguyễn Văn An (Demo)',
   studentClass: '20050201',
   companyName: DEFAULT_TSNN_TRACK.companyName,
   companyTax: DEFAULT_TSNN_TRACK.companyTax,
@@ -157,15 +187,21 @@ export function normalizeProfile(rawProfile) {
 
   ['tsnn', 'ktcn'].forEach((trackKey) => {
     const track = profile.tracks[trackKey];
-    if (track && Array.isArray(track.weeklyLogs)) {
-      track.weeklyLogs.forEach((log, wIdx) => {
-        if (!Array.isArray(log.dailyLogs) || log.dailyLogs.length === 0) {
-          log.dailyLogs = generateDefaultDailyLogs(log.week || (wIdx + 1), Number(log.hours) || 20);
-        }
-        if (typeof log.isExpanded !== 'boolean') {
-          log.isExpanded = false;
-        }
-      });
+    if (track) {
+      if (track.deadlineDate === '2026-05-30') track.deadlineDate = defaultDates.deadlineDate;
+      if (track.startDate === '2026-02-15' || track.startDate === '2026-02-20') track.startDate = defaultDates.startDate;
+      if (track.endDate === '2026-05-15' || track.endDate === '2026-05-20') track.endDate = defaultDates.endDate;
+
+      if (Array.isArray(track.weeklyLogs)) {
+        track.weeklyLogs.forEach((log, wIdx) => {
+          if (!Array.isArray(log.dailyLogs) || log.dailyLogs.length === 0) {
+            log.dailyLogs = generateDefaultDailyLogs(log.week || (wIdx + 1), Number(log.hours) || 20);
+          }
+          if (typeof log.isExpanded !== 'boolean') {
+            log.isExpanded = false;
+          }
+        });
+      }
     }
   });
 
@@ -239,6 +275,13 @@ export async function register(mssv, pin, studentName, studentClass) {
 }
 
 export function logout() {
+  const token = getAuthToken();
+  if (token) {
+    fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).catch(() => {});
+  }
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
 }

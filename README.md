@@ -183,10 +183,10 @@ sequenceDiagram
 | **Icons & Typography** | **Google Material Symbols, Be Vietnam Pro, JetBrains Mono, Space Grotesk** | Chuẩn nhận diện hình ảnh hiện đại, font chữ tiếng Việt hiển thị rõ nét, font monospace chuyên nghiệp cho tên file và code. |
 | **Kiến trúc Client** | **Native ES Modules (JavaScript ES6+)** | Phân tách logic rõ ràng thành các module chuyên biệt (`validator`, `hoursTracker`, `personalTracker`, `profileManager`, `i18n`, `testRunner`) không cần qua bước bundling (Vite/Webpack) khi chạy trực tiếp. |
 | **Bộ máy Song ngữ** | **DOM TreeWalker + JSON Dictionary** | Dịch trực tiếp trên DOM đang hiển thị, lưu vết text gốc để chuyển đổi qua lại mượt mà, hỗ trợ 589+ cụm từ. |
-| **Máy chủ (Backend Server)** | **Node.js Built-in HTTP Server (`http`, `fs`, `path`, `crypto`)** | **Zero External Dependencies** (Không cần `npm install`, không phụ thuộc thư viện bên ngoài), hoạt động độc lập, nhẹ và bảo mật. |
-| **Xác thực & Bảo mật** | **SHA-256 Hash + Salt & Bearer Session Tokens** | Mã hóa mã PIN an toàn, xác thực phiên đăng nhập bằng mã token ngẫu nhiên, chặn mọi hành vi can thiệp trái phép giữa các MSSV. |
-| **Lưu trữ dữ liệu (Database)** | **Flat-file JSON Database (`data/accounts/{mssv}.json`)** | Lưu trữ độc lập cho từng sinh viên, dễ dàng backup, không cần cài đặt hệ quản trị cơ sở dữ liệu phức tạp. |
-| **Kiểm thử tự động** | **In-browser Interactive Test Runner** | 10 test cases kiểm thử logic chạy trực tiếp trên cả Node.js CLI và giao diện Web. |
+| **Máy chủ (Backend Server)** | **Node.js Built-in HTTP Server (`http`, `fs`, `path`, `crypto`)** | **Zero External Dependencies** (Không cần cài gói runtime phụ thuộc bên ngoài), hoạt động độc lập, nhẹ và bảo mật cao. |
+| **Xác thực & Bảo mật (P0)** | **Scrypt KDF + Salt, Random Session Tokens & Rate Limiting** | Băm PIN bằng `crypto.scryptSync` (salt 16 bytes ngẫu nhiên, key 64 bytes, `timingSafeEqual`), Session Token ngẫu nhiên 32 bytes hex (24h TTL), Rate Limiting (5 lần sai/15 phút với header `Retry-After`), giới hạn payload 1MB chống DoS, chặn Path Traversal và bảo vệ dữ liệu PII sinh viên. |
+| **Lưu trữ dữ liệu (Database)** | **Flat-file JSON Database (`data/accounts/{mssv}.json`)** | Lưu trữ độc lập cho từng sinh viên, cách ly IDOR, không lưu trữ plain PIN, không đưa dữ liệu thật vào Git. |
+| **Kiểm thử tự động (P1)** | **Dual Test Suite: Unit Tests (12 TC) + API Security Tests (9 TC)** | Bộ kiểm thử toàn diện 21 test cases chạy trực tiếp qua `npm test`, `npm run test:api`, `npm run test:all` hoặc trên modal Web. |
 
 ---
 
@@ -195,11 +195,13 @@ sequenceDiagram
 ```text
 INTERN-page-main/
 │
-├── index.html                    # Giao diện chính của ứng dụng
+├── index.html                    # Giao diện chính của ứng dụng (Single-Page App)
 ├── app.js                        # Controller chính điều phối các module và sự kiện
-├── server.js                     # Node.js HTTP Server phục vụ API xác thực & file tĩnh
-├── language.json                 # Từ điển song ngữ Anh - Việt (589 mục từ)
-├── package.json                  # Cấu hình dự án
+├── server.js                     # Node.js HTTP Server phục vụ API bảo mật & static assets
+├── language.json                 # Từ điển song ngữ Anh - Việt (609 mục từ)
+├── package.json                  # Cấu hình dự án & scripts chuẩn (start, test, test:api)
+├── test_runner_cli.js            # CLI Test Runner cho 12 Unit Test Cases
+├── test_api.js                   # Bộ Integration & Security Tests cho Backend (9 TC)
 │
 ├── modules/                      # Các module nghiệp vụ (Native ES Modules)
 │   ├── i18n.js                   # Bộ máy chuyển đổi đa ngôn ngữ (DOM TreeWalker)
@@ -210,12 +212,11 @@ INTERN-page-main/
 │   ├── checklist.js              # Dữ liệu danh mục 11 tiêu chí hồ sơ môn học
 │   ├── formsData.js              # Dữ liệu quy tắc biểu mẫu BM01 - BM08
 │   ├── adminConfig.js            # Quản lý cấu hình học kỳ & deadline các giai đoạn
-│   └── testRunner.js             # Bộ 10 test cases kiểm thử tự động
+│   └── testRunner.js             # Bộ kiểm thử tự động 12 Unit Test Cases
 │
-├── data/                         # Thư mục lưu trữ dữ liệu (Database)
-│   └── accounts/                 # Hồ sơ riêng biệt của từng sinh viên
-│       ├── 52000888.json
-│       └── 52200111.json
+├── data/                         # Thư mục lưu trữ dữ liệu tài khoản
+│   └── accounts/                 # Hồ sơ riêng biệt của từng sinh viên (được gitignore bảo vệ)
+│       └── 52000888.json         # Tài khoản mẫu duy nhất được commit (PIN đã băm Scrypt)
 │
 └── README.md                     # Tài liệu hướng dẫn chi tiết dự án
 ```
@@ -228,14 +229,15 @@ Dự án được thiết kế với tiêu chí **Zero External Dependencies**, 
 
 ### Bước 1: Clone kho mã nguồn
 ```bash
-git clone https://github.com/nhan1232004/TSNN.git
-cd TSNN
+git clone https://github.com/cttnhhfuhostar-gif/tsnn.git
+cd tsnn
 ```
 
 ### Bước 2: Khởi chạy máy chủ
-Chạy lệnh trực tiếp bằng Node.js:
+Chạy lệnh bằng npm hoặc Node.js:
 ```bash
-node server.js
+npm start
+# Hoặc: node server.js
 ```
 *Máy chủ sẽ khởi động và lắng nghe tại:* `http://localhost:3000`
 
@@ -245,26 +247,30 @@ Mở trình duyệt web bất kỳ và truy cập vào:
 http://localhost:3000
 ```
 
-### Tài khoản mẫu thử nghiệm (Demo Accounts):
+### Tài khoản mẫu thử nghiệm (Demo Account):
 | MSSV | Mã PIN | Họ và tên sinh viên | Ghi chú |
 | :--- | :--- | :--- | :--- |
-| `52000888` | `1234` | Trần Hoàng Quốc Bảo | Tài khoản đã tích lũy 65/120H, có nhật ký 3 tuần |
-| `52200111` | `5678` | Nguyễn Văn An | Tài khoản mới bắt đầu |
+| `52000888` | `123456` | Nguyễn Văn An (Demo) | Tài khoản mẫu có sẵn 3 tuần nhật ký, PIN băm Scrypt |
 
-*Hoặc bạn có thể tự bấm **"Đăng Ký Mới"** trên giao diện với MSSV và mã PIN của chính mình.*
+*Hoặc bạn có thể bấm **"Đăng Ký Mới"** trên giao diện với MSSV và mã PIN của chính mình.*
 
 ---
 
 ## 7. HỆ THỐNG KIỂM THỬ TỰ ĐỘNG (TEST SUITE)
 
-Dự án tích hợp sẵn bộ kiểm thử 12 Test Cases bao quát toàn bộ logic cốt lõi.
+Dự án tích hợp sẵn **21 Test Cases** bao quát toàn bộ logic nghiệp vụ và bảo mật API Backend:
 
-### Chạy kiểm thử từ Command Line (CLI):
+### Chạy toàn bộ kiểm thử (All Tests):
 ```bash
-node -e "import('./modules/testRunner.js').then(m => m.executeAllTests(r => console.log(r.id, r.status, r.outputMessage)))"
+npm run test:all
 ```
 
-### Danh sách 12 Test Cases:
+### Chạy bộ kiểm thử đơn vị (12 Unit Tests):
+```bash
+npm test
+# Hoặc: node test_runner_cli.js
+```
+**Danh sách 12 Unit Test Cases:**
 1. `TC-VAL-01`: Kiểm tra tên file nộp HSMH chuẩn TDTU (`1_52000888_BM01.pdf`).
 2. `TC-VAL-02`: Bắt lỗi tên file chứa khoảng trắng (`1_52000888 BM01.pdf`).
 3. `TC-VAL-03`: Bắt lỗi file biểu mẫu không phải định dạng PDF scan màu (`1_52000888_BM01.docx`).
@@ -276,7 +282,23 @@ node -e "import('./modules/testRunner.js').then(m => m.executeAllTests(r => cons
 9. `TC-TRACK-02`: Tính toán tổng giờ từ chi tiết các ngày trong tuần (Daily Logs).
 10. `TC-TRACK-03`: Quản lý và phân tách 2 học phần độc lập (Dual Tracks: TSNN & KTCN).
 11. `TC-UTIL-01`: Thuật toán chuẩn hóa loại bỏ dấu tiếng Việt cho tên file.
-12. `TC-I18N-01`: Kiểm tra gói từ điển song ngữ Anh - Việt (610+ mục từ).
+12. `TC-I18N-01`: Xác thực gói từ điển đa ngôn ngữ thật `language.json` (609 mục từ tiếng Anh không rỗng, đầy đủ thuộc tính UI).
+
+### Chạy bộ kiểm thử bảo mật Backend (9 Security Integration Tests):
+```bash
+npm run test:api
+# Hoặc: node test_api.js
+```
+**Danh sách 9 API Security Test Cases:**
+1. `TC-API-01`: Health check endpoint (`GET /api/health`) trả về 200 OK & thời gian uptime.
+2. `TC-API-02`: Chặn tấn công Path Traversal (`/../`, `%2e%2e`) và cấm đọc file nội bộ (`server.js`, `data/accounts/`).
+3. `TC-API-03`: Đăng ký tài khoản mới mã hóa PIN Scrypt + Salt, không làm lộ PIN/pinHash trong API hoặc file.
+4. `TC-API-04`: Từ chối đăng ký trùng MSSV với HTTP 409 Conflict.
+5. `TC-API-05`: Đăng nhập đúng PIN trả về 200 & Session Token; sai PIN trả về HTTP 401.
+6. `TC-API-06`: Chặn tấn công Brute-Force Rate Limiting (HTTP 429 sau 5 lần sai liên tiếp, có `Retry-After`).
+7. `TC-API-07`: Xác thực Session Token hợp lệ, chặn Token giả mạo/hết hạn với HTTP 401.
+8. `TC-API-08`: Thu hồi Session Token khi gọi `/api/auth/logout`, từ chối tái sử dụng token.
+9. `TC-API-09`: Từ chối request payload vượt quá giới hạn 1MB (chống DoS / tràn bộ nhớ).
 
 ---
 

@@ -1,15 +1,15 @@
 {
   "mssv": "52000888",
-  "studentName": "Trần Hoàng Quốc Bảo",
+  "studentName": "Nguyễn Văn An (Demo)",
   "studentClass": "20050201",
   "companyName": "Công ty Cổ phần Công nghệ FPT Software",
   "companyTax": "0101248141",
   "mentorName": "Trần Văn Bình (Tech Lead)",
   "courseType": "dual",
   "activeTrack": "tsnn",
-  "startDate": "2026-02-15",
-  "endDate": "2026-05-15",
-  "deadlineDate": "2026-05-30",
+  "startDate": "2026-09-15",
+  "endDate": "2026-12-15",
+  "deadlineDate": "2026-12-30",
   "weeklyLogs": [
     {
       "id": 1,
@@ -152,9 +152,9 @@
       "companyName": "Công ty Cổ phần Công nghệ FPT Software",
       "companyTax": "0101248141",
       "mentorName": "Trần Văn Bình (Tech Lead)",
-      "startDate": "2026-02-15",
-      "endDate": "2026-05-15",
-      "deadlineDate": "2026-05-30",
+      "startDate": "2026-09-15",
+      "endDate": "2026-12-15",
+      "deadlineDate": "2026-12-30",
       "weeklyLogs": [
         {
           "id": 1,
@@ -297,9 +297,9 @@
       "companyName": "Trung tâm Phát triển Phần mềm Viettel Solutions",
       "companyTax": "0100109106",
       "mentorName": "Lê Hoàng Nam (Senior DevOps)",
-      "startDate": "2026-02-20",
-      "endDate": "2026-05-20",
-      "deadlineDate": "2026-05-30",
+      "startDate": "2026-09-20",
+      "endDate": "2026-12-20",
+      "deadlineDate": "2026-12-30",
       "weeklyLogs": [
         {
           "id": 11,
@@ -394,5 +394,5 @@
       ]
     }
   },
-  "pin": "123456"
+  "pinHash": "a1b2c3d4e5f60718293a4b5c6d7e8f90:bf6bdd1693dc31289e14d0eca9d8dd21d9e5d6945a99a798b2bbd904873d4578962b2471595c04a15459dab8ff124511d0288e7e5d3c60b4a850d8211c4903db"
 }

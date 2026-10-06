@@ -4,10 +4,11 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest run"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test_runner_cli.js",
+    "test:api": "node test_api.js",
+    "test:all": "node test_runner_cli.js && node test_api.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",
