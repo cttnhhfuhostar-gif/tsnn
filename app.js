@@ -1,20 +1,16 @@
 // app.js - Controller chính của Cổng Thông Tin & Quản Lý Học Phần TSNN & KTCN TDTU v2.0
-import { FORMS_DATA } from './modules/formsData.js';
 import { validateSubmissionFilename } from './modules/validator.js';
 import { calculateInternshipHours } from './modules/hoursTracker.js';
 import { CHECKLIST_ITEMS, getChecklistState, saveChecklistState } from './modules/checklist.js';
-import { askInternshipAI } from './modules/aiAdvisor.js';
 import { getAdminConfig, saveAdminConfig, resetAdminConfig } from './modules/adminConfig.js';
 import { executeAllTests, TEST_SUITE } from './modules/testRunner.js';
 
-// DOM Elements & State
 let currentLang = localStorage.getItem('tdtu_lang') || 'vi';
 
 document.addEventListener('DOMContentLoaded', () => {
   initCopyButtons();
   initModals();
   initStudentTools();
-  initAIChat();
   initAdmin();
   initTestRunner();
   initScrollSpy();
@@ -25,8 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Toast notification helper
 export function showToast(message) {
   const toast = document.getElementById('app-toast');
+  const toastText = document.getElementById('app-toast-text');
   if (!toast) return;
-  toast.textContent = message;
+  if (toastText) toastText.textContent = message;
   toast.classList.remove('hidden', 'opacity-0');
   toast.classList.add('opacity-100');
   clearTimeout(window._toastTimer);
@@ -38,13 +35,13 @@ export function showToast(message) {
 
 // 1. Copy filename logic
 function initCopyButtons() {
-  document.querySelectorAll('[data-copy-filename]').forEach((btn) => {
+  document.querySelectorAll('[data-copy]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const filename = btn.getAttribute('data-copy-filename');
+      const filename = btn.getAttribute('data-copy');
       if (filename) {
         navigator.clipboard.writeText(filename);
         showToast(`Đã sao chép: ${filename}`);
-        const icon = btn.querySelector('.copy-icon');
+        const icon = btn.querySelector('.material-symbols-outlined');
         if (icon) {
           const original = icon.textContent;
           icon.textContent = 'check';
@@ -55,14 +52,11 @@ function initCopyButtons() {
   });
 }
 
-// 2. Modals Control
+// 2. Modals Control (Đã loại bỏ AI modal)
 function initModals() {
   const modalConfigs = [
     { openBtn: 'btn-open-tools', modal: 'modal-tools', closeBtn: 'btn-close-tools' },
     { openBtn: 'btn-open-tools-hero', modal: 'modal-tools', closeBtn: 'btn-close-tools-footer' },
-    { openBtn: 'btn-open-ai', modal: 'modal-ai', closeBtn: 'btn-close-ai' },
-    { openBtn: 'btn-open-ai-fab', modal: 'modal-ai', closeBtn: null },
-    { openBtn: 'btn-open-ai-search', modal: 'modal-ai', closeBtn: null },
     { openBtn: 'btn-open-admin', modal: 'modal-admin', closeBtn: 'btn-close-admin' },
     { openBtn: 'btn-open-admin-footer', modal: 'modal-admin', closeBtn: null },
     { openBtn: 'btn-open-tests', modal: 'modal-tests', closeBtn: 'btn-close-tests' },
@@ -88,7 +82,6 @@ function initModals() {
     }
   });
 
-  // Đóng khi click ra ngoài backdrop
   document.querySelectorAll('.modal-backdrop').forEach((backdrop) => {
     backdrop.addEventListener('click', (e) => {
       if (e.target === backdrop) {
@@ -101,7 +94,6 @@ function initModals() {
 
 // 3. Student Tools (Validator, Hours, Checklist, Form Filler)
 function initStudentTools() {
-  // Tab Switcher
   const toolTabs = document.querySelectorAll('.tool-tab-btn');
   const toolContents = document.querySelectorAll('.tool-tab-content');
 
@@ -134,7 +126,6 @@ function initStudentTools() {
     if (!valStatus) return;
     const res = validateSubmissionFilename(value);
 
-    // Status
     if (res.isValid) {
       valStatus.innerHTML = `
         <div class="flex items-center gap-2 text-emerald-700 font-bold text-xs sm:text-sm">
@@ -153,7 +144,6 @@ function initStudentTools() {
       `;
     }
 
-    // Errors
     if (res.errors.length > 0) {
       valErrors.classList.remove('hidden');
       valErrors.innerHTML = `
@@ -167,7 +157,6 @@ function initStudentTools() {
       valErrors.classList.add('hidden');
     }
 
-    // Warnings
     if (res.warnings.length > 0) {
       valWarnings.classList.remove('hidden');
       valWarnings.innerHTML = `
@@ -181,7 +170,6 @@ function initStudentTools() {
       valWarnings.classList.add('hidden');
     }
 
-    // Suggested
     if (res.suggestedName) {
       valSuggested.classList.remove('hidden');
       valSuggestedName.textContent = res.suggestedName;
@@ -192,7 +180,7 @@ function initStudentTools() {
 
   if (valInput) {
     valInput.addEventListener('input', (e) => runValidation(e.target.value));
-    runValidation(valInput.value); // Chạy mẫu ban đầu
+    runValidation(valInput.value);
   }
 
   if (valCopyBtn && valSuggestedName) {
@@ -205,7 +193,6 @@ function initStudentTools() {
     });
   }
 
-  // Sample click buttons
   document.querySelectorAll('[data-val-sample]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const sample = btn.getAttribute('data-val-sample');
@@ -305,7 +292,6 @@ function initStudentTools() {
     if (checklistProgressText) checklistProgressText.textContent = `${completed}/${CHECKLIST_ITEMS.length} (${pct}%)`;
     if (checklistProgressBar) checklistProgressBar.style.width = `${pct}%`;
 
-    // Row click event
     checklistContainer.querySelectorAll('.checklist-row').forEach((row) => {
       row.addEventListener('click', () => {
         const id = row.getAttribute('data-check-id');
@@ -357,74 +343,7 @@ function initStudentTools() {
   }
 }
 
-// 4. AI Chatbot
-function initAIChat() {
-  const chatMessages = document.getElementById('ai-chat-messages');
-  const chatInput = document.getElementById('ai-chat-input');
-  const chatSendBtn = document.getElementById('btn-ai-send');
-
-  function appendMessage(sender, text) {
-    if (!chatMessages) return;
-    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const isUser = sender === 'user';
-
-    const div = document.createElement('div');
-    div.className = `flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`;
-    div.innerHTML = `
-      <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs ${
-        isUser ? 'bg-primary text-on-primary font-bold' : 'bg-secondary/15 text-secondary'
-      }">
-        <span class="material-symbols-outlined text-[16px]">${isUser ? 'person' : 'smart_toy'}</span>
-      </div>
-      <div class="max-w-[85%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed whitespace-pre-line shadow-xs ${
-        isUser ? 'bg-primary text-on-primary rounded-tr-none' : 'bg-surface-container-lowest text-on-surface border border-outline-variant/30 rounded-tl-none'
-      }">
-        ${text}
-        <div class="text-[9px] mt-1 text-right ${isUser ? 'text-on-primary/70' : 'text-on-surface-variant/60'}">${time}</div>
-      </div>
-    `;
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  function handleSend() {
-    if (!chatInput) return;
-    const query = chatInput.value.trim();
-    if (!query) return;
-
-    appendMessage('user', query);
-    chatInput.value = '';
-
-    // Typing simulation
-    setTimeout(() => {
-      const response = askInternshipAI(query);
-      appendMessage('bot', response);
-    }, 450);
-  }
-
-  if (chatSendBtn && chatInput) {
-    chatSendBtn.addEventListener('click', handleSend);
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleSend();
-      }
-    });
-  }
-
-  // Quick prompt buttons
-  document.querySelectorAll('[data-ai-prompt]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const prompt = btn.getAttribute('data-ai-prompt');
-      if (chatInput) {
-        chatInput.value = prompt;
-        handleSend();
-      }
-    });
-  });
-}
-
-// 5. Admin Settings
+// 4. Admin Settings
 function initAdmin() {
   const cfg = getAdminConfig();
   const termNameInput = document.getElementById('admin-term-name');
@@ -466,7 +385,7 @@ function initAdmin() {
   }
 }
 
-// 6. Test Runner
+// 5. Test Runner
 function initTestRunner() {
   const testListContainer = document.getElementById('test-suite-list');
   const btnRunAll = document.getElementById('btn-run-all-tests');
@@ -542,7 +461,7 @@ function initTestRunner() {
   }
 }
 
-// 7. Scroll-spy
+// 6. Scroll-spy
 function initScrollSpy() {
   const navLinks = document.querySelectorAll('[data-quick-nav] a[href^="#"]');
   if (navLinks.length === 0) return;
@@ -559,7 +478,7 @@ function initScrollSpy() {
   }, { passive: true });
 }
 
-// 8. Instant Search Filter
+// 7. Instant Search Filter
 function initSearch() {
   const searchInput = document.getElementById('global-search-input');
   if (!searchInput) return;
@@ -577,7 +496,7 @@ function initSearch() {
   });
 }
 
-// 9. Language Switcher
+// 8. Language Switcher
 function initLanguageSwitcher() {
   const btnVi = document.getElementById('lang-vi-btn');
   const btnEn = document.getElementById('lang-en-btn');

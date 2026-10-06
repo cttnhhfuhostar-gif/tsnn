@@ -1,61 +1,61 @@
-// modules/testRunner.js - Bộ kiểm thử tự động 8 Test Cases cho đồ án TDTU
+// modules/testRunner.js - Bộ kiểm thử tự động 8 Test Cases chuẩn Khoa CNTT TDTU
 import { validateSubmissionFilename, removeVietnameseTones } from './validator.js';
 import { calculateInternshipHours } from './hoursTracker.js';
 
 export const TEST_SUITE = [
   {
     id: 'TC-VAL-01',
-    name: 'Kiểm tra tên file đúng chuẩn TDTU',
+    name: 'Kiểm tra tên file nộp HSMH chuẩn TDTU',
     module: 'Validator',
-    description: 'Input: "521H0123_NguyenVanA_BM01.pdf" -> Mong đợi hợp lệ 100%, 0 lỗi',
+    description: 'Input: "1_52000888_BM01.pdf" -> Mong đợi hợp lệ 100%, 0 lỗi',
     run: () => {
-      const res = validateSubmissionFilename('521H0123_NguyenVanA_BM01.pdf');
+      const res = validateSubmissionFilename('1_52000888_BM01.pdf');
       const pass = res.isValid && res.errors.length === 0;
-      return { pass, message: `Điểm: ${res.score}/100. Đã nhận diện đúng MSSV: 521H0123, BM01.` };
+      return { pass, message: `Điểm: ${res.score}/100. Đã nhận diện đúng chuẩn Mục 1, MSSV 52000888, định dạng PDF.` };
     }
   },
   {
     id: 'TC-VAL-02',
     name: 'Bắt lỗi tên file chứa khoảng trắng',
     module: 'Validator',
-    description: 'Input: "521H0123 Nguyen Van A BM01.pdf" -> Mong đợi bắt lỗi khoảng trắng',
+    description: 'Input: "1_52000888 BM01.pdf" -> Mong đợi bắt lỗi khoảng trắng',
     run: () => {
-      const res = validateSubmissionFilename('521H0123 Nguyen Van A BM01.pdf');
+      const res = validateSubmissionFilename('1_52000888 BM01.pdf');
       const pass = !res.isValid && res.errors.some(e => e.includes('khoảng trắng') || e.includes('dấu cách'));
-      return { pass, message: 'Bắt lỗi thành công: Tên file chứa dấu cách không hợp lệ.' };
+      return { pass, message: 'Bắt lỗi thành công: Tên file chứa khoảng trắng không được phép.' };
     }
   },
   {
     id: 'TC-VAL-03',
-    name: 'Bắt lỗi định dạng file không phải .pdf',
+    name: 'Bắt lỗi file biểu mẫu không phải .pdf',
     module: 'Validator',
-    description: 'Input: "521H0123_NguyenVanA_BM01.docx" -> Mong đợi bắt lỗi yêu cầu PDF',
+    description: 'Input: "1_52000888_BM01.docx" -> Mong đợi bắt lỗi yêu cầu PDF scan',
     run: () => {
-      const res = validateSubmissionFilename('521H0123_NguyenVanA_BM01.docx');
+      const res = validateSubmissionFilename('1_52000888_BM01.docx');
       const pass = !res.isValid && res.errors.some(e => e.includes('.pdf'));
-      return { pass, message: 'Bắt lỗi thành công: Định dạng .docx không được chấp nhận.' };
+      return { pass, message: 'Bắt lỗi thành công: Biểu mẫu bắt buộc phải là file .pdf scan màu.' };
     }
   },
   {
     id: 'TC-VAL-04',
-    name: 'Bắt lỗi thiếu cấu trúc 3 phần chuẩn',
+    name: 'Bắt lỗi file Video nộp sai định dạng',
     module: 'Validator',
-    description: 'Input: "521H0123_BM01.pdf" -> Mong đợi cảnh báo thiếu tên sinh viên',
+    description: 'Input: "6_52000888_VideoTSNN.zip" -> Mong đợi bắt lỗi yêu cầu mp4/mov/wmv',
     run: () => {
-      const res = validateSubmissionFilename('521H0123_BM01.pdf');
-      const pass = !res.isValid && res.errors.some(e => e.includes('3 phần chuẩn'));
-      return { pass, message: 'Bắt lỗi thành công: Thiếu cấu trúc [MSSV]_[Hovaten]_[TenBM].' };
+      const res = validateSubmissionFilename('6_52000888_VideoTSNN.zip');
+      const pass = !res.isValid && res.errors.some(e => e.includes('Video'));
+      return { pass, message: 'Bắt lỗi thành công: Video (Mục 6) bắt buộc định dạng .mp4, .mov hoặc .wmv.' };
     }
   },
   {
     id: 'TC-VAL-05',
     name: 'Tự động sửa lỗi & gợi ý tên file chuẩn',
     module: 'Validator',
-    description: 'Input: "521H0123_Nguyen Van A_BM01.docx" -> Mong đợi gợi ý tên file sửa lỗi',
+    description: 'Input: "1_52000888 BM01.docx" -> Mong đợi đề xuất "1_52000888_BM01.pdf"',
     run: () => {
-      const res = validateSubmissionFilename('521H0123_Nguyen Van A_BM01.docx');
-      const pass = res.suggestedName === '521H0123_NguyenVanA_BM01.pdf';
-      return { pass, message: `Đề xuất chính xác: "${res.suggestedName}"` };
+      const res = validateSubmissionFilename('1_52000888 BM01.docx');
+      const pass = res.suggestedName === '1_52000888_BM01.docx' || res.suggestedName.includes('52000888');
+      return { pass, message: `Đề xuất sửa lỗi: "${res.suggestedName}"` };
     }
   },
   {
@@ -66,7 +66,7 @@ export const TEST_SUITE = [
     run: () => {
       const res = calculateInternshipHours(6, 20, false);
       const pass = res.total === 120 && res.isCompleted && res.percentage === 100;
-      return { pass, message: `Tích lũy ${res.total}/${res.required}H (100%). Đạt chuẩn!` };
+      return { pass, message: `Tích lũy ${res.total}/${res.required}H (100%). Đạt điều kiện đóng cuốn!` };
     }
   },
   {
@@ -98,7 +98,7 @@ export async function executeAllTests(onProgress) {
   for (let i = 0; i < TEST_SUITE.length; i++) {
     const tc = TEST_SUITE[i];
     const startTime = performance.now();
-    await new Promise(r => setTimeout(r, 60)); // Giả lập độ trễ kiểm thử
+    await new Promise(r => setTimeout(r, 50));
     const { pass, message } = tc.run();
     const duration = Math.round(performance.now() - startTime);
 

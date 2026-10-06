@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>TDTU Khoa CNTT - Cổng Thông Tin & Quản Lý Học Phần Thực Tập TSNN - KTCN v2.0</title>
+    <title>TDTU Khoa CNTT - Cổng Thông Tin & Quản Lý Học Phần Thực Tập TSNN & KTCN</title>
     <link rel="shortcut icon" href="https://stdportal.tdtu.edu.vn/logo.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -71,35 +71,29 @@
               <span>TDTU</span>
               <span class="text-outline-variant">•</span>
               <span>KHOA CNTT</span>
-              <span class="px-1.5 py-0.2 rounded bg-secondary/10 text-secondary text-[10px] font-mono font-bold">v2.0</span>
+              <span class="px-1.5 py-0.2 rounded bg-secondary/10 text-secondary text-[10px] font-mono font-bold">Cẩm Nang 2026</span>
             </div>
-            <p className="text-[10px] text-on-surface-variant hidden sm:block">
-              Cổng Quản Lý & Cẩm Nang Học Phần TSNN & KTCN
+            <p class="text-[10px] text-on-surface-variant hidden sm:block">
+              Cổng Hướng Dẫn & Quản Lý Học Phần TSNN & KTCN
             </p>
           </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-2 sm:gap-3">
-          <!-- AI Assistant -->
-          <button id="btn-open-ai" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary/10 text-secondary hover:bg-secondary/20 transition-all font-semibold text-xs sm:text-sm">
-            <span class="material-symbols-outlined text-[18px]">smart_toy</span>
-            <span class="hidden md:inline">Trợ lý AI Quy chế</span>
-          </button>
-
-          <!-- Student Tools -->
+          <!-- Student Tools Button -->
           <button id="btn-open-tools" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all font-semibold text-xs sm:text-sm shadow-xs">
             <span class="material-symbols-outlined text-[18px]">build</span>
-            <span class="hidden sm:inline">Bộ Công Cụ</span>
+            <span>Bộ Công Cụ Hỗ Trợ</span>
           </button>
 
-          <!-- Run Tests -->
-          <button id="btn-open-tests" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all font-semibold text-xs border border-emerald-200">
+          <!-- Run Tests Button -->
+          <button id="btn-open-tests" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all font-semibold text-xs border border-emerald-200" title="Chạy kiểm thử tự động 8 Test Cases">
             <span class="material-symbols-outlined text-[16px] text-emerald-600">play_circle</span>
-            <span class="hidden lg:inline">Chạy Test Suite</span>
+            <span class="hidden sm:inline">Kiểm Thử (8 Tests)</span>
           </button>
 
-          <!-- Admin -->
+          <!-- Admin Settings Button -->
           <button id="btn-open-admin" class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container transition-colors" title="Cấu hình học kỳ">
             <span class="material-symbols-outlined text-[20px]">settings</span>
           </button>
@@ -109,11 +103,22 @@
             <button id="lang-vi-btn" class="rounded px-2 py-1 text-xs font-bold bg-primary text-on-primary shadow-xs">VI</button>
             <button id="lang-en-btn" class="rounded px-2 py-1 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high">EN</button>
           </div>
+
+          <!-- Kho Biểu Mẫu Link -->
+          <a
+            href="https://tinyurl.com/BieuMauHocPhan"
+            target="_blank"
+            rel="noreferrer"
+            class="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-xl bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors text-xs font-semibold"
+          >
+            <span class="material-symbols-outlined text-[16px] text-secondary">download</span>
+            <span>Kho Biểu Mẫu</span>
+          </a>
         </div>
       </div>
     </header>
 
-    <!-- 2. SUB-NAV (Mục Lục Cuộn) -->
+    <!-- 2. SUB-NAV (Mục Lục Cuộn Mượt Mà) -->
     <nav class="sticky top-14 z-40 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 py-2 px-4 sm:px-6 shadow-xs" data-quick-nav>
       <div class="max-w-[1440px] mx-auto flex items-center gap-3">
         <div class="flex items-center gap-1.5 text-xs font-bold text-secondary uppercase tracking-wider shrink-0">
@@ -121,12 +126,13 @@
           <span class="hidden sm:inline">Mục lục:</span>
         </div>
         <div class="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs">
-          <a href="#tong-quan" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-primary text-on-primary font-semibold transition-all">1. Tổng quan</a>
-          <a href="#giai-doan-1" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">2. GĐ1: Chuẩn bị & Đăng ký</a>
-          <a href="#giai-doan-2" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">3. GĐ2: Trong 120H</a>
-          <a href="#giai-doan-3" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">4. GĐ3: Nộp HSMH</a>
-          <a href="#su-co" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">5. Xử lý sự cố (FAQ)</a>
-          <a href="#tai-nguyen" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">6. Kho Biểu mẫu BM01-06</a>
+          <a href="#tong-quan" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-primary text-on-primary font-semibold transition-all">1. Tổng Quan & Đối Chiếu</a>
+          <a href="#thuc-tap-som" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">2. Thực Tập Sớm</a>
+          <a href="#giai-doan-1" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">3. GĐ1: Chuẩn Bị & Đăng Ký</a>
+          <a href="#giai-doan-2" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">4. GĐ2: Trong 120H</a>
+          <a href="#giai-doan-3" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">5. GĐ3: Nộp HSMH & Quy Chuẩn</a>
+          <a href="#su-co" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">6. Xử Lý Sự Cố</a>
+          <a href="#quy-tac-bieu-mau" class="shrink-0 whitespace-nowrap rounded-full px-3 py-1 bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">7. Quy Tắc Biểu Mẫu & Tải File</a>
         </div>
       </div>
     </nav>
@@ -141,24 +147,20 @@
           <input
             id="global-search-input"
             type="search"
-            placeholder="Tra cứu nhanh biểu mẫu BM01-BM06, quy định, mộc đỏ..."
+            placeholder="Tra cứu nhanh: BM01, mộc tròn, 120H, quy tắc đặt tên, rubric..."
             class="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-xs sm:text-sm focus:border-secondary focus:outline-none"
           />
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <button id="btn-open-ai-search" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary text-on-secondary text-xs font-semibold hover:bg-secondary-container transition-all shadow-xs">
-            <span class="material-symbols-outlined text-[16px]">smart_toy</span>
-            <span>Hỏi Trợ lý AI Quy chế</span>
-          </button>
           <button id="btn-open-tools-hero" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container transition-all shadow-xs">
             <span class="material-symbols-outlined text-[16px]">build</span>
-            <span>Mở Bộ Công Cụ</span>
+            <span>Mở Bộ Công Cụ Sinh Viên</span>
           </button>
         </div>
       </div>
 
-      <!-- 1. HERO SECTION -->
+      <!-- 1. HERO & MA TRẬN ĐỐI CHIẾU TSNN VS KTCN -->
       <section id="tong-quan" class="flex flex-col gap-6 scroll-mt-28">
         <div class="bg-surface-container-lowest p-6 sm:p-8 rounded-3xl shadow-xs border border-outline-variant/30 relative overflow-hidden">
           <div class="absolute right-0 top-0 translate-x-12 -translate-y-8 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -166,13 +168,13 @@
             <div class="flex flex-col gap-3 max-w-3xl">
               <div class="inline-flex items-center gap-2 text-xs font-bold text-secondary uppercase tracking-widest font-mono">
                 <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
-                Khoa Công Nghệ Thông Tin • Đại học Tôn Đức Thắng
+                Khoa Công Nghệ Thông Tin • Trường Đại học Tôn Đức Thắng
               </div>
               <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary tracking-tight font-display">
-                CỔNG QUẢN LÝ & HƯỚNG DẪN HỌC PHẦN TSNN & KTCN
+                CẨM NANG HƯỚNG DẪN QUY TRÌNH TSNN & KTCN
               </h1>
               <p class="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-                Hệ thống tương tác thông minh hỗ trợ sinh viên hoàn tất thủ tục học vụ, theo dõi tiến độ tích lũy 120H/240H, kiểm tra biểu mẫu BM01–BM06, điều kiện mộc đỏ và chuẩn hóa hồ sơ môn học (HSMH).
+                Cẩm nang quy chuẩn học vụ dành cho sinh viên thực hiện học phần <strong>Tập sự nghề nghiệp (TSNN)</strong> và <strong>Kiến tập công nghiệp (KTCN)</strong>. Toàn bộ yêu cầu thủ tục, biểu mẫu BM01–BM08, điều kiện mộc đỏ, quy tắc đặt tên file và quy cách đóng cuốn hồ sơ môn học (HSMH).
               </p>
             </div>
 
@@ -184,14 +186,14 @@
                 class="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary font-semibold text-xs sm:text-sm shadow hover:bg-primary-container transition-all"
               >
                 <span class="material-symbols-outlined text-[20px]">menu_book</span>
-                <span>Cẩm Nang Hướng Dẫn</span>
+                <span>Cẩm Nang Hướng Dẫn Gốc</span>
               </a>
               <a
-                href="#tai-nguyen"
+                href="#quy-tac-bieu-mau"
                 class="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-surface-container-high text-on-surface font-semibold text-xs sm:text-sm hover:bg-surface-container-highest transition-all"
               >
                 <span class="material-symbols-outlined text-[20px] text-secondary">folder_zip</span>
-                <span>Kho Biểu Mẫu Trực Tiếp</span>
+                <span>Kho Biểu Mẫu & Tải File</span>
               </a>
             </div>
           </div>
@@ -211,7 +213,7 @@
                 <span class="text-xs text-on-surface-variant">/ học phần</span>
               </div>
               <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
-                Nếu học song hành cả TSNN và KTCN cùng kỳ, bắt buộc đạt <strong>≥ 240H</strong>.
+                Nếu học song hành cả TSNN và KTCN cùng kỳ, tổng thời lượng bắt buộc đạt <strong>≥ 240H</strong>.
               </p>
             </div>
           </div>
@@ -223,286 +225,707 @@
               <span class="material-symbols-outlined text-secondary text-[22px]">calendar_month</span>
             </div>
             <div>
-              <div class="text-2xl font-extrabold text-primary font-display">15 Tuần</div>
+              <div class="text-2xl font-extrabold text-primary font-display">Kế Hoạch Năm</div>
               <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
-                Trùng với khung thời gian bắt đầu và kết thúc học kỳ chính thức của TDTU.
+                Theo khung 15 tuần học kỳ chính thức của TDTU. Trùng thời gian bắt đầu và kết thúc học kỳ.
               </p>
             </div>
           </div>
 
           <!-- Metric 3 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border-l-4 border-l-amber-500 border border-outline-variant/30 flex flex-col justify-between">
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border-l-4 border-l-secondary border border-outline-variant/30 flex flex-col justify-between">
             <div class="flex items-center justify-between text-on-surface-variant mb-2">
-              <span class="text-xs font-bold uppercase tracking-wider font-mono text-amber-700">Điều Kiện Mộc Đỏ</span>
-              <span class="material-symbols-outlined text-amber-600 text-[22px]">approval</span>
+              <span class="text-xs font-bold uppercase tracking-wider font-mono">Phạm Vi Địa Điểm</span>
+              <span class="material-symbols-outlined text-secondary text-[22px]">apartment</span>
             </div>
             <div>
-              <div class="text-2xl font-extrabold text-amber-800 font-display">Mộc Tròn Đỏ</div>
+              <div class="text-2xl font-extrabold text-primary font-display">Linh Hoạt IT</div>
               <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
-                BM01, BM03 (cuối nhật ký), BM04 bắt buộc có mộc tròn đỏ pháp nhân của doanh nghiệp.
+                Không bắt buộc là công ty phần mềm, nhưng <strong>vị trí phải đúng CNTT</strong>. Được thực tập ngoại tỉnh & nước ngoài.
               </p>
             </div>
           </div>
 
           <!-- Metric 4 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border-l-4 border-l-emerald-500 border border-outline-variant/30 flex flex-col justify-between">
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border-l-4 border-l-secondary border border-outline-variant/30 flex flex-col justify-between">
             <div class="flex items-center justify-between text-on-surface-variant mb-2">
-              <span class="text-xs font-bold uppercase tracking-wider font-mono text-emerald-700">Quy Chuẩn Hồ Sơ</span>
-              <span class="material-symbols-outlined text-emerald-600 text-[22px]">inventory_2</span>
+              <span class="text-xs font-bold uppercase tracking-wider font-mono">Đơn Vị Nội Bộ</span>
+              <span class="material-symbols-outlined text-secondary text-[22px]">domain_verification</span>
             </div>
             <div>
-              <div class="text-2xl font-extrabold text-emerald-800 font-display">Đóng Cuốn & PDF</div>
+              <div class="text-2xl font-extrabold text-primary font-display">Đơn Vị TDTU</div>
               <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
-                Đóng bìa kính theo thứ tự quy định và nộp file PDF scan màu đặt đúng tên chuẩn.
+                Được thực tập tại các Phòng/Ban/Viện/Lab trực thuộc TDTU nếu có phân công dự án CNTT phù hợp.
               </p>
             </div>
           </div>
         </div>
+
+        <!-- MA TRẬN ĐỐI CHIẾU TSNN VS KTCN -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-xs border border-outline-variant/30 overflow-hidden" data-search-target>
+          <div class="p-5 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
+            <div>
+              <span class="font-mono text-xs uppercase tracking-wider font-bold text-secondary">Ma Trận Đối Chiếu Chi Tiết</span>
+              <h3 class="text-lg font-bold text-primary font-display mt-0.5">Phân Biệt Quy Trình Giữa 2 Học Phần: TSNN & KTCN</h3>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant">sync_alt</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-surface-container text-on-surface font-mono border-b border-outline-variant/30">
+                  <th class="p-3.5 w-1/4 font-semibold uppercase">Tiêu chí phân định</th>
+                  <th class="p-3.5 w-3/8 font-semibold uppercase text-primary">Tập Sự Nghề Nghiệp (TSNN)</th>
+                  <th class="p-3.5 w-3/8 font-semibold uppercase text-secondary">Kiến Tập Công Nghiệp (KTCN)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/20">
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="p-3.5 font-semibold text-on-surface">1. Cổng phần mềm tác nghiệp</td>
+                  <td class="p-3.5">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono font-semibold">TDTU-TSNN</span>
+                      <a href="https://tsnn.tdtu.edu.vn/" target="_blank" rel="noreferrer" class="text-secondary hover:underline flex items-center">
+                        tsnn.tdtu.edu.vn <span class="material-symbols-outlined text-[14px] ml-0.5">open_in_new</span>
+                      </a>
+                    </div>
+                  </td>
+                  <td class="p-3.5">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-mono font-semibold">e-Learning TDTU</span>
+                      <a href="https://elearning.tdtu.edu.vn/" target="_blank" rel="noreferrer" class="text-secondary hover:underline flex items-center">
+                        elearning.tdtu.edu.vn <span class="material-symbols-outlined text-[14px] ml-0.5">open_in_new</span>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="p-3.5 font-semibold text-on-surface">2. Báo cáo & phê duyệt CBHD</td>
+                  <td class="p-3.5">
+                    <span class="font-semibold text-primary">TDTU-TSNN · Hằng ngày</span>
+                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      Sinh viên ghi nhật ký tập sự trên hệ thống. Cuối đợt, bấm <strong>Gửi CBHD</strong> để hệ thống gửi email xin phê duyệt.
+                    </p>
+                  </td>
+                  <td class="p-3.5">
+                    <span class="font-semibold text-secondary">BM02 · Hằng ngày</span>
+                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      Ghi nhận công việc vào <strong>BM02</strong> và xin CBHD ký xác nhận trực tiếp trên phiếu; không yêu cầu đóng dấu.
+                    </p>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="p-3.5 font-semibold text-on-surface">3. Báo cáo & phê duyệt GVGS</td>
+                  <td class="p-3.5">
+                    <span class="font-semibold text-primary">Nhật ký tập sự trên TDTU-TSNN</span>
+                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      GVGS theo dõi và đánh giá trực tiếp trên hệ thống, sinh viên không cần nộp thêm form ngoài.
+                    </p>
+                  </td>
+                  <td class="p-3.5">
+                    <span class="font-semibold text-secondary">Google Form · Hằng ngày/tuần</span>
+                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      Trạng thái đánh giá mặc định là <strong>Đồng ý</strong>. Nếu cần bổ sung, GVGS sẽ liên hệ qua email hoặc gặp trực tiếp.
+                    </p>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="p-3.5 font-semibold text-on-surface">4. Biểu mẫu nộp vào HSMH</td>
+                  <td class="p-3.5">
+                    <span class="font-semibold text-primary">Nhật ký TSNN xuất file từ hệ thống</span>
+                    <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      Thay thế hoàn toàn cho <strong>BM02</strong> và <strong>BM03</strong>.
+                    </p>
+                  </td>
+                  <td class="p-3.5">
+                    <span class="font-semibold text-secondary">Bộ 02 biểu mẫu</span>
+                    <ul class="text-xs text-on-surface-variant mt-1 list-disc pl-4 space-y-0.5">
+                      <li><strong>BM02</strong> - Phiếu điểm danh doanh nghiệp</li>
+                      <li><strong>BM03</strong> - Phiếu điểm danh GVGS</li>
+                    </ul>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="p-3.5 font-semibold text-on-surface">5. Sử dụng BM01 chung (làm cùng kỳ)</td>
+                  <td class="p-3.5">
+                    <span class="font-bold text-error">Nộp BẢN GỐC</span> (có mộc đỏ tròn của DN) trong bộ hồ sơ TSNN.
+                  </td>
+                  <td class="p-3.5">
+                    <span class="font-bold text-secondary">Nộp BẢN SAO</span> (photo đen trắng, không bắt buộc công chứng) kèm bộ hồ sơ KTCN.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
-      <!-- 2. GIAI ĐOẠN 1 -->
+      <!-- 2. THỰC TẬP SỚM (DỰ THẢO) -->
+      <section id="thuc-tap-som" class="flex flex-col gap-4 scroll-mt-28" data-search-target>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="material-symbols-outlined flex h-9 w-9 items-center justify-center rounded-xl bg-secondary text-white text-[20px]">event_available</span>
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-secondary font-bold">Thông tin dành cho sinh viên</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">QUY ĐỊNH THỰC TẬP SỚM (DỰ THẢO)</h2>
+          </div>
+          <span class="ml-auto rounded-full bg-error-container px-3 py-1 text-xs font-bold text-error">DỰ THẢO</span>
+        </div>
+
+        <p class="max-w-4xl text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+          <strong class="text-primary">Dành riêng cho sinh viên chưa đăng ký chính thức</strong> học phần Tập sự nghề nghiệp (TSNN), Kiến tập công nghiệp (KTCN) hoặc cả hai nhưng bắt đầu thực tập tại doanh nghiệp trước thời điểm đăng ký môn học.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <article class="flex flex-col gap-2 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4">
+            <span class="text-xs font-mono font-bold text-secondary bg-surface-container px-2 py-0.5 rounded w-max">BƯỚC 01</span>
+            <h3 class="text-sm font-bold text-on-surface">Đủ điều kiện trước khi bắt đầu</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Tích lũy đủ môn tiên quyết và ràng buộc theo sơ đồ đào tạo tại thời điểm bắt đầu thực tập.
+            </p>
+          </article>
+
+          <article class="flex flex-col gap-2 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4">
+            <span class="text-xs font-mono font-bold text-secondary bg-surface-container px-2 py-0.5 rounded w-max">BƯỚC 02</span>
+            <h3 class="text-sm font-bold text-on-surface">Đăng ký thực tập sớm</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Chuẩn bị và nộp <strong>Đơn đăng ký thực tập sớm (BM08)</strong>, bản sao BM01 và bảng điểm tích lũy có xác nhận của Trường (thời gian cấp phải trùng hoặc trước ngày bắt đầu ghi trên BM01).
+            </p>
+          </article>
+
+          <article class="flex flex-col gap-2 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4">
+            <span class="text-xs font-mono font-bold text-secondary bg-surface-container px-2 py-0.5 rounded w-max">BƯỚC 03</span>
+            <h3 class="text-sm font-bold text-on-surface">Lưu trữ và ĐKMH</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Hoàn thành đủ nội dung, nhật ký/báo cáo và tối thiểu 120H mỗi môn, sinh viên lưu trữ hồ sơ và <strong>bắt buộc đăng ký học phần tương ứng ở học kỳ liền kề</strong>.
+            </p>
+          </article>
+
+          <article class="flex flex-col gap-2 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-4">
+            <span class="text-xs font-mono font-bold text-secondary bg-surface-container px-2 py-0.5 rounded w-max">BƯỚC 04</span>
+            <h3 class="text-sm font-bold text-on-surface">Nộp hồ sơ công nhận điểm</h3>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Vào cuối đợt thực tập trong kỳ đã đăng ký môn học chính thức, nộp <strong>Đơn đề nghị công nhận điểm (BM07)</strong> cùng bộ hồ sơ môn học (BM01-BM06) theo thông báo thu của Khoa.
+            </p>
+          </article>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-error/30 bg-error-container/20 text-xs">
+          <p class="text-on-surface leading-relaxed">
+            <strong class="text-error">Lưu ý:</strong> Đăng ký sớm không đồng nghĩa được tự động công nhận. Đối với TSNN, sinh viên cần giữ liên lạc với CBHD để xác nhận qua email khi đăng ký môn học thành công.
+          </p>
+          <a
+            href="https://drive.google.com/drive/u/0/folders/1XnFfxHBb6SZK7ikKWrjHIirSUyWM1jyr"
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center gap-1 font-bold text-primary underline underline-offset-2 shrink-0"
+          >
+            <span class="material-symbols-outlined text-[16px]">folder_open</span>
+            <span>Folder Google Drive Thực Tập Sớm</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 3. GIAI ĐOẠN 1: CHUẨN BỊ & ĐĂNG KÝ -->
       <section id="giai-doan-1" class="flex flex-col gap-5 scroll-mt-28" data-search-target>
-        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-xs border-l-4 border-l-blue-500 border border-outline-variant/30">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-3">
-              <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center font-mono">1</span>
-              <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">GĐ1: Chuẩn bị & Đăng ký Doanh nghiệp</h2>
-            </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-xs font-semibold text-secondary font-mono">Tuần 1 - Tuần 2</span>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary font-bold text-base font-mono">
+            01
           </div>
-          <p class="text-sm text-on-surface-variant">Tìm kiếm công ty phù hợp với ngành CNTT, hoàn thiện thủ tục tiếp nhận và đăng ký thông tin với Khoa.</p>
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-secondary font-bold">Giai đoạn chuẩn bị</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">GIAI ĐOẠN 1: CHUẨN BỊ & ĐĂNG KÝ (Tuần 1 - Tuần 2)</h2>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-4">
-            <h3 class="text-sm sm:text-base font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary text-[20px]">task_alt</span>
-              <span>Nhiệm vụ bắt buộc cần hoàn tất:</span>
-            </h3>
-            <ul class="space-y-2.5 text-xs sm:text-sm text-on-surface-variant">
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>Xác nhận công ty hoạt động hợp pháp (Mã số thuế, website, mộc tròn đỏ pháp nhân).</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>Công việc phù hợp chuyên ngành: Phần mềm, Mạng, An toàn thông tin, Data, AI/ML, Tester, DevOps...</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>Điền BM01 (Phiếu tiếp nhận) có đầy đủ chữ ký mentor và mộc tròn của công ty.</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>Ký BM02 (Bản cam kết sinh viên).</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">5</span>Đăng ký thông tin công ty và mentor lên link của Khoa trước hạn chót.</li>
-            </ul>
-
-            <div class="mt-2 pt-3 border-t border-outline-variant/30 flex flex-wrap gap-2">
-              <button data-copy-filename="BM01_PhieuTiepNhanThucTap" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-mono text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[16px] copy-icon">content_copy</span>
-                <span>Copy tên file BM01</span>
-              </button>
-              <button data-copy-filename="BM02_BanCamKetThucTap" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-mono text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[16px] copy-icon">content_copy</span>
-                <span>Copy tên file BM02</span>
-              </button>
+        <!-- 4 Step Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-surface-container-lowest p-4 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-900 font-mono text-xs font-bold flex items-center justify-center mb-2">1</span>
+              <h4 class="text-sm font-bold text-on-surface">Tìm Doanh Nghiệp</h4>
+              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                Sinh viên chủ động ứng tuyển DN hoặc đăng ký đề tài Nghiên cứu tại Lab Khoa. <em>Được phép thực tập trước khi ĐKMH</em>.
+              </p>
             </div>
+            <div class="mt-3 pt-2 border-t border-outline-variant/20 text-[11px] text-secondary font-semibold font-mono">• Tối thiểu 120h/môn</div>
           </div>
 
-          <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/30 flex flex-col gap-3">
-            <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-amber-600 text-[20px]">warning</span>
-              <span>Lưu ý quan trọng GĐ1:</span>
-            </h3>
-            <div class="p-3 rounded-xl bg-surface-container-lowest border border-amber-200 text-xs text-on-surface leading-relaxed">
-              Khoa <strong>KHÔNG</strong> chấp nhận các công ty không có mộc tròn hoặc chỉ có mộc vuông/mộc chức danh (trừ khi có bản sao Giấy ĐKKD giải trình).
+          <div class="bg-surface-container-lowest p-4 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-900 font-mono text-xs font-bold flex items-center justify-center mb-2">2</span>
+              <h4 class="text-sm font-bold text-on-surface">Giấy Giới Thiệu (GTTT)</h4>
+              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                <strong>Chỉ xin nếu DN bắt buộc</strong>. Gửi qua Google Form bằng email SV. Cấp 1 lần/học kỳ sau khi có DS đủ điều kiện. <strong>Không dùng để rải CV ứng tuyển</strong>.
+              </p>
             </div>
-            <div class="p-3 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-xs text-on-surface leading-relaxed">
-              Nếu đổi nơi thực tập, phải làm đơn trình báo Khoa trong 14 ngày đầu kỳ học.
+            <div class="mt-3 pt-2 border-t border-outline-variant/20 text-[11px] text-error font-semibold font-mono">• Nghiêm cấm rải GTTT</div>
+          </div>
+
+          <div class="bg-surface-container-lowest p-4 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-900 font-mono text-xs font-bold flex items-center justify-center mb-2">3</span>
+              <h4 class="text-sm font-bold text-on-surface">Mộc Tròn Trên BM01</h4>
+              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                Xin chữ ký xác nhận của Người đại diện và <strong>mộc tròn pháp nhân của Doanh nghiệp</strong> lên mẫu BM01 tiếp nhận.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-outline-variant/20 text-[11px] text-primary font-bold font-mono">• Tránh bị động về sau</div>
+          </div>
+
+          <div class="bg-surface-container-lowest p-4 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-900 font-mono text-xs font-bold flex items-center justify-center mb-2">4</span>
+              <h4 class="text-sm font-bold text-on-surface">Đăng Ký Đề Tài</h4>
+              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                Khai báo thông tin đơn vị, đề tài công việc và CBHD lên hệ thống phần mềm (TDTU-TSNN hoặc e-Learning) theo hạn công bố.
+              </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-outline-variant/20 text-[11px] text-primary font-semibold font-mono">• Tránh quá hạn đóng cổng</div>
+          </div>
+        </div>
+
+        <!-- 2 Deep Dive Boxes -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- Box 1: Quy Chuẩn BM01 -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-3">
+            <div class="flex items-center gap-2 text-primary font-bold text-sm sm:text-base">
+              <span class="material-symbols-outlined text-secondary text-[22px]">verified</span>
+              <h3>Hướng Dẫn Chi Tiết Về Biểu Mẫu Tiếp Nhận (BM01)</h3>
+            </div>
+            <ul class="text-xs sm:text-sm text-on-surface-variant space-y-2 list-disc pl-4 leading-relaxed">
+              <li>
+                <strong class="text-on-surface">Chỉnh sửa nội dung:</strong> Sinh viên được điều chỉnh phần dành cho doanh nghiệp ký, đóng dấu theo yêu cầu riêng của doanh nghiệp. Phần này phải có xác nhận bằng mộc tròn của doanh nghiệp.
+              </li>
+              <li>
+                <strong class="text-on-surface">Dùng chung BM01 cho 2 môn (TSNN & KTCN):</strong> Được phép nếu thỏa mãn cả 2 điều kiện:
+                <div class="bg-surface-container p-2.5 rounded-lg my-1 text-xs text-on-surface font-medium">
+                  (1) Cùng làm tại một Doanh nghiệp; VÀ<br />
+                  (2) Thời gian thực tập trên BM01 bao phủ toàn bộ thời gian triển khai hoặc tổng số giờ ≥ 240 giờ (sau khi trừ các ngày nghỉ, lễ).
+                </div>
+                <em>Hồ sơ TSNN nộp BM01 bản gốc; Hồ sơ KTCN nộp bản sao (không cần công chứng).</em>
+              </li>
+              <li>
+                <strong class="text-on-surface">Thay BM01 bằng Hợp Đồng Lao Động (HĐLĐ):</strong> Được chấp thuận nếu HĐLĐ thỏa mãn cùng điều kiện như trên. Trong trường hợp này, <em>cả 2 môn đều được nộp bản sao HĐLĐ</em>.
+              </li>
+            </ul>
+          </div>
+
+          <!-- Box 2: Cảnh Báo GTTT Mộc Tròn TDTU -->
+          <div class="bg-red-50/70 p-5 rounded-2xl shadow-xs border border-red-200 flex flex-col gap-3">
+            <div class="flex items-center gap-2 text-error font-bold text-sm sm:text-base">
+              <span class="material-symbols-outlined text-[22px]">warning</span>
+              <h3>Cảnh Báo: Doanh Nghiệp Bắt Buộc Giấy Giới Thiệu Có Mộc Tròn TDTU</h3>
+            </div>
+            <div class="text-xs sm:text-sm text-on-surface space-y-2 leading-relaxed">
+              <p>
+                <strong class="text-error">Quy chuẩn mặc định:</strong> Khoa CNTT mặc định chỉ cấp Giấy giới thiệu có <strong>mộc vuông của Khoa</strong> (đã đủ giá trị học vụ theo thẩm quyền).
+              </p>
+              <p>
+                Nếu doanh nghiệp bắt buộc phải có <strong>mộc tròn đỏ của Trường ĐH Tôn Đức Thắng</strong>, sinh viên thực hiện theo 2 phương án:
+              </p>
+              <div class="space-y-1.5 mt-1">
+                <div class="p-2.5 rounded-lg bg-surface-container-lowest text-xs flex items-start gap-2">
+                  <span class="px-2 py-0.5 rounded bg-primary text-on-primary font-bold font-mono shrink-0">PA 1</span>
+                  <span>Đăng ký cấp <strong>Giấy xác nhận sinh viên</strong> trực tiếp trên Hệ thống Thông tin Sinh viên (HTTTSV / stdportal.tdtu.edu.vn).</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-surface-container-lowest text-xs flex items-start gap-2">
+                  <span class="px-2 py-0.5 rounded bg-secondary text-on-secondary font-bold font-mono shrink-0">PA 2</span>
+                  <span>Làm đơn xin cấp Giấy GTTT mộc tròn tại Phòng CTSV, <strong>bắt buộc kèm theo Công văn / Văn bản yêu cầu chính thức</strong> từ phía Doanh nghiệp.</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 3. GIAI ĐOẠN 2 -->
+      <!-- 4. GIAI ĐOẠN 2: TRONG 120H THỰC TẬP -->
       <section id="giai-doan-2" class="flex flex-col gap-5 scroll-mt-28" data-search-target>
-        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-xs border-l-4 border-l-amber-500 border border-outline-variant/30">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-3">
-              <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-bold text-sm flex items-center justify-center font-mono">2</span>
-              <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">GĐ2: Trong Quá Trình Thực Tập (Tối thiểu 120H)</h2>
-            </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-xs font-semibold text-secondary font-mono">Tuần 3 - Tuần 13</span>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-on-secondary font-bold text-base font-mono">
+            02
           </div>
-          <p class="text-sm text-on-surface-variant">Làm việc thực tế tại doanh nghiệp, tích lũy số giờ yêu cầu, duy trì ghi chép nhật ký công việc hàng tuần.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-4">
-            <h3 class="text-sm sm:text-base font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary text-[20px]">task_alt</span>
-              <span>Nhiệm vụ bắt buộc cần hoàn tất:</span>
-            </h3>
-            <ul class="space-y-2.5 text-xs sm:text-sm text-on-surface-variant">
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>Tích lũy tối thiểu ≥ 120 giờ thực tập cho 1 học phần (hoặc ≥ 240 giờ nếu đăng ký song hành cả TSNN và KTCN).</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>Ghi chép Nhật ký thực tập BM03 chi tiết theo từng tuần (nêu rõ task công việc, công nghệ áp dụng, kết quả).</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>Hàng tuần hoặc mỗi 2 tuần xin chữ ký xác nhận của Cán bộ hướng dẫn doanh nghiệp vào BM03.</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>Chủ động liên hệ Giảng viên hướng dẫn TDTU phụ trách nhóm để báo cáo tiến độ giữa kỳ.</li>
-            </ul>
-
-            <div class="mt-2 pt-3 border-t border-outline-variant/30 flex flex-wrap gap-2">
-              <button data-copy-filename="BM03_NhatKyThucTap" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-mono text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[16px] copy-icon">content_copy</span>
-                <span>Copy tên file BM03</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/30 flex flex-col gap-3">
-            <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-amber-600 text-[20px]">warning</span>
-              <span>Lưu ý quan trọng GĐ2:</span>
-            </h3>
-            <div class="p-3 rounded-xl bg-surface-container-lowest border border-amber-200 text-xs text-on-surface leading-relaxed">
-              Không dồn nhật ký để ký vào tuần cuối cùng — GV chấm sẽ kiểm tra kỹ tính chân thực của nhật ký.
-            </div>
-            <div class="p-3 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-xs text-on-surface leading-relaxed">
-              Làm việc hình thức Remote/WFM cần có minh chứng cam kết từ công ty và nhật ký log task chi tiết (Jira/Git commits).
-            </div>
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-secondary font-bold">Thực thi tại đơn vị</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">GIAI ĐOẠN 2: TRONG 120H THỰC TẬP (Làm Liên Tục)</h2>
           </div>
         </div>
-      </section>
 
-      <!-- 4. GIAI ĐOẠN 3 -->
-      <section id="giai-doan-3" class="flex flex-col gap-5 scroll-mt-28" data-search-target>
-        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-xs border-l-4 border-l-emerald-500 border border-outline-variant/30">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-3">
-              <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-sm flex items-center justify-center font-mono">3</span>
-              <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">GĐ3: Hoàn tất & Nộp Hồ Sơ Môn Học (HSMH)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- TSNN -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between gap-3">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-primary">Tập Sự Nghề Nghiệp (TSNN)</h3>
+                <span class="material-symbols-outlined text-secondary">edit_note</span>
+              </div>
+              <p class="text-xs text-on-surface-variant">
+                <strong>Kênh:</strong> <a class="text-secondary hover:underline" href="https://tsnn.tdtu.edu.vn/" target="_blank" rel="noreferrer">tsnn.tdtu.edu.vn</a>.
+              </p>
+              <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+                <span class="font-bold text-secondary block">Báo cáo với CBHD:</span>
+                <p>Nhập công việc, kết quả và kỹ năng hằng ngày vào nhật ký trên hệ thống. Cuối đợt, bấm <strong>Gửi CBHD</strong> để hệ thống gửi email xin phê duyệt.</p>
+              </div>
+              <div class="bg-blue-50/60 p-3 rounded-xl text-xs space-y-1">
+                <span class="font-bold text-primary block">Báo cáo với GVGS:</span>
+                <p>Không cần làm gì thêm, dùng chung nhật ký trên hệ thống, GVGS sẽ truy cập theo dõi và đánh giá.</p>
+              </div>
             </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-container text-xs font-semibold text-secondary font-mono">Tuần 14 - Tuần 15</span>
-          </div>
-          <p class="text-sm text-on-surface-variant">Xin đánh giá từ công ty (BM04), viết báo cáo tổng kết (BM05), điền khảo sát (BM06) và nộp bộ hồ sơ hoàn chỉnh.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col gap-4">
-            <h3 class="text-sm sm:text-base font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary text-[20px]">task_alt</span>
-              <span>Nhiệm vụ bắt buộc cần hoàn tất:</span>
-            </h3>
-            <ul class="space-y-2.5 text-xs sm:text-sm text-on-surface-variant">
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>Xin phiếu đánh giá BM04 có điểm số, nhận xét, chữ ký và mộc tròn công ty (hoặc niêm phong phong bì).</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>Đóng mộc tròn xác nhận ở trang kết thúc của nhật ký BM03.</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>Hoàn thành Báo cáo chuyên môn BM05 theo đúng chuẩn định dạng Khoa CNTT.</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>Điền phiếu khảo sát BM06.</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">5</span>Đóng cuốn HSMH theo đúng thứ tự: Bìa kính → BM01 → BM02 → BM03 → BM04 → BM05 → BM06.</li>
-              <li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-md bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">6</span>Nộp bản mềm scan PDF chuẩn cú pháp và nộp bản cứng tại văn phòng Khoa theo thông báo.</li>
-            </ul>
-
-            <div class="mt-2 pt-3 border-t border-outline-variant/30 flex flex-wrap gap-2">
-              <button data-copy-filename="BM04_PhieuDanhGiaKetQua" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-mono text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[16px] copy-icon">content_copy</span>
-                <span>Copy tên file BM04</span>
-              </button>
-              <button data-copy-filename="BM05_BaoCaoTongKet" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-mono text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[16px] copy-icon">content_copy</span>
-                <span>Copy tên file BM05</span>
-              </button>
-              <button data-copy-filename="BM06_PhieuKhaoSat" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-mono text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[16px] copy-icon">content_copy</span>
-                <span>Copy tên file BM06</span>
-              </button>
+            <div class="pt-2 border-t border-outline-variant/20 text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
+              <span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+              <span>Nhật ký TSNN xuất file thay cho BM02 & BM03</span>
             </div>
           </div>
 
-          <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/30 flex flex-col gap-3">
-            <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-error text-[20px]">cancel</span>
-              <span>Cấm kỵ tuyệt đối GĐ3:</span>
-            </h3>
-            <div class="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-900 leading-relaxed font-medium">
-              Tuyệt đối <strong>KHÔNG</strong> tẩy xóa điểm số trên BM04. Mọi vết bút xóa hoặc sửa chữa sẽ khiến bài bị hủy điểm!
+          <!-- KTCN -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between gap-3">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-primary">Kiến Tập Công Nghiệp (KTCN)</h3>
+                <span class="material-symbols-outlined text-secondary">assignment_turned_in</span>
+              </div>
+              <p class="text-xs text-on-surface-variant">
+                <strong>Kênh quản lý:</strong> <a class="text-secondary hover:underline" href="https://elearning.tdtu.edu.vn/" target="_blank">e-Learning</a> & Google Form.
+              </p>
+              <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+                <span class="font-bold text-secondary block">Báo cáo với CBHD:</span>
+                <p>Ghi nhận công việc hằng ngày vào <strong>BM02</strong> và trình CBHD ký tên xác nhận.</p>
+              </div>
+              <div class="bg-blue-50/60 p-3 rounded-xl text-xs space-y-1">
+                <span class="font-bold text-primary block">Báo cáo với GVGS:</span>
+                <p>Nộp báo cáo tiến độ qua Google Form, đồng thời ghi vào <strong>BM03</strong>. Trạng thái mặc định là <strong>Đồng ý</strong>.</p>
+              </div>
             </div>
-            <div class="p-3 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-xs text-on-surface leading-relaxed">
-              Tên file nộp bắt buộc: <code class="font-mono text-primary font-bold">[MSSV]_[Hovaten]_[TenBM].pdf</code> (Không dấu cách).
+            <div class="pt-2 border-t border-outline-variant/20 text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
+              <span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+              <span>BM03 không cần chữ ký xác nhận của GVGS</span>
+            </div>
+          </div>
+
+          <!-- Cập nhật thay đổi -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between gap-3">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-primary">Cập Nhật Thay Đổi Khi Cần</h3>
+                <span class="material-symbols-outlined text-secondary">dynamic_form</span>
+              </div>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                Sinh viên được thay đổi thông tin đã nhập trên phần mềm TDTU-TSNN và e-Learning trước khi kết thúc học phần.
+              </p>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                Sinh viên có thể chủ động cập nhật thông tin trên Google Form của học phần nếu biểu mẫu cho phép nộp nhiều lần.
+              </p>
+              <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+                <span class="font-bold text-primary block">Quy tắc dữ liệu:</span>
+                <p>Khoa CNTT lấy và công nhận dữ liệu ở <strong>lần nộp mới nhất</strong> của sinh viên.</p>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-outline-variant/20 text-[11px] text-on-surface-variant flex items-center gap-1 font-mono">
+              <span class="material-symbols-outlined text-[16px] text-secondary">update</span>
+              <span>Tránh nộp trễ hạn đóng form</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 5. XỬ LÝ SỰ CỐ & FAQ -->
+      <!-- 5. GIAI ĐOẠN 3: NỘP HỒ SƠ MÔN HỌC & CÁC QUY CHUẨN CỐT TỬ -->
+      <section id="giai-doan-3" class="flex flex-col gap-6 scroll-mt-28" data-search-target>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary font-bold text-base font-mono">
+            03
+          </div>
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-secondary font-bold">Hoàn tất học phần</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">GIAI ĐOẠN 3: SAU KHI ĐỦ 120H (NỘP HỒ SƠ MÔN HỌC - HSMH)</h2>
+          </div>
+        </div>
+
+        <!-- 6 Bước Thực Thi Đầy Đủ Của Bản Gốc -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Bước 1: BM04 -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-primary text-on-primary">BƯỚC 1</span>
+              <span class="text-xs text-error font-bold font-mono">QUAN TRỌNG</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-primary">Xin Chấm Điểm & Mộc BM04</h4>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              CBHD doanh nghiệp chấm điểm trên phiếu đánh giá BM04. Phải có <strong>mộc đỏ tròn / mộc treo / chữ ký số</strong> hợp lệ.
+            </p>
+            <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+              <strong>Thù lao CBHD:</strong> <strong>Nếu nhận</strong>, CBHD tích chọn mục (1) và điền thông tin vào mục "III. Thông tin thanh toán thù lao cho CBHD" trên BM04. Sinh viên khai báo qua <a class="text-secondary underline" href="https://tinyurl.com/ThanhToanThuLaoCBHD" target="_blank">form thù lao</a>. <strong>Nếu không nhận</strong>, chọn mục (2).
+            </div>
+            <div class="p-2.5 rounded-lg bg-red-50 text-error text-xs font-semibold">
+              • Tuyệt đối KHÔNG được thay đổi tiêu chí chấm điểm (RUBRIC) hoặc cạo xóa điểm số!
+            </div>
+          </div>
+
+          <!-- Bước 2: Quyển Báo Cáo -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-primary text-on-primary">BƯỚC 2</span>
+              <span class="text-xs text-secondary font-bold font-mono">≥ 40 TRANG</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-primary">Hoàn Thiện Quyển Báo Cáo</h4>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Tối thiểu <strong>40 trang</strong> (không tính bìa, mục lục, lời cảm ơn), trình bày theo mẫu chuẩn TDTU.
+            </p>
+            <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+              <span class="font-bold">Nội dung gợi ý:</span>
+              <p>Tổng quan đơn vị, môi trường, công nghệ áp dụng. Công việc/dự án, nhiệm vụ, khó khăn & cách giải quyết. Kết quả sản phẩm, kiến thức thu hoạch.</p>
+            </div>
+            <div class="text-xs text-on-surface-variant space-y-0.5">
+              <p>• <strong>Không dùng LaTeX:</strong> nộp DOCX hoặc PDF.</p>
+              <p>• <strong>Dùng LaTeX:</strong> nộp PDF và ZIP mã nguồn (không nộp DOCX).</p>
+            </div>
+          </div>
+
+          <!-- Bước 3: Video -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-primary text-on-primary">BƯỚC 3</span>
+              <span class="text-xs text-secondary font-bold font-mono">4 – 5 PHÚT</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-primary">Quay Video Tổng Kết</h4>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Quay video demo sản phẩm, quy trình làm việc và thành quả cá nhân đạt được tại đơn vị.
+            </p>
+            <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+              <p>• Cơ cấu: Tối đa 1 phút intro giới thiệu, <strong>tối thiểu 4 phút nội dung</strong> công việc.</p>
+              <p>• Dung lượng <strong>≤ 100 MB</strong> | Khung hình 16:9 | Định dạng <code>.mp4</code>/<code>.mov</code>/<code>.wmv</code>.</p>
+              <p class="text-error font-bold">• Nộp file trực tiếp, KHÔNG gửi link YouTube/Drive!</p>
+            </div>
+          </div>
+
+          <!-- Bước 4: BM05, BM06 -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-primary text-on-primary">BƯỚC 4</span>
+              <span class="text-xs text-on-surface-variant font-bold font-mono">CHỈ ĐIỀN THÔNG TIN</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-primary">Chuẩn Bị BM05 & BM06</h4>
+            <p class="text-xs text-on-surface-variant leading-relaxed">
+              Phiếu chấm điểm của Giảng viên giám sát (BM05) và Giảng viên phản biện (BM06).
+            </p>
+            <div class="bg-red-50 p-3 rounded-xl text-xs border border-red-200 text-red-900 space-y-1">
+              <span class="font-bold text-error">NGHIÊM CẤM:</span>
+              <p>Sinh viên chỉ in sẵn biểu mẫu và điền thông tin cá nhân. <strong>TUYỆT ĐỐI KHÔNG</strong> tự liên hệ nhờ Thầy/Cô chấm điểm hoặc ký tên trước khi nộp hồ sơ.</p>
+            </div>
+          </div>
+
+          <!-- Bước 5: BẢNG QUY CHUẨN ĐẶT TÊN FILE (LỚN - 2 CỘT) -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-3 md:col-span-2 lg:col-span-2">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-primary text-on-primary">BƯỚC 5</span>
+              <span class="text-xs text-secondary font-bold font-mono">QUY CHUẨN ĐẶT TÊN FILE (SYNTAX)</span>
+            </div>
+            <h4 class="text-sm sm:text-base font-bold text-primary">Quy Chuẩn Đặt Tên File Bản Mềm Upload Portal</h4>
+            <p class="text-xs text-on-surface-variant">
+              Chọn đúng nhóm học phần. Bấm vào từng tên file bên dưới để sao chép cú pháp chuẩn tức thì:
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
+              <!-- Cột TSNN -->
+              <div class="bg-surface-container p-3.5 rounded-xl space-y-2">
+                <span class="font-bold text-primary text-xs font-mono block">A. Tập Sự Nghề Nghiệp (TSNN)</span>
+                <div class="space-y-1.5 text-xs font-mono">
+                  <button type="button" data-copy="1_MSSV_BM01.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>1_MSSV_BM01.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="2_MSSV_NhatKyTSNN.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>2_MSSV_NhatKyTSNN.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="4_MSSV_BM04.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>4_MSSV_BM04.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="5_MSSV_BaoCao.docx" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>5_MSSV_BaoCao.docx (hoặc .pdf)</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="6_MSSV_VideoTSNN.mp4" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>6_MSSV_VideoTSNN.mp4</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Cột KTCN -->
+              <div class="bg-surface-container p-3.5 rounded-xl space-y-2">
+                <span class="font-bold text-secondary text-xs font-mono block">B. Kiến Tập Công Nghiệp (KTCN)</span>
+                <div class="space-y-1.5 text-xs font-mono">
+                  <button type="button" data-copy="1_MSSV_BM01.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>1_MSSV_BM01.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="2_MSSV_BM02.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>2_MSSV_BM02.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="3_MSSV_BM03.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>3_MSSV_BM03.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="4_MSSV_BM04.pdf" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>4_MSSV_BM04.pdf</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="5_MSSV_BaoCao.docx" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>5_MSSV_BaoCao.docx (hoặc .pdf)</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                  <button type="button" data-copy="6_MSSV_VideoKTCN.mp4" class="w-full p-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-highest flex items-center justify-between gap-1 text-left transition-colors">
+                    <span>6_MSSV_VideoKTCN.mp4</span>
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant">content_copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p class="text-[11px] text-on-surface-variant italic mt-1">
+              * Thay <code>MSSV</code> bằng Mã số sinh viên chính xác (Ví dụ: <code>1_52000888_BM01.pdf</code>).
+            </p>
+          </div>
+        </div>
+
+        <!-- Bước 6: QUY CÁCH NỘP HỒ SƠ BẢN MỀM & BẢN CỨNG (SPAN TOÀN BỘ) -->
+        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-primary text-on-primary">BƯỚC 6</span>
+              <h4 class="text-base sm:text-lg font-bold text-primary font-display">Nộp Hồ Sơ Môn Học (HSMH): Bản Mềm & Bản Cứng</h4>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-[24px]">task</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-surface-container p-4 rounded-xl space-y-2">
+              <div class="flex items-center gap-2 text-primary font-bold text-sm">
+                <span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+                <h5>1. Quy cách Nộp Bản Mềm (Online)</h5>
+              </div>
+              <ul class="text-xs text-on-surface space-y-1.5 list-disc pl-4 leading-relaxed">
+                <li><strong>TSNN:</strong> Upload toàn bộ các file đã đổi tên đúng cú pháp lên <a class="text-secondary underline" href="https://tsnn.tdtu.edu.vn" target="_blank">tsnn.tdtu.edu.vn</a>.</li>
+                <li><strong>KTCN:</strong> Nộp bài tập lớn theo từng slot tương ứng trên khóa học <a class="text-secondary underline" href="https://elearning.tdtu.edu.vn" target="_blank">elearning.tdtu.edu.vn</a>.</li>
+                <li>Kiểm tra tính toàn vẹn của file (mở thử sau khi upload) để tránh nộp nhầm file rỗng 0KB.</li>
+              </ul>
+            </div>
+
+            <div class="bg-surface-container p-4 rounded-xl space-y-2">
+              <div class="flex items-center gap-2 text-primary font-bold text-sm">
+                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+                <h5>2. Quy cách Đóng Bìa Bản Cứng (Văn phòng Khoa)</h5>
+              </div>
+              <ul class="text-xs text-on-surface space-y-1.5 list-disc pl-4 leading-relaxed">
+                <li>
+                  <strong>Thứ tự sắp xếp bắt buộc từ trước ra sau:</strong><br />
+                  <span class="font-semibold text-secondary">Bìa ngoài → BM01 → BM02/Nhật ký → BM03 (nếu KTCN) → BM04 → BM05 → BM06 → Quyển Báo cáo</span>.
+                </li>
+                <li>Đặt toàn bộ vào <strong>bìa hồ sơ chỉn chu</strong>. Ghi rõ ràng bên ngoài: <em>Họ và tên, MSSV, Tên học phần, Học kỳ và Năm học</em>.</li>
+                <li><strong class="text-error">Lưu ý sinh viên học song hành:</strong> Phải nộp <strong>2 bộ hồ sơ bản cứng riêng biệt</strong> hoàn chỉnh cho 2 môn.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. XỬ LÝ SỰ CỐ & TÌNH HUỐNG THƯỜNG GẶP -->
       <section id="su-co" class="flex flex-col gap-5 scroll-mt-28" data-search-target>
-        <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-xs border border-outline-variant/30">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700">
-              <span class="material-symbols-outlined text-[20px]">help</span>
-            </div>
-            <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">5. Xử Lý Sự Cố & Câu Hỏi Thường Gặp (FAQ)</h2>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-surface-variant flex items-center justify-center text-primary font-bold text-base font-mono">
+            04
           </div>
-          <p class="text-sm text-on-surface-variant">Tổng hợp giải pháp cho các tình huống phát sinh: Trục trặc con dấu, thay đổi nơi thực tập, làm remote và quy chuẩn chấm điểm.</p>
+          <div>
+            <span class="font-mono text-xs uppercase tracking-wider text-secondary font-bold">Troubleshooting Guide</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">XỬ LÝ CÁC SỰ CỐ & TÌNH HUỐNG THƯỜNG GẶP</h2>
+          </div>
         </div>
 
-        <div class="space-y-3">
-          <!-- FAQ 1 -->
-          <details class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-4 transition-all group" open>
-            <summary class="font-bold text-xs sm:text-sm text-on-surface cursor-pointer list-none flex items-center justify-between">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-error text-[18px]">gpp_maybe</span>
-                <span>Công ty start-up chỉ có mộc vuông hoặc không dùng con dấu thì xử lý thế nào?</span>
-              </span>
-              <span class="material-symbols-outlined text-on-surface-variant transition-transform group-open:rotate-180 text-[18px]">expand_more</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-outline-variant/20 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-              Theo quy chế học vụ Khoa CNTT TDTU, nếu công ty chỉ có mộc vuông hoặc không dùng con dấu, sinh viên bắt buộc phải nộp kèm: (1) Bản sao Giấy phép Đăng ký kinh doanh (ĐKKD) có mã số thuế đang hoạt động; (2) Bản giải trình/xác nhận phương thức sử dụng con dấu hoặc chữ ký số hợp lệ của người đại diện theo pháp luật.
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Tình huống 1 -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between gap-3">
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-1.5 text-error text-xs font-bold font-mono">
+                <span class="material-symbols-outlined text-[18px]">help</span>
+                <span>TÌNH HUỐNG 01</span>
+              </div>
+              <h4 class="text-sm font-bold text-primary">Đến hạn nộp mà chưa có mộc tròn của DN?</h4>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                Doanh nghiệp có quy trình đóng dấu qua nhiều cấp phòng ban và chưa kịp trả hồ sơ trước hạn nộp của Khoa.
+              </p>
+              <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+                <strong>Cách xử lý:</strong> Liên hệ ngay với Ban Điều Phối Khoa CNTT. Sinh viên <em>tự soạn đơn xin xem xét hoãn nộp mộc</em> (trình bày rõ nguyên nhân + đính kèm email trao đổi làm minh chứng). <strong>Khoa không cung cấp mẫu đơn này.</strong>
+              </div>
             </div>
-          </details>
+            <div class="pt-2 border-t border-outline-variant/20 text-[11px] text-on-surface-variant font-mono">
+              • Báo sớm trước hạn chót thu hồ sơ
+            </div>
+          </div>
 
-          <!-- FAQ 2 -->
-          <details class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-4 transition-all group">
-            <summary class="font-bold text-xs sm:text-sm text-on-surface cursor-pointer list-none flex items-center justify-between">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-amber-600 text-[18px]">timelapse</span>
-                <span>Nếu học song hành cả TSNN và KTCN trong cùng một học kỳ thì tính giờ như thế nào?</span>
-              </span>
-              <span class="material-symbols-outlined text-on-surface-variant transition-transform group-open:rotate-180 text-[18px]">expand_more</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-outline-variant/20 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-              Bắt buộc tích lũy <strong>≥ 240 giờ</strong> (120 giờ cho TSNN + 120 giờ cho KTCN). Bạn phải nộp 2 bộ hồ sơ riêng biệt và nội dung công việc trong nhật ký BM03 giữa 2 học phần phải có sự phân định rõ ràng về phạm vi nhiệm vụ.
+          <!-- Tình huống 2 -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between gap-3">
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-1.5 text-error text-xs font-bold font-mono">
+                <span class="material-symbols-outlined text-[18px]">computer</span>
+                <span>TÌNH HUỐNG 02</span>
+              </div>
+              <h4 class="text-sm font-bold text-primary">Phần mềm TDTU-TSNN hoặc e-Learning bị lỗi?</h4>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                Không đăng nhập được, không lưu được nhật ký, nút upload bị crash hoặc không nhận file.
+              </p>
+              <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+                <strong>Cách xử lý:</strong> Gửi email hỗ trợ kỹ thuật về Tổ Phần Mềm TDTU:
+                <a class="block font-mono text-secondary font-bold underline" href="mailto:tophanmem@tdtu.edu.vn">tophanmem@tdtu.edu.vn</a>
+                <span class="block text-[11px] mt-0.5">Bắt buộc đính kèm: MSSV, họ tên, link bị lỗi và ảnh chụp màn hình rõ nét.</span>
+              </div>
             </div>
-          </details>
+            <div class="pt-2 border-t border-outline-variant/20 text-[11px] text-on-surface-variant font-mono">
+              • Tổ phần mềm TDTU hỗ trợ
+            </div>
+          </div>
 
-          <!-- FAQ 3 -->
-          <details class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-4 transition-all group">
-            <summary class="font-bold text-xs sm:text-sm text-on-surface cursor-pointer list-none flex items-center justify-between">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary text-[18px]">swap_horiz</span>
-                <span>Trong quá trình thực tập muốn chuyển sang công ty khác có được không?</span>
-              </span>
-              <span class="material-symbols-outlined text-on-surface-variant transition-transform group-open:rotate-180 text-[18px]">expand_more</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-outline-variant/20 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-              Được phép nhưng chỉ trong <strong>2 - 3 tuần đầu tiên</strong> của học kỳ. Sinh viên phải: (1) Làm đơn xin đổi đơn vị thực tập có lý do chính đáng; (2) Có xác nhận ngừng thực tập từ công ty cũ; (3) Nộp lại BM01 mới từ công ty tiếp nhận mới và được Giảng viên phụ trách/Khoa phê duyệt.
+          <!-- Tình huống 3 -->
+          <div class="bg-surface-container-lowest p-5 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col justify-between gap-3">
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-1.5 text-secondary text-xs font-bold font-mono">
+                <span class="material-symbols-outlined text-[18px]">rule</span>
+                <span>TÌNH HUỐNG 03</span>
+              </div>
+              <h4 class="text-sm font-bold text-primary">Quy định thẩm quyền đóng dấu BM01, BM04</h4>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                Doanh nghiệp là chi nhánh, văn phòng đại diện hoặc công ty nước ngoài không dùng mộc tròn truyền thống.
+              </p>
+              <div class="bg-surface-container p-3 rounded-xl text-xs space-y-1">
+                <strong>Cách xử lý:</strong>
+                <ol class="list-decimal pl-4 space-y-0.5">
+                  <li><strong>Sử dụng Mộc treo:</strong> Khoa chấp nhận mộc treo của DN/chi nhánh lên BM01 và BM04.</li>
+                  <li><strong>Sử dụng Chữ ký số:</strong> Nộp tập tin PDF đã được nhúng chữ ký số hợp lệ của DN/người đại diện.</li>
+                </ol>
+              </div>
             </div>
-          </details>
-
-          <!-- FAQ 4 -->
-          <details class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-4 transition-all group">
-            <summary class="font-bold text-xs sm:text-sm text-on-surface cursor-pointer list-none flex items-center justify-between">
-              <span class="material-symbols-outlined text-error text-[18px]">cancel</span>
-              <span>Phiếu BM04 của công ty ghi nhầm điểm rồi gạch xóa sửa lại có được chấp nhận không?</span>
-            </span>
-              <span class="material-symbols-outlined text-on-surface-variant transition-transform group-open:rotate-180 text-[18px]">expand_more</span>
-            </summary>
-            <div class="mt-3 pt-3 border-t border-outline-variant/20 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-              <strong>TUYỆT ĐỐI KHÔNG.</strong> Phiếu đánh giá BM04 có dấu hiệu tẩy xóa điểm số (kể cả dùng bút xóa hoặc gạch viết lại) sẽ bị Khoa hủy bỏ và tính 0 điểm môn học. Nếu ghi nhầm, bắt buộc phải in phiếu mới nhờ công ty chấm và đóng dấu lại, hoặc tại chỗ sửa phải có con dấu đóng đè xác nhận của lãnh đạo.
+            <div class="pt-2 border-t border-outline-variant/20 text-[11px] text-on-surface-variant font-mono">
+              • Chấp nhận mộc treo & chữ ký số
             </div>
-          </details>
+          </div>
         </div>
       </section>
 
-      <!-- 6. KHO BIỂU MẪU BM01 - BM06 -->
-      <section id="tai-nguyen" class="flex flex-col gap-5 scroll-mt-28" data-search-target>
+      <!-- 7. QUY TẮC ĐỐI VỚI CÁC BIỂU MẪU & KHO TẢI FILE -->
+      <section id="quy-tac-bieu-mau" class="flex flex-col gap-6 scroll-mt-28" data-search-target>
         <div class="bg-surface-container-lowest p-6 rounded-2xl shadow-xs border border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-3 mb-2">
               <div class="w-8 h-8 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
-                <span class="material-symbols-outlined text-[20px]">folder</span>
+                <span class="material-symbols-outlined text-[20px]">description</span>
               </div>
-              <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">6. Kho Biểu Mẫu Chuẩn BM01 - BM06 & Tài Nguyên</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-primary font-display">7. Quy Tắc Đối Với Các Biểu Mẫu (BM01 - BM08) & Kho Tải File</h2>
             </div>
-            <p class="text-sm text-on-surface-variant">Tải biểu mẫu chính thức, sao chép cú pháp đặt tên file chuẩn và xem hướng dẫn điền thông tin chi tiết.</p>
+            <p class="text-sm text-on-surface-variant">Bảng tra cứu quy định mộc dấu, số lượng bản nộp và link tải biểu mẫu chính thức.</p>
           </div>
 
           <a
@@ -516,136 +939,99 @@
           </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- BM01 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col justify-between gap-4">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-mono text-xs font-bold">BM01</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Mộc tròn đỏ</span>
-              </div>
-              <h3 class="text-sm font-bold text-on-surface">Phiếu tiếp nhận thực tập (Tiếp nhận SV)</h3>
-              <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Xác nhận của Doanh nghiệp đồng ý tiếp nhận sinh viên, có đầy đủ chữ ký người đại diện và mộc tròn pháp nhân.</p>
-            </div>
-            <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-              <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span>Tải mẫu
-              </a>
-              <button data-copy-filename="BM01_PhieuTiepNhanThucTap" class="text-xs font-mono bg-surface-container px-2 py-1 rounded hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span><span>Copy tên file</span>
-              </button>
-            </div>
-          </div>
+        <!-- BẢNG MA TRẬN QUY TẮC BIỂU MẪU -->
+        <div class="bg-surface-container-lowest rounded-2xl shadow-xs border border-outline-variant/30 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-surface-container text-on-surface font-mono border-b border-outline-variant/30">
+                  <th class="p-3 w-16 font-semibold uppercase">Mã</th>
+                  <th class="p-3 font-semibold uppercase">Tên Biểu Mẫu</th>
+                  <th class="p-3 font-semibold uppercase">Học Phần</th>
+                  <th class="p-3 font-semibold uppercase">Yêu Cầu Con Dấu / Mộc</th>
+                  <th class="p-3 font-semibold uppercase">Quy Tắc Đặc Thù</th>
+                  <th class="p-3 w-28 font-semibold uppercase text-right">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/20 font-sans">
+                <!-- BM01 -->
+                <tr class="hover:bg-surface-container-low/50">
+                  <td class="p-3 font-mono font-bold text-primary">BM01</td>
+                  <td class="p-3 font-semibold text-on-surface">Phiếu tiếp nhận thực tập</td>
+                  <td class="p-3 font-mono text-xs">Cả 2 môn</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Bắt buộc mộc tròn đỏ</span></td>
+                  <td class="p-3 text-xs text-on-surface-variant">Dùng chung cho 2 môn nếu cùng DN & ≥240H (TSNN nộp bản gốc, KTCN nộp bản sao). Được thay bằng HĐLĐ.</td>
+                  <td class="p-3 text-right">
+                    <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-secondary font-semibold hover:underline text-xs">Tải mẫu</a>
+                  </td>
+                </tr>
 
-          <!-- BM02 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col justify-between gap-4">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-mono text-xs font-bold">BM02</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container text-on-surface-variant">GĐ1</span>
-              </div>
-              <h3 class="text-sm font-bold text-on-surface">Bản cam kết thực tập của sinh viên</h3>
-              <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Cam kết chấp hành nghiêm chỉnh nội quy công ty, bảo mật thông tin và lịch trình thực tập.</p>
-            </div>
-            <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-              <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span>Tải mẫu
-              </a>
-              <button data-copy-filename="BM02_BanCamKetThucTap" class="text-xs font-mono bg-surface-container px-2 py-1 rounded hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span><span>Copy tên file</span>
-              </button>
-            </div>
-          </div>
+                <!-- BM02 -->
+                <tr class="hover:bg-surface-container-low/50">
+                  <td class="p-3 font-mono font-bold text-primary">BM02</td>
+                  <td class="p-3 font-semibold text-on-surface">Phiếu điểm danh doanh nghiệp (KTCN) / Bản cam kết SV (TSNN)</td>
+                  <td class="p-3 font-mono text-xs">KTCN / TSNN</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container text-on-surface-variant">Chữ ký CBHD (Không dấu)</span></td>
+                  <td class="p-3 text-xs text-on-surface-variant">KTCN ghi nhận công việc hằng ngày và xin chữ ký mentor. TSNN dùng nhật ký trên web thay thế.</td>
+                  <td class="p-3 text-right">
+                    <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-secondary font-semibold hover:underline text-xs">Tải mẫu</a>
+                  </td>
+                </tr>
 
-          <!-- BM03 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col justify-between gap-4">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-mono text-xs font-bold">BM03</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Mộc tròn đỏ</span>
-              </div>
-              <h3 class="text-sm font-bold text-on-surface">Nhật ký thực tập (Theo dõi hàng tuần)</h3>
-              <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Ghi chép chi tiết công việc từng tuần (tối thiểu 120H/môn, nếu song hành cả TSNN và KTCN thì ≥ 240H).</p>
-            </div>
-            <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-              <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span>Tải mẫu
-              </a>
-              <button data-copy-filename="BM03_NhatKyThucTap" class="text-xs font-mono bg-surface-container px-2 py-1 rounded hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span><span>Copy tên file</span>
-              </button>
-            </div>
-          </div>
+                <!-- BM03 -->
+                <tr class="hover:bg-surface-container-low/50">
+                  <td class="p-3 font-mono font-bold text-primary">BM03</td>
+                  <td class="p-3 font-semibold text-on-surface">Phiếu điểm danh GVGS (KTCN)</td>
+                  <td class="p-3 font-mono text-xs">KTCN</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container text-on-surface-variant">Không cần ký</span></td>
+                  <td class="p-3 text-xs text-on-surface-variant">Ghi nhận tiến độ nộp Google Form; không cần chữ ký xác nhận của GVGS.</td>
+                  <td class="p-3 text-right">
+                    <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-secondary font-semibold hover:underline text-xs">Tải mẫu</a>
+                  </td>
+                </tr>
 
-          <!-- BM04 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col justify-between gap-4">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-mono text-xs font-bold">BM04</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Mộc tròn đỏ</span>
-              </div>
-              <h3 class="text-sm font-bold text-on-surface">Phiếu đánh giá kết quả từ Doanh nghiệp</h3>
-              <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Bảng điểm và nhận xét chi tiết của Mentor và Lãnh đạo DN. Tuyệt đối không tẩy xóa điểm số.</p>
-            </div>
-            <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-              <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span>Tải mẫu
-              </a>
-              <button data-copy-filename="BM04_PhieuDanhGiaKetQua" class="text-xs font-mono bg-surface-container px-2 py-1 rounded hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span><span>Copy tên file</span>
-              </button>
-            </div>
-          </div>
+                <!-- BM04 -->
+                <tr class="hover:bg-surface-container-low/50">
+                  <td class="p-3 font-mono font-bold text-primary">BM04</td>
+                  <td class="p-3 font-semibold text-on-surface">Phiếu đánh giá kết quả từ Doanh nghiệp</td>
+                  <td class="p-3 font-mono text-xs">Cả 2 môn</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Bắt buộc mộc tròn đỏ / treo</span></td>
+                  <td class="p-3 text-xs text-on-surface-variant">Tuyệt đối không sửa điểm, không đổi Rubric. Điền mục III nếu CBHD nhận thù lao. Nộp 2 bản riêng nếu học 2 môn.</td>
+                  <td class="p-3 text-right">
+                    <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-secondary font-semibold hover:underline text-xs">Tải mẫu</a>
+                  </td>
+                </tr>
 
-          <!-- BM05 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col justify-between gap-4">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-mono text-xs font-bold">BM05</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container text-on-surface-variant">GĐ3</span>
-              </div>
-              <h3 class="text-sm font-bold text-on-surface">Báo cáo tổng kết thực tập (Chuyên môn)</h3>
-              <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Báo cáo toàn diện về kiến trúc dự án, công nghệ ứng dụng, đóng góp thực tế (25 - 45 trang).</p>
-            </div>
-            <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-              <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span>Tải mẫu
-              </a>
-              <button data-copy-filename="BM05_BaoCaoTongKet" class="text-xs font-mono bg-surface-container px-2 py-1 rounded hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span><span>Copy tên file</span>
-              </button>
-            </div>
-          </div>
+                <!-- BM05 & BM06 -->
+                <tr class="hover:bg-surface-container-low/50">
+                  <td class="p-3 font-mono font-bold text-primary">BM05-06</td>
+                  <td class="p-3 font-semibold text-on-surface">Phiếu chấm điểm GVGS & GV Phản biện</td>
+                  <td class="p-3 font-mono text-xs">Cả 2 môn</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container text-on-surface-variant">Chỉ in sẵn</span></td>
+                  <td class="p-3 text-xs text-on-surface-variant">Sinh viên chỉ điền thông tin cá nhân. Nghiêm cấm tự liên hệ nhờ Thầy/Cô chấm điểm hoặc ký trước.</td>
+                  <td class="p-3 text-right">
+                    <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-secondary font-semibold hover:underline text-xs">Tải mẫu</a>
+                  </td>
+                </tr>
 
-          <!-- BM06 -->
-          <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col justify-between gap-4">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2.5 py-0.5 rounded-md bg-primary text-on-primary font-mono text-xs font-bold">BM06</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container text-on-surface-variant">GĐ3</span>
-              </div>
-              <h3 class="text-sm font-bold text-on-surface">Phiếu khảo sát sinh viên về học phần</h3>
-              <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Khảo sát ý kiến đóng góp của sinh viên về doanh nghiệp tiếp nhận và công tác hỗ trợ của Khoa.</p>
-            </div>
-            <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-              <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-xs font-semibold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">download</span>Tải mẫu
-              </a>
-              <button data-copy-filename="BM06_PhieuKhaoSat" class="text-xs font-mono bg-surface-container px-2 py-1 rounded hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px] copy-icon">content_copy</span><span>Copy tên file</span>
-              </button>
-            </div>
+                <!-- BM07 & BM08 -->
+                <tr class="hover:bg-surface-container-low/50">
+                  <td class="p-3 font-mono font-bold text-primary">BM07-08</td>
+                  <td class="p-3 font-semibold text-on-surface">Đơn đăng ký & Đề nghị công nhận điểm Thực tập sớm</td>
+                  <td class="p-3 font-mono text-xs">Thực tập sớm</td>
+                  <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container text-on-surface-variant">Chữ ký SV & Khoa</span></td>
+                  <td class="p-3 text-xs text-on-surface-variant">BM08 nộp đầu đợt sớm; BM07 nộp cuối đợt trong học kỳ đăng ký môn học chính thức.</td>
+                  <td class="p-3 text-right">
+                    <a href="https://tinyurl.com/BieuMauHocPhan" target="_blank" class="text-secondary font-semibold hover:underline text-xs">Tải mẫu</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
     </main>
-
-    <!-- FLOATING ACTION BUTTON (AI BOT) -->
-    <button id="btn-open-ai-fab" class="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-secondary text-on-secondary shadow-lg hover:bg-secondary-container hover:scale-105 transition-all text-xs sm:text-sm font-bold">
-      <span class="material-symbols-outlined text-[20px] animate-bounce">smart_toy</span>
-      <span class="hidden sm:inline">Trợ lý AI Cố Vấn</span>
-    </button>
 
     <!-- TOAST NOTIFICATION -->
     <div id="app-toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-on-surface text-surface text-xs font-semibold shadow-xl border border-outline-variant transition-opacity duration-300 opacity-0 flex items-center gap-2">
@@ -684,7 +1070,7 @@
           </button>
           <button data-tool-target="tool-checklist" class="tool-tab-btn flex items-center gap-1.5 py-3 px-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface">
             <span class="material-symbols-outlined text-[18px]">checklist</span>
-            <span>3. Checklist Hồ Sơ</span>
+            <span>3. Checklist Hồ Sơ Cá Nhân</span>
           </button>
           <button data-tool-target="tool-filler" class="tool-tab-btn flex items-center gap-1.5 py-3 px-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface">
             <span class="material-symbols-outlined text-[18px]">edit_note</span>
@@ -701,14 +1087,15 @@
               <input
                 id="validator-input"
                 type="text"
-                value="521H0123_NguyenVanA_BM01.pdf"
+                value="1_52000888_BM01.pdf"
                 class="w-full px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant focus:border-secondary focus:outline-none text-xs sm:text-sm font-mono text-on-surface"
               />
               <div class="flex flex-wrap items-center gap-1.5 mt-1">
                 <span class="text-[11px] text-on-surface-variant">Thử mẫu:</span>
-                <button data-val-sample="521H0123_NguyenVanA_BM01.pdf" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Chuẩn TDTU</button>
-                <button data-val-sample="521H0123 Nguyen Van A BM01.pdf" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Lỗi có dấu cách</button>
-                <button data-val-sample="521H0123_NguyenVanA_BM01.docx" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Lỗi file Word</button>
+                <button data-val-sample="1_52000888_BM01.pdf" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Chuẩn TDTU Mục 1</button>
+                <button data-val-sample="1_52000888 BM01.pdf" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Lỗi khoảng trắng</button>
+                <button data-val-sample="1_52000888_BM01.docx" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Lỗi file Word</button>
+                <button data-val-sample="6_52000888_VideoTSNN.mp4" class="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-container text-on-surface-variant hover:bg-surface-container-high">Chuẩn Video Mục 6</button>
               </div>
             </div>
 
@@ -825,67 +1212,7 @@
       </div>
     </div>
 
-    <!-- MODAL 2: TRỢ LÝ AI QUY CHẾ (AI CHAT) -->
-    <div id="modal-ai" class="modal-backdrop hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
-      <div class="bg-surface-container-lowest w-full max-w-2xl rounded-3xl shadow-2xl border border-outline-variant/40 flex flex-col h-[600px] max-h-[92vh] overflow-hidden">
-        <!-- Header -->
-        <div class="px-5 py-3.5 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container/40">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center text-on-secondary shadow-xs">
-              <span class="material-symbols-outlined text-[20px]">smart_toy</span>
-            </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <h3 class="text-sm sm:text-base font-bold text-primary font-display">Trợ Lý AI Quy Chế TSNN & KTCN</h3>
-                <span class="flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Online
-                </span>
-              </div>
-              <p class="text-[11px] text-on-surface-variant">Hỏi đáp quy chế con dấu, biểu mẫu, 120H và nộp bài</p>
-            </div>
-          </div>
-          <button id="btn-close-ai" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors">
-            <span class="material-symbols-outlined text-[20px]">close</span>
-          </button>
-        </div>
-
-        <!-- Chat messages body -->
-        <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3.5 bg-surface/30">
-          <div class="flex items-start gap-2.5">
-            <div class="w-7 h-7 rounded-full bg-secondary/15 text-secondary flex items-center justify-center shrink-0 text-xs">
-              <span class="material-symbols-outlined text-[16px]">smart_toy</span>
-            </div>
-            <div class="max-w-[85%] rounded-2xl rounded-tl-none px-4 py-2.5 text-xs sm:text-sm bg-surface-container-lowest text-on-surface border border-outline-variant/30 leading-relaxed shadow-xs">
-              Xin chào bạn! Tôi là Trợ lý AI Cố vấn Học phần Thực tập (TSNN & KTCN) của Khoa CNTT - TDTU. Bạn có thắc mắc gì về quy trình 120H, con dấu mộc tròn, biểu mẫu BM01-BM06 hay cách nộp HSMH không?
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick prompts -->
-        <div class="px-4 py-2 bg-surface-container-low/50 border-t border-outline-variant/20 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          <span class="text-[10px] font-bold text-on-surface-variant shrink-0">Gợi ý:</span>
-          <button data-ai-prompt="Công ty chỉ có mộc vuông thì xử lý sao?" class="px-2.5 py-1 rounded-full text-[11px] bg-surface-container-lowest border border-outline-variant/30 hover:border-secondary hover:text-secondary whitespace-nowrap text-on-surface-variant">Mộc vuông xử lý sao?</button>
-          <button data-ai-prompt="Học song hành cả TSNN và KTCN tính bao nhiêu giờ?" class="px-2.5 py-1 rounded-full text-[11px] bg-surface-container-lowest border border-outline-variant/30 hover:border-secondary hover:text-secondary whitespace-nowrap text-on-surface-variant">Song hành tính bao nhiêu giờ?</button>
-          <button data-ai-prompt="Quy định đặt tên file nộp bài thế nào?" class="px-2.5 py-1 rounded-full text-[11px] bg-surface-container-lowest border border-outline-variant/30 hover:border-secondary hover:text-secondary whitespace-nowrap text-on-surface-variant">Cú pháp đặt tên file?</button>
-          <button data-ai-prompt="Có được đổi công ty thực tập giữa chừng không?" class="px-2.5 py-1 rounded-full text-[11px] bg-surface-container-lowest border border-outline-variant/30 hover:border-secondary hover:text-secondary whitespace-nowrap text-on-surface-variant">Đổi công ty thực tập?</button>
-        </div>
-
-        <!-- Input box -->
-        <div class="p-3 border-t border-outline-variant/30 bg-surface-container-lowest flex items-center gap-2">
-          <input
-            id="ai-chat-input"
-            type="text"
-            placeholder="Nhập câu hỏi quy chế (vd: mộc tròn, 120H, BM04, song hành...)..."
-            class="flex-1 px-3.5 py-2 rounded-xl bg-surface-container-low/40 border border-outline-variant text-xs sm:text-sm focus:border-secondary focus:outline-none text-on-surface"
-          />
-          <button id="btn-ai-send" class="p-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all shadow-xs">
-            <span class="material-symbols-outlined text-[18px]">send</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODAL 3: ADMIN SETTINGS -->
+    <!-- MODAL 2: ADMIN SETTINGS -->
     <div id="modal-admin" class="modal-backdrop hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
       <div class="bg-surface-container-lowest w-full max-w-lg rounded-3xl shadow-2xl border border-outline-variant/40 flex flex-col overflow-hidden">
         <div class="px-5 py-3.5 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container/40">
@@ -926,7 +1253,7 @@
       </div>
     </div>
 
-    <!-- MODAL 4: INTERACTIVE TEST RUNNER -->
+    <!-- MODAL 3: INTERACTIVE TEST RUNNER -->
     <div id="modal-tests" class="modal-backdrop hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
       <div class="bg-surface-container-lowest w-full max-w-3xl rounded-3xl shadow-2xl border border-outline-variant/40 flex flex-col max-h-[92vh] overflow-hidden">
         <div class="px-5 py-4 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container/40">
@@ -968,7 +1295,7 @@
       <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
         <div class="flex items-center gap-2 font-mono">
           <span class="font-bold text-primary">TDTU • KHOA CNTT</span>
-          <span>- Cổng Thông Tin & Quản Lý Học Phần Thực Tập TSNN & KTCN v2.0</span>
+          <span>- Cổng Thông Tin & Quản Lý Học Phần Thực Tập TSNN & KTCN</span>
         </div>
 
         <div class="flex items-center gap-4">

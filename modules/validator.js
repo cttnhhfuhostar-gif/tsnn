@@ -19,6 +19,12 @@ export function removeVietnameseTones(str) {
   return str;
 }
 
+/**
+ * Kiểm tra tên file theo 2 quy chuẩn của Khoa CNTT TDTU:
+ * 1. Cú pháp số thứ tự nộp HSMH: [STT]_[MSSV]_[TenFile].[ext]
+ *    Ví dụ: 1_521H0123_BM01.pdf, 2_521H0123_NhatKyTSNN.pdf, 4_521H0123_BM04.pdf, 5_521H0123_BaoCao.pdf, 6_521H0123_VideoTSNN.mp4
+ * 2. Cú pháp chuẩn hóa tổng quát: [MSSV]_[HoVaTen]_[TenBM].[ext]
+ */
 export function validateSubmissionFilename(input) {
   const trimmed = (input || '').trim();
   const errors = [];
@@ -36,61 +42,78 @@ export function validateSubmissionFilename(input) {
 
   // 1. Kiểm tra khoảng trắng
   if (/\s/.test(trimmed)) {
-    errors.push('Tên file KHÔNG ĐƯỢC chứa dấu cách (khoảng trắng). Hãy sử dụng dấu gạch dưới "_" để phân tách.');
+    errors.push('Tên file KHÔNG ĐƯỢC chứa khoảng trắng (dấu cách). Hãy sử dụng dấu gạch dưới "_" để phân tách.');
   }
 
-  // 2. Kiểm tra phần mở rộng file .pdf
+  // 2. Kiểm tra phần mở rộng file
   const extMatch = trimmed.match(/\.([a-zA-Z0-9]+)$/);
   const ext = extMatch ? extMatch[1].toLowerCase() : '';
 
   if (!ext) {
-    errors.push('Thiếu phần mở rộng file. Bắt buộc phải là định dạng .pdf.');
-  } else if (ext !== 'pdf') {
-    errors.push(`Định dạng hiện tại là ".${ext}". Quy chế Khoa bắt buộc phải nộp file PDF scan màu (".pdf").`);
+    errors.push('Thiếu phần mở rộng file (đuôi file như .pdf, .docx, .mp4, .zip).');
   }
 
-  // Phân tích các thành phần
   const nameWithoutExt = trimmed.replace(/\.[a-zA-Z0-9]+$/, '');
   const parts = nameWithoutExt.split('_');
 
-  let studentId = '';
-  let fullName = '';
-  let formCode = '';
+  // Kiểm tra cú pháp dạng 1: [STT]_[MSSV]_[TenFile].[ext] (Quy chuẩn nộp HSMH Khoa CNTT TDTU)
+  const isNumberedFormat = parts.length >= 3 && /^[1-6]$/.test(parts[0]);
 
-  if (parts.length < 3) {
-    errors.push('Cấu trúc tên file không đủ 3 phần chuẩn: [MSSV]_[Hovaten]_[TenBieuMau].pdf (phân tách bằng dấu gạch dưới "_").');
-  } else {
-    studentId = parts[0];
-    fullName = parts[1];
-    formCode = parts.slice(2).join('_');
-
-    // Kiểm tra định dạng MSSV TDTU
-    const tdtuStudentIdRegex = /^[0-9A-Z]{7,9}$/i;
-    if (!tdtuStudentIdRegex.test(studentId)) {
-      warnings.push(`MSSV "${studentId}" có thể chưa đúng định dạng chuẩn của TDTU (thường gồm 8 ký tự như 521H0123, 52000123).`);
-    }
-
-    // Cảnh báo nếu họ tên có dấu tiếng Việt
-    const vietnameseDiacritics = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
-    if (vietnameseDiacritics.test(fullName)) {
-      warnings.push('Họ tên nên viết không dấu (ví dụ: NguyenVanA) để tránh lỗi font khi tải về máy chấm điểm.');
-    }
-
-    // Kiểm tra mã biểu mẫu hợp lệ
-    const validCodes = ['BM01', 'BM02', 'BM03', 'BM04', 'BM05', 'BM06', 'HSMH', 'BAOCAO', 'NHATKY'];
-    const matched = validCodes.find(c => formCode.toUpperCase().includes(c));
-    if (!matched) {
-      warnings.push(`Mã biểu mẫu "${formCode}" chưa thuộc danh mục chuẩn (BM01, BM02, BM03, BM04, BM05, BM06, HSMH).`);
-    }
-  }
-
-  // Tự động sinh tên đề xuất chuẩn hóa
   let suggestedName = '';
-  if (parts.length >= 2) {
-    const cleanId = (parts[0] || 'MSSV').replace(/\s+/g, '');
-    const cleanName = removeVietnameseTones(parts[1] || 'HoVaTen').replace(/\s+/g, '');
-    const cleanCode = (parts[2] || 'BM01').toUpperCase().replace(/\s+/g, '');
-    suggestedName = `${cleanId}_${cleanName}_${cleanCode}.pdf`;
+
+  if (isNumberedFormat) {
+    const stt = parts[0];
+    const mssv = parts[1];
+    const fileLabel = parts.slice(2).join('_');
+
+    // Kiểm tra định dạng MSSV
+    const tdtuMssvRegex = /^[0-9A-Z]{7,9}$/i;
+    if (!tdtuMssvRegex.test(mssv)) {
+      warnings.push(`MSSV "${mssv}" có thể chưa đúng chuẩn TDTU (thường 8 ký tự như 521H0123, 52000888).`);
+    }
+
+    // Kiểm tra đuôi file theo số thứ tự
+    if (['1', '2', '3', '4'].includes(stt) && ext !== 'pdf') {
+      errors.push(`Mục số ${stt} (${fileLabel}) bắt buộc phải là định dạng ".pdf" scan màu.`);
+    }
+    if (stt === '5' && !['pdf', 'docx', 'zip'].includes(ext)) {
+      errors.push('Báo cáo (Mục 5) phải là định dạng .pdf, .docx hoặc .zip (nếu dùng LaTeX).');
+    }
+    if (stt === '6' && !['mp4', 'mov', 'wmv'].includes(ext)) {
+      errors.push('Video tổng kết (Mục 6) bắt buộc định dạng .mp4, .mov hoặc .wmv (dung lượng ≤ 100MB).');
+    }
+
+    suggestedName = `${stt}_${mssv.replace(/\s+/g, '')}_${fileLabel.replace(/\s+/g, '')}.${ext || 'pdf'}`;
+  } else {
+    // Kiểm tra cú pháp dạng 2: [MSSV]_[HoVaTen]_[TenBM].[ext]
+    if (parts.length < 3) {
+      errors.push('Cấu trúc chưa đúng chuẩn Khoa CNTT: Bắt buộc dùng cú pháp [STT]_[MSSV]_[TenFile].[ext] (vd: 1_521H0123_BM01.pdf) hoặc [MSSV]_[HoVaTen]_[TenBM].pdf.');
+    } else {
+      const studentId = parts[0];
+      const fullName = parts[1];
+      const formCode = parts.slice(2).join('_');
+
+      const tdtuMssvRegex = /^[0-9A-Z]{7,9}$/i;
+      if (!tdtuMssvRegex.test(studentId)) {
+        warnings.push(`MSSV "${studentId}" có thể chưa đúng chuẩn TDTU.`);
+      }
+
+      const vietnameseDiacritics = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+      if (vietnameseDiacritics.test(fullName)) {
+        warnings.push('Họ tên nên viết không dấu (ví dụ: NguyenVanA) để tránh lỗi font khi tải về máy chấm điểm.');
+      }
+
+      if (ext !== 'pdf' && ext !== 'mp4') {
+        errors.push(`Định dạng hiện tại là ".${ext}". Hồ sơ biểu mẫu bắt buộc phải là ".pdf".`);
+      }
+    }
+
+    if (parts.length >= 2) {
+      const cleanId = (parts[0] || '521H0123').replace(/\s+/g, '');
+      const cleanName = removeVietnameseTones(parts[1] || 'NguyenVanA').replace(/\s+/g, '');
+      const cleanCode = (parts[2] || 'BM01').toUpperCase().replace(/\s+/g, '');
+      suggestedName = `${cleanId}_${cleanName}_${cleanCode}.${ext || 'pdf'}`;
+    }
   }
 
   const isValid = errors.length === 0;
@@ -101,7 +124,7 @@ export function validateSubmissionFilename(input) {
     score,
     errors,
     warnings,
-    suggestedName: suggestedName || '521H0123_NguyenVanA_BM01.pdf',
-    parsedData: { studentId, fullName, formCode, ext }
+    suggestedName: suggestedName || '1_521H0123_BM01.pdf',
+    parsedData: { isNumberedFormat, parts, ext }
   };
 }
