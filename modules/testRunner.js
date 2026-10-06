@@ -1,6 +1,7 @@
-// modules/testRunner.js - Bộ kiểm thử tự động 8 Test Cases chuẩn Khoa CNTT TDTU
+// modules/testRunner.js - Bộ kiểm thử tự động 9 Test Cases chuẩn Khoa CNTT TDTU
 import { validateSubmissionFilename, removeVietnameseTones } from './validator.js';
 import { calculateInternshipHours } from './hoursTracker.js';
+import { calculatePersonalProgress } from './personalTracker.js';
 
 export const TEST_SUITE = [
   {
@@ -51,10 +52,10 @@ export const TEST_SUITE = [
     id: 'TC-VAL-05',
     name: 'Tự động sửa lỗi & gợi ý tên file chuẩn',
     module: 'Validator',
-    description: 'Input: "1_52000888 BM01.docx" -> Mong đợi đề xuất "1_52000888_BM01.pdf"',
+    description: 'Input: "1_52000888 BM01.docx" -> Mong đợi đề xuất sửa lỗi',
     run: () => {
       const res = validateSubmissionFilename('1_52000888 BM01.docx');
-      const pass = res.suggestedName === '1_52000888_BM01.docx' || res.suggestedName.includes('52000888');
+      const pass = res.suggestedName.includes('52000888');
       return { pass, message: `Đề xuất sửa lỗi: "${res.suggestedName}"` };
     }
   },
@@ -81,6 +82,28 @@ export const TEST_SUITE = [
     }
   },
   {
+    id: 'TC-TRACK-01',
+    name: 'Tính toán tiến trình cá nhân hóa từ nhật ký tuần',
+    module: 'PersonalTracker',
+    description: 'Dữ liệu 3 tuần (20h + 20h + 25h = 65h) đối với môn 120H',
+    run: () => {
+      const mockData = {
+        courseType: 'single_tsnn',
+        startDate: '2026-02-15',
+        endDate: '2026-05-15',
+        deadlineDate: '2026-05-30',
+        weeklyLogs: [
+          { id: 1, week: 1, hours: 20, task: 'Task 1', mentorSigned: true },
+          { id: 2, week: 2, hours: 20, task: 'Task 2', mentorSigned: true },
+          { id: 3, week: 3, hours: 25, task: 'Task 3', mentorSigned: false }
+        ]
+      };
+      const res = calculatePersonalProgress(mockData);
+      const pass = res.totalLoggedHours === 65 && res.remainingHours === 55 && res.targetHours === 120 && res.signedLogsCount === 2;
+      return { pass, message: `Đã tích lũy ${res.totalLoggedHours}/${res.targetHours}H (54%). Đã ký: ${res.signedLogsCount}/3 tuần. Còn thiếu ${res.remainingHours}H.` };
+    }
+  },
+  {
     id: 'TC-UTIL-01',
     name: 'Hàm xử lý loại bỏ dấu tiếng Việt',
     module: 'Utilities',
@@ -98,7 +121,7 @@ export async function executeAllTests(onProgress) {
   for (let i = 0; i < TEST_SUITE.length; i++) {
     const tc = TEST_SUITE[i];
     const startTime = performance.now();
-    await new Promise(r => setTimeout(r, 50));
+    await new Promise(r => setTimeout(r, 40));
     const { pass, message } = tc.run();
     const duration = Math.round(performance.now() - startTime);
 

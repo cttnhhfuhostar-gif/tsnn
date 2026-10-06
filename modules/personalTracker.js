@@ -1,0 +1,119 @@
+// modules/personalTracker.js - Quản lý tiến trình và thời gian biểu thực tập cá nhân hóa
+
+const STORAGE_KEY = 'tdtu_intern_personal_tracker_v1';
+
+export const DEFAULT_TRACKER_DATA = {
+  courseType: 'single_tsnn', // 'single_tsnn' (120H) | 'single_ktcn' (120H) | 'dual' (240H)
+  startDate: new Date().toISOString().split('T')[0], // Mặc định hôm nay
+  endDate: new Date(Date.now() + 75 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +75 ngày
+  deadlineDate: '2026-05-30', // Hạn nộp HSMH kỳ 2
+  weeklyLogs: [
+    { id: 1, week: 1, hours: 20, task: 'Làm quen môi trường công ty, setup IDE và đọc tài liệu dự án', mentorSigned: true },
+    { id: 2, week: 2, hours: 20, task: 'Nghiên cứu cấu trúc cơ sở dữ liệu, viết API authentication', mentorSigned: true },
+    { id: 3, week: 3, hours: 25, task: 'Xây dựng giao diện Dashboard, tích hợp REST API', mentorSigned: false }
+  ]
+};
+
+export function getPersonalTrackerState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_TRACKER_DATA;
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_TRACKER_DATA,
+      ...parsed,
+      weeklyLogs: Array.isArray(parsed.weeklyLogs) ? parsed.weeklyLogs : DEFAULT_TRACKER_DATA.weeklyLogs
+    };
+  } catch {
+    return DEFAULT_TRACKER_DATA;
+  }
+}
+
+export function savePersonalTrackerState(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Lỗi lưu personal tracker:', e);
+  }
+}
+
+export function resetPersonalTrackerState() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+/**
+ * Tính toán phân tích tiến trình cá nhân hóa
+ */
+export function calculatePersonalProgress(trackerData) {
+  const data = trackerData || DEFAULT_TRACKER_DATA;
+  const isDual = data.courseType === 'dual';
+  const targetHours = isDual ? 240 : 120;
+
+  // 1. Tổng số giờ đã tích lũy từ các tuần
+  const totalLoggedHours = data.weeklyLogs.reduce((acc, log) => acc + (Number(log.hours) || 0), 0);
+  const remainingHours = Math.max(0, targetHours - totalLoggedHours);
+  const progressPercentage = Math.min(100, Math.round((totalLoggedHours / targetHours) * 100));
+  const isCompleted = totalLoggedHours >= targetHours;
+
+  // 2. Phân tích thời gian (Ngày bắt đầu, kết thúc, deadline)
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  const start = new Date(data.startDate);
+  const end = new Date(data.endDate);
+  const deadline = new Date(data.deadlineDate);
+
+  // Số ngày còn lại đến hạn nộp bài
+  const diffTimeToDeadline = deadline.getTime() - now.getTime();
+  const daysUntilDeadline = Math.ceil(diffTimeToDeadline / (1000 * 60 * 60 * 24));
+  const isDeadlinePassed = daysUntilDeadline < 0;
+
+  // Số tuần còn lại đến deadline
+  const weeksUntilDeadline = Math.max(0, Math.ceil(daysUntilDeadline / 7));
+
+  // 3. Tốc độ làm việc & Dự báo
+  // Số giờ cần làm mỗi tuần để kịp deadline
+  const requiredHoursPerWeek = weeksUntilDeadline > 0 ? Math.ceil(remainingHours / weeksUntilDeadline) : remainingHours;
+
+  // Đánh giá tình trạng tiến độ (Velocity Status)
+  let status = 'on_track'; // 'completed' | 'on_track' | 'warning' | 'urgent'
+  let statusMessage = '';
+
+  if (isCompleted) {
+    status = 'completed';
+    statusMessage = `Xuất sắc! Bạn đã hoàn thành ${totalLoggedHours}H (≥ ${targetHours}H). Đã đủ điều kiện đóng cuốn HSMH.`;
+  } else if (isDeadlinePassed) {
+    status = 'urgent';
+    statusMessage = `ĐÃ QUÁ HẠN NỘP HỒ SƠ (${Math.abs(daysUntilDeadline)} ngày trước)! Vui lòng liên hệ gấp Giảng viên hướng dẫn.`;
+  } else if (daysUntilDeadline <= 14 && remainingHours > 30) {
+    status = 'urgent';
+    statusMessage = `Cảnh báo khẩn cấp: Chỉ còn ${daysUntilDeadline} ngày đến deadline nhưng còn thiếu ${remainingHours}H! Bạn cần làm ${requiredHoursPerWeek}H/tuần.`;
+  } else if (requiredHoursPerWeek > 30) {
+    status = 'warning';
+    statusMessage = `Cần tăng tốc: Bạn cần làm trung bình ${requiredHoursPerWeek}H/tuần trong ${weeksUntilDeadline} tuần tới để kịp nộp HSMH.`;
+  } else {
+    status = 'on_track';
+    statusMessage = `Tiến độ ổn định: Còn ${daysUntilDeadline} ngày. Duy trì ~${requiredHoursPerWeek || 15}H/tuần để về đích đúng hạn.`;
+  }
+
+  // Thống kê chữ ký mentor
+  const signedLogsCount = data.weeklyLogs.filter(l => l.mentorSigned).length;
+  const unsignedLogsCount = data.weeklyLogs.length - signedLogsCount;
+
+  return {
+    targetHours,
+    totalLoggedHours,
+    remainingHours,
+    progressPercentage,
+    isCompleted,
+    daysUntilDeadline,
+    weeksUntilDeadline,
+    isDeadlinePassed,
+    requiredHoursPerWeek,
+    status,
+    statusMessage,
+    signedLogsCount,
+    unsignedLogsCount,
+    totalWeeksRecorded: data.weeklyLogs.length
+  };
+}
