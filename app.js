@@ -18,8 +18,11 @@ import {
   loadCurrentProfile,
   saveCurrentProfile
 } from './modules/profileManager.js';
-
-let currentLang = localStorage.getItem('tdtu_lang') || 'vi';
+import {
+  initTextNodes,
+  setLanguage,
+  getCurrentLanguage
+} from './modules/i18n.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initCopyButtons();
@@ -961,20 +964,26 @@ function initSearch() {
 
 // 10. Language Switcher
 function initLanguageSwitcher() {
+  initTextNodes();
+
   const btnVi = document.getElementById('lang-vi-btn');
   const btnEn = document.getElementById('lang-en-btn');
 
-  function setLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('tdtu_lang', lang);
-    if (btnVi && btnEn) {
-      btnVi.classList.toggle('bg-primary', lang === 'vi');
-      btnVi.classList.toggle('text-on-primary', lang === 'vi');
-      btnEn.classList.toggle('bg-primary', lang === 'en');
-      btnEn.classList.toggle('text-on-primary', lang === 'en');
-    }
+  if (btnVi) {
+    btnVi.addEventListener('click', () => {
+      setLanguage('vi', showToast);
+    });
   }
 
-  if (btnVi) btnVi.addEventListener('click', () => setLanguage('vi'));
-  if (btnEn) btnEn.addEventListener('click', () => setLanguage('en'));
+  if (btnEn) {
+    btnEn.addEventListener('click', () => {
+      setLanguage('en', showToast);
+    });
+  }
+
+  // Apply saved language if was previously English
+  const saved = getCurrentLanguage();
+  if (saved === 'en') {
+    setLanguage('en');
+  }
 }
